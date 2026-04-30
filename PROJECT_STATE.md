@@ -20,20 +20,12 @@ The platform supports a dual-profile system where one user account can switch be
 
 ## Current Milestone
 
-Milestone 1: Repository and Documentation Setup
+Milestone 2: Authentication & Dual Profiles
 
 ## Current Status
 
-The GitHub repository has been created.
+Phase 1 project foundation is complete. The project is moving into backend and frontend initialization, authentication, and dual-profile implementation.
 
-The current focus is setting up:
-
-- README
-- Contribution guide
-- Architecture documentation
-- Technical decisions
-- Initial project structure
-- GitHub templates
 
 ## Confirmed Architecture
 
@@ -101,41 +93,16 @@ Teaching-related data should be attached to the instructor profile.
 
 ## Next Tasks
 
-### Documentation
-
-- Add root README
-- Add CONTRIBUTING guide
-- Add architecture overview
-- Add module documentation
-- Add initial data model
-- Add first architecture decision record
-- Add system context diagram
-
-### Repository Setup
-
-- Add backend folder
-- Add frontend folder
-- Add docs folder
-- Add GitHub issue templates
-- Add pull request template
-- Add initial `.gitignore`
-
-### Backend Setup
-
-- Initialize Spring Boot project
-- Configure PostgreSQL
-- Configure base package structure
-- Add global exception handling
-- Add Swagger
-- Add authentication module skeleton
-
-### Frontend Setup
-
-- Initialize React project
-- Configure routing
-- Add base layout structure
-- Add authentication context skeleton
-- Add API client setup
+- [ ] Setup Spring Boot backend project
+- [ ] Configure PostgreSQL connection
+- [ ] Implement User and Role entities
+- [ ] Implement registration endpoint
+- [ ] Implement login with JWT
+- [ ] Create learner profile automatically after registration
+- [ ] Implement instructor profile request
+- [ ] Implement admin approval for instructor profiles
+- [ ] Implement profile switching logic
+- [ ] Setup React frontend project
 
 ## First Implementation Priority
 
