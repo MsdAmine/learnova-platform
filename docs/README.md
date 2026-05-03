@@ -8,6 +8,7 @@ This folder contains the technical documentation for the Online Training Platfor
 - [Backend Modules](architecture/modules.md)
 - [Data Model](architecture/data-model.md)
 - [API Overview](architecture/api-overview.md)
+- [Profile Switching](architecture/profile-switching.md)
 
 ## Architecture Decisions
 

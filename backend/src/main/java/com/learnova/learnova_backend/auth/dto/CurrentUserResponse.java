@@ -1,5 +1,6 @@
 package com.learnova.learnova_backend.auth.dto;
 
+import com.learnova.learnova_backend.profile.entity.ProfileType;
 import com.learnova.learnova_backend.user.entity.AccountStatus;
 import com.learnova.learnova_backend.user.entity.RoleName;
 
@@ -11,7 +12,7 @@ public record CurrentUserResponse(
         String email,
         AccountStatus accountStatus,
         Set<RoleName> roles,
-        Set<String> availableProfiles,
+        Set<ProfileType> availableProfiles,
         String instructorApprovalStatus
 ) {
 }
