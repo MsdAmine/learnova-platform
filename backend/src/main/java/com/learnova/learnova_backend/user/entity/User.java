@@ -2,6 +2,7 @@ package com.learnova.learnova_backend.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import com.learnova.learnova_backend.profile.entity.LearnerProfile;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -92,5 +93,18 @@ public class User {
     public void removeRole(Role role) {
         this.roles.remove(role);
         role.getUsers().remove(this);
+    }
+
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private LearnerProfile learnerProfile;
+
+    public void attachLearnerProfile(LearnerProfile learnerProfile) {
+        this.learnerProfile = learnerProfile;
+        learnerProfile.setUser(this);
     }
 }
