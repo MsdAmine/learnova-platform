@@ -1,5 +1,7 @@
 package com.learnova.learnova_backend.auth.controller;
 
+import com.learnova.learnova_backend.auth.dto.LoginRequest;
+import com.learnova.learnova_backend.auth.dto.LoginResponse;
 import com.learnova.learnova_backend.auth.dto.RegisterRequest;
 import com.learnova.learnova_backend.auth.dto.RegisterResponse;
 import com.learnova.learnova_backend.auth.service.AuthService;
@@ -19,5 +21,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public RegisterResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
