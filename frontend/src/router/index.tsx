@@ -4,14 +4,14 @@ import RegisterPage from '../features/auth/pages/RegisterPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import GuestRoute from '../components/common/GuestRoute';
-import DashboardPlaceholder from '../pages/DashboardPlaceholder';
+import DashboardPage from '../pages/DashboardPage';
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: (
             <ProtectedRoute>
-                <DashboardPlaceholder />
+                <DashboardPage />
             </ProtectedRoute>
         ),
     },
