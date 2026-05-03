@@ -13,6 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.learnova.learnova_backend.profile.dto.InstructorProfileRejectionRequest;
+import com.learnova.learnova_backend.user.entity.Role;
+import com.learnova.learnova_backend.user.entity.RoleName;
+import com.learnova.learnova_backend.user.repository.RoleRepository;
+
+import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +27,7 @@ public class InstructorProfileService {
 
     private final InstructorProfileRepository instructorProfileRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Transactional
     public InstructorProfileResponse requestInstructorProfile(
@@ -86,5 +94,66 @@ public class InstructorProfileService {
                 instructorProfile.getRequestedAt(),
                 instructorProfile.getReviewedAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<InstructorProfileResponse> getPendingInstructorProfiles() {
+        return instructorProfileRepository.findByApprovalStatus(InstructorApprovalStatus.PENDING)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public InstructorProfileResponse approveInstructorProfile(Long profileId) {
+        InstructorProfile instructorProfile = instructorProfileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Instructor profile request not found"
+                ));
+
+        if (instructorProfile.getApprovalStatus() == InstructorApprovalStatus.APPROVED) {
+            return toResponse(instructorProfile);
+        }
+
+        instructorProfile.setApprovalStatus(InstructorApprovalStatus.APPROVED);
+        instructorProfile.setRejectionReason(null);
+        instructorProfile.setReviewedAt(Instant.now());
+
+        Role instructorRole = getOrCreateRole(RoleName.ROLE_INSTRUCTOR);
+        instructorProfile.getUser().addRole(instructorRole);
+
+        InstructorProfile savedProfile = instructorProfileRepository.save(instructorProfile);
+
+        return toResponse(savedProfile);
+    }
+
+    @Transactional
+    public InstructorProfileResponse rejectInstructorProfile(
+            Long profileId,
+            InstructorProfileRejectionRequest request
+    ) {
+        InstructorProfile instructorProfile = instructorProfileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Instructor profile request not found"
+                ));
+
+        instructorProfile.setApprovalStatus(InstructorApprovalStatus.REJECTED);
+        instructorProfile.setRejectionReason(request.rejectionReason().trim());
+        instructorProfile.setReviewedAt(Instant.now());
+
+        InstructorProfile savedProfile = instructorProfileRepository.save(instructorProfile);
+
+        return toResponse(savedProfile);
+    }
+
+    private Role getOrCreateRole(RoleName roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseGet(() -> roleRepository.save(
+                        Role.builder()
+                                .name(roleName)
+                                .build()
+                ));
     }
 }
