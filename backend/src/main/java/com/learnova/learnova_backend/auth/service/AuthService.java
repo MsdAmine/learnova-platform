@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.learnova.learnova_backend.auth.dto.CurrentUserResponse;
 import com.learnova.learnova_backend.profile.service.LearnerProfileService;
 import com.learnova.learnova_backend.profile.repository.InstructorProfileRepository;
+import com.learnova.learnova_backend.profile.service.ProfileAccessService;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final LearnerProfileService learnerProfileService;
     private final InstructorProfileRepository instructorProfileRepository;
+    private final ProfileAccessService profileAccessService;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -144,7 +146,7 @@ public class AuthService {
                 user.getEmail(),
                 user.getAccountStatus(),
                 extractRoles(user),
-                Set.of("LEARNER"),
+                profileAccessService.resolveAvailableProfiles(user),
                 instructorApprovalStatus
         );
     }
