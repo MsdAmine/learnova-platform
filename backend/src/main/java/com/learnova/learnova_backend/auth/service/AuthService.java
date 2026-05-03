@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import com.learnova.learnova_backend.auth.dto.CurrentUserResponse;
 import com.learnova.learnova_backend.profile.service.LearnerProfileService;
+import com.learnova.learnova_backend.profile.repository.InstructorProfileRepository;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final LearnerProfileService learnerProfileService;
+    private final InstructorProfileRepository instructorProfileRepository;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -132,6 +134,10 @@ public class AuthService {
         User user = userRepository.findByEmailIgnoreCase(currentUser.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
+        String instructorApprovalStatus = instructorProfileRepository.findByUserId(user.getId())
+                .map(profile -> profile.getApprovalStatus().name())
+                .orElse(null);
+
         return new CurrentUserResponse(
                 user.getId(),
                 user.getFullName(),
@@ -139,7 +145,7 @@ public class AuthService {
                 user.getAccountStatus(),
                 extractRoles(user),
                 Set.of("LEARNER"),
-                null
+                instructorApprovalStatus
         );
     }
 }
