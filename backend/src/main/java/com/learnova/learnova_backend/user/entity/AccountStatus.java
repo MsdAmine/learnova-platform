@@ -1,4 +1,7 @@
 package com.learnova.learnova_backend.user.entity;
 
-public class AccountStatus {
+public enum AccountStatus {
+    ACTIVE,
+    DISABLED,
+    SUSPENDED
 }
