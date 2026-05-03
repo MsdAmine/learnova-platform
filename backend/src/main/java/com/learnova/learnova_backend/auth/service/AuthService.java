@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import com.learnova.learnova_backend.auth.dto.CurrentUserResponse;
+import com.learnova.learnova_backend.profile.service.LearnerProfileService;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final LearnerProfileService learnerProfileService;
 
     @Transactional
     public RegisterResponse register(RegisterRequest request) {
@@ -56,6 +58,8 @@ public class AuthService {
         user.addRole(learnerRole);
 
         User savedUser = userRepository.save(user);
+
+        learnerProfileService.createDefaultProfileFor(savedUser);
 
         return toRegisterResponse(savedUser);
     }
