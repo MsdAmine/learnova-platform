@@ -1,9 +1,6 @@
 package com.learnova.learnova_backend.auth.service;
 
-import com.learnova.learnova_backend.auth.dto.LoginRequest;
-import com.learnova.learnova_backend.auth.dto.LoginResponse;
-import com.learnova.learnova_backend.auth.dto.RegisterRequest;
-import com.learnova.learnova_backend.auth.dto.RegisterResponse;
+import com.learnova.learnova_backend.auth.dto.*;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import com.learnova.learnova_backend.security.JwtService;
 import com.learnova.learnova_backend.user.entity.AccountStatus;
@@ -24,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.learnova.learnova_backend.auth.dto.CurrentUserResponse;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -123,5 +121,21 @@ public class AuthService {
                 .stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
+    }
+
+    @Transactional(readOnly = true)
+    public CurrentUserResponse getCurrentUser(CustomUserDetails currentUser) {
+        User user = userRepository.findByEmailIgnoreCase(currentUser.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        return new CurrentUserResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getAccountStatus(),
+                extractRoles(user),
+                Set.of("LEARNER"),
+                null
+        );
     }
 }
