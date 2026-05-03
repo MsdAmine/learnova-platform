@@ -5,14 +5,20 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/learnova_db}
     username: ${DB_USERNAME:learnova_user}
-    password: ${DB_PASSWORD:learnova_password}
+    password: ${DB_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
         format_sql: true
+
+  sql:
+    init:
+      mode: never
+
+server:
+  port: ${SERVER_PORT:8080}
