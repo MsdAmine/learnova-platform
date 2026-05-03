@@ -9,7 +9,6 @@ spring:
     hibernate:
       ddl-auto: create-drop
     open-in-view: false
-    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
         format_sql: true
@@ -17,3 +16,9 @@ spring:
   sql:
     init:
       mode: never
+
+app:
+  security:
+    jwt:
+      secret: learnova-test-secret-key-for-jwt-authentication-minimum-32-characters
+      expiration-ms: 86400000
