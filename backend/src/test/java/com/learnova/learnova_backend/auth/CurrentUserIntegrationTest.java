@@ -51,14 +51,14 @@ class CurrentUserIntegrationTest {
     @Test
     void shouldRejectCurrentUserRequestWithoutToken() throws Exception {
         mockMvc.perform(get("/api/v1/auth/me"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     void shouldRejectCurrentUserRequestWithInvalidToken() throws Exception {
         mockMvc.perform(get("/api/v1/auth/me")
                         .header("Authorization", "Bearer invalid-token"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     private String registerAndLogin(String email, String password) throws Exception {
