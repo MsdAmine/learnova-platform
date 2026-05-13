@@ -36,4 +36,12 @@ public class CourseController {
             @Valid @RequestBody CourseUpdateRequest request) {
         return courseService.updateCourse(id, currentUser, request);
     }
+
+    @PatchMapping("/{id}/publish")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse publishCourse(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        return courseService.publishCourse(id, currentUser);
+    }
 }
