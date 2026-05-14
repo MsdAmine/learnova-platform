@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -53,6 +54,15 @@ public class CourseController {
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         return courseService.archiveCourse(id, currentUser);
+    }
+
+    @PostMapping("/instructor/courses/{id}/thumbnail")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public String uploadThumbnail(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam("file") MultipartFile file) {
+        return courseService.uploadThumbnail(id, currentUser, file);
     }
 
     // --- Admin Endpoints ---

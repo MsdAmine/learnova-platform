@@ -28,3 +28,5 @@ app:
     jwt:
       secret: ${JWT_SECRET:learnova-development-secret-key-for-jwt-authentication-minimum-32-characters}
       expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+    upload:
+      dir: ./uploads 
