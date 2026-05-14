@@ -8,4 +8,6 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     List<Section> findByCourseId(Long courseId);
 
     long countByCourseId(Long courseId);
+
+    List<Section> findByCourseIdOrderByPositionAsc(Long courseId);
 }
