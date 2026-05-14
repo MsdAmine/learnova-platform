@@ -13,10 +13,12 @@ import com.learnova.learnova_backend.profile.entity.InstructorApprovalStatus;
 import com.learnova.learnova_backend.profile.entity.InstructorProfile;
 import com.learnova.learnova_backend.profile.repository.InstructorProfileRepository;
 import com.learnova.learnova_backend.security.CustomUserDetails;
+import com.learnova.learnova_backend.file.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -29,6 +31,7 @@ public class CourseService {
         private final CategoryRepository categoryRepository;
         private final InstructorProfileRepository instructorProfileRepository;
         private final SectionRepository sectionRepository;
+        private final FileStorageService fileStorageService;
 
         /**
          * CORE OWNERSHIP UTILITY
@@ -121,6 +124,21 @@ public class CourseService {
                 Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
                 course.setStatus(CourseStatus.ARCHIVED);
                 return toResponse(courseRepository.save(course));
+        }
+
+        @Transactional
+        public String uploadThumbnail(Long courseId, CustomUserDetails currentUser, MultipartFile file) {
+                Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
+
+                // Delete old thumbnail if it exists
+                if (course.getThumbnailUrl() != null) {
+                        fileStorageService.deleteFile(course.getThumbnailUrl());
+                }
+
+                String filePath = fileStorageService.storeFile(file, "courses/" + courseId + "/thumbnail");
+                course.setThumbnailUrl(filePath);
+                courseRepository.save(course);
+                return filePath;
         }
 
         @Transactional

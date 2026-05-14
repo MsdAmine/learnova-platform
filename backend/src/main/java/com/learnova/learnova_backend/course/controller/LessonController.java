@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -57,4 +58,15 @@ public class LessonController {
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         lessonService.deleteLesson(courseId, sectionId, lessonId, currentUser.getId());
     }
-}
+
+    @PostMapping("/{lessonId}/resource")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public String uploadResource(
+            @PathVariable Long courseId,
+            @PathVariable Long sectionId,
+            @PathVariable Long lessonId,
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam("file") MultipartFile file) {
+        return lessonService.uploadResource(courseId, sectionId, lessonId, currentUser.getId(), file);
+    }
+}

@@ -6,10 +6,13 @@ import com.learnova.learnova_backend.course.entity.Lesson;
 import com.learnova.learnova_backend.course.entity.Section;
 import com.learnova.learnova_backend.course.repository.LessonRepository;
 import com.learnova.learnova_backend.course.repository.SectionRepository;
+import com.learnova.learnova_backend.file.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -22,6 +25,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final SectionRepository sectionRepository;
     private final CourseService courseService;
+    private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
     public List<LessonResponse> getSectionLessons(Long sectionId) {
@@ -66,7 +70,30 @@ public class LessonService {
     public void deleteLesson(Long courseId, Long sectionId, Long lessonId, Long userId) {
         validateSectionOwnership(courseId, sectionId, userId);
         Lesson lesson = findLessonAndValidateSection(lessonId, sectionId);
+        
+        // Delete associated file if it exists
+        if (lesson.getContentUrl() != null) {
+            fileStorageService.deleteFile(lesson.getContentUrl());
+        }
+        
         lessonRepository.delete(lesson);
+    }
+
+    @Transactional
+    public String uploadResource(Long courseId, Long sectionId, Long lessonId, Long userId, MultipartFile file) {
+        validateSectionOwnership(courseId, sectionId, userId);
+        Lesson lesson = findLessonAndValidateSection(lessonId, sectionId);
+
+        // Delete old resource if it exists
+        if (lesson.getContentUrl() != null) {
+            fileStorageService.deleteFile(lesson.getContentUrl());
+        }
+
+        String subFolder = "courses/" + courseId + "/sections/" + sectionId + "/lessons/" + lessonId;
+        String filePath = fileStorageService.storeFile(file, subFolder);
+        lesson.setContentUrl(filePath);
+        lessonRepository.save(lesson);
+        return filePath;
     }
 
     private Section validateSectionOwnership(Long courseId, Long sectionId, Long userId) {
