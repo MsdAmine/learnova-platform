@@ -30,6 +30,24 @@ public class CourseService {
         private final InstructorProfileRepository instructorProfileRepository;
         private final SectionRepository sectionRepository;
 
+        /**
+         * CORE OWNERSHIP UTILITY
+         * Validates if the authenticated user is the owner of the course.
+         * This is the "Utility method" required by Acceptance Criteria.
+         */
+        public Course validateAndGetCourseOwnership(Long courseId, Long userId) {
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Course not found"));
+
+                if (!course.getInstructorProfile().getUser().getId().equals(userId)) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN,
+                                        "Access Denied: You do not own this course");
+                }
+                return course;
+        }
+
         @Transactional
         public CourseResponse createCourse(CustomUserDetails currentUser, CourseRequest request) {
                 InstructorProfile instructorProfile = getInstructorProfile(currentUser.getId());
@@ -64,8 +82,8 @@ public class CourseService {
 
         @Transactional
         public CourseResponse updateCourse(Long courseId, CustomUserDetails currentUser, CourseUpdateRequest request) {
-                Course course = findCourseById(courseId);
-                validateCourseOwnership(course, currentUser);
+                // Ownership Check Applied
+                Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
 
                 var category = categoryRepository.findById(request.categoryId())
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -82,32 +100,16 @@ public class CourseService {
 
         @Transactional
         public CourseResponse publishCourse(Long courseId, CustomUserDetails currentUser) {
-                Course course = findCourseById(courseId);
-                validateCourseOwnership(course, currentUser);
+                // Ownership Check Applied
+                Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
 
                 if (course.getInstructorProfile().getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                                         "Instructor must be approved to publish courses");
                 }
 
-                if (course.getDescription() == null || course.getDescription().isBlank()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "Course must have a description before publishing");
-                }
-
-                List<Section> sections = sectionRepository.findByCourseId(courseId);
-                if (sections.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "Course must have at least one section before publishing");
-                }
-
-                boolean hasLessons = sections.stream()
-                                .anyMatch(s -> s.getLessons() != null && !s.getLessons().isEmpty());
-
-                if (!hasLessons) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                        "Course must have at least one lesson before publishing");
-                }
+                // Requirements check
+                validatePublishingRequirements(course);
 
                 course.setStatus(CourseStatus.PUBLISHED);
                 return toResponse(courseRepository.save(course));
@@ -115,29 +117,39 @@ public class CourseService {
 
         @Transactional
         public CourseResponse archiveCourse(Long courseId, CustomUserDetails currentUser) {
-                Course course = findCourseById(courseId);
-                validateCourseOwnership(course, currentUser);
+                // Ownership Check Applied
+                Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
                 course.setStatus(CourseStatus.ARCHIVED);
                 return toResponse(courseRepository.save(course));
         }
 
         @Transactional
         public CourseResponse deactivateCourse(Long courseId) {
-                Course course = findCourseById(courseId);
+                // NO ownership check here because this is an ADMIN operation
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Course not found"));
                 course.setStatus(CourseStatus.DEACTIVATED);
                 return toResponse(courseRepository.save(course));
         }
 
-        private Course findCourseById(Long courseId) {
-                return courseRepository.findById(courseId)
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                "Course not found"));
-        }
+        private void validatePublishingRequirements(Course course) {
+                if (course.getDescription() == null || course.getDescription().isBlank()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course must have a description");
+                }
 
-        private void validateCourseOwnership(Course course, CustomUserDetails currentUser) {
-                if (!course.getInstructorProfile().getUser().getId().equals(currentUser.getId())) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                        "You do not have permission to modify this course");
+                List<Section> sections = sectionRepository.findByCourseId(course.getId());
+                if (sections.isEmpty()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "Course must have at least one section");
+                }
+
+                boolean hasLessons = sections.stream()
+                                .anyMatch(s -> s.getLessons() != null && !s.getLessons().isEmpty());
+
+                if (!hasLessons) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                        "Course must have at least one lesson");
                 }
         }
 
