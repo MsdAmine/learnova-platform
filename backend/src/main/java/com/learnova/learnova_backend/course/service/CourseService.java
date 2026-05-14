@@ -35,21 +35,18 @@ public class CourseService {
                 InstructorProfile instructorProfile = getInstructorProfile(currentUser.getId());
 
                 if (instructorProfile.getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
-                        throw new ResponseStatusException(
-                                        HttpStatus.FORBIDDEN,
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                                         "Your instructor profile is not approved yet");
                 }
 
-                if (courseRepository.existsByTitleIgnoreCaseAndInstructorProfileId(
-                                request.title().trim(), instructorProfile.getId())) {
-                        throw new ResponseStatusException(
-                                        HttpStatus.CONFLICT,
+                if (courseRepository.existsByTitleIgnoreCaseAndInstructorProfileId(request.title().trim(),
+                                instructorProfile.getId())) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,
                                         "You already have a course with this title");
                 }
 
                 var category = categoryRepository.findById(request.categoryId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Category not found"));
 
                 Course course = Course.builder()
@@ -71,8 +68,7 @@ public class CourseService {
                 validateCourseOwnership(course, currentUser);
 
                 var category = categoryRepository.findById(request.categoryId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Category not found"));
 
                 course.setTitle(request.title().trim());
@@ -89,13 +85,11 @@ public class CourseService {
                 Course course = findCourseById(courseId);
                 validateCourseOwnership(course, currentUser);
 
-                // Ensure instructor is still approved
                 if (course.getInstructorProfile().getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                                         "Instructor must be approved to publish courses");
                 }
 
-                // Validate Minimum Publishing Requirements
                 if (course.getDescription() == null || course.getDescription().isBlank()) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                         "Course must have a description before publishing");
@@ -119,25 +113,37 @@ public class CourseService {
                 return toResponse(courseRepository.save(course));
         }
 
+        @Transactional
+        public CourseResponse archiveCourse(Long courseId, CustomUserDetails currentUser) {
+                Course course = findCourseById(courseId);
+                validateCourseOwnership(course, currentUser);
+                course.setStatus(CourseStatus.ARCHIVED);
+                return toResponse(courseRepository.save(course));
+        }
+
+        @Transactional
+        public CourseResponse deactivateCourse(Long courseId) {
+                Course course = findCourseById(courseId);
+                course.setStatus(CourseStatus.DEACTIVATED);
+                return toResponse(courseRepository.save(course));
+        }
+
         private Course findCourseById(Long courseId) {
                 return courseRepository.findById(courseId)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND,
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Course not found"));
         }
 
         private void validateCourseOwnership(Course course, CustomUserDetails currentUser) {
                 if (!course.getInstructorProfile().getUser().getId().equals(currentUser.getId())) {
-                        throw new ResponseStatusException(
-                                        HttpStatus.FORBIDDEN,
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                                         "You do not have permission to modify this course");
                 }
         }
 
         private InstructorProfile getInstructorProfile(Long userId) {
                 return instructorProfileRepository.findByUserId(userId)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.FORBIDDEN,
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
                                                 "Instructor profile not found"));
         }
 
