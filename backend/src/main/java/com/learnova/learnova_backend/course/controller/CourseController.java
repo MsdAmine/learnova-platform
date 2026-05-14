@@ -13,13 +13,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/instructor/courses")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService courseService;
 
-    @PostMapping
+    // --- Instructor Endpoints ---
+
+    @PostMapping("/instructor/courses")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('INSTRUCTOR')")
     public CourseResponse createCourse(
@@ -28,7 +30,7 @@ public class CourseController {
         return courseService.createCourse(currentUser, request);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/instructor/courses/{id}")
     @PreAuthorize("hasRole('INSTRUCTOR')")
     public CourseResponse updateCourse(
             @PathVariable Long id,
@@ -37,11 +39,27 @@ public class CourseController {
         return courseService.updateCourse(id, currentUser, request);
     }
 
-    @PatchMapping("/{id}/publish")
+    @PatchMapping("/instructor/courses/{id}/publish")
     @PreAuthorize("hasRole('INSTRUCTOR')")
     public CourseResponse publishCourse(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         return courseService.publishCourse(id, currentUser);
+    }
+
+    @PatchMapping("/instructor/courses/{id}/archive")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse archiveCourse(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        return courseService.archiveCourse(id, currentUser);
+    }
+
+    // --- Admin Endpoints ---
+
+    @PatchMapping("/admin/courses/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CourseResponse deactivateCourse(@PathVariable Long id) {
+        return courseService.deactivateCourse(id);
     }
 }
