@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -36,7 +38,6 @@ public class CourseService {
         /**
          * CORE OWNERSHIP UTILITY
          * Validates if the authenticated user is the owner of the course.
-         * This is the "Utility method" required by Acceptance Criteria.
          */
         public Course validateAndGetCourseOwnership(Long courseId, Long userId) {
                 Course course = courseRepository.findById(courseId)
@@ -49,6 +50,14 @@ public class CourseService {
                                         "Access Denied: You do not own this course");
                 }
                 return course;
+        }
+
+        // --- THIS METHOD RESOLVES THE CONTROLLER ERROR ---
+        @Transactional(readOnly = true)
+        public Page<CourseResponse> getInstructorCourses(CustomUserDetails currentUser, Pageable pageable) {
+                InstructorProfile instructor = getInstructorProfile(currentUser.getId());
+                return courseRepository.findByInstructorProfileId(instructor.getId(), pageable)
+                                .map(this::toResponse);
         }
 
         @Transactional
@@ -78,6 +87,7 @@ public class CourseService {
                                 .level(request.level())
                                 .thumbnailUrl(request.thumbnailUrl() != null ? request.thumbnailUrl().trim() : null)
                                 .status(CourseStatus.DRAFT)
+                                // sections initialized automatically via Builder.Default in entity
                                 .build();
 
                 return toResponse(courseRepository.save(course));
@@ -85,7 +95,6 @@ public class CourseService {
 
         @Transactional
         public CourseResponse updateCourse(Long courseId, CustomUserDetails currentUser, CourseUpdateRequest request) {
-                // Ownership Check Applied
                 Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
 
                 var category = categoryRepository.findById(request.categoryId())
@@ -103,7 +112,6 @@ public class CourseService {
 
         @Transactional
         public CourseResponse publishCourse(Long courseId, CustomUserDetails currentUser) {
-                // Ownership Check Applied
                 Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
 
                 if (course.getInstructorProfile().getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
@@ -111,7 +119,6 @@ public class CourseService {
                                         "Instructor must be approved to publish courses");
                 }
 
-                // Requirements check
                 validatePublishingRequirements(course);
 
                 course.setStatus(CourseStatus.PUBLISHED);
@@ -120,7 +127,6 @@ public class CourseService {
 
         @Transactional
         public CourseResponse archiveCourse(Long courseId, CustomUserDetails currentUser) {
-                // Ownership Check Applied
                 Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
                 course.setStatus(CourseStatus.ARCHIVED);
                 return toResponse(courseRepository.save(course));
@@ -130,7 +136,6 @@ public class CourseService {
         public String uploadThumbnail(Long courseId, CustomUserDetails currentUser, MultipartFile file) {
                 Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
 
-                // Delete old thumbnail if it exists
                 if (course.getThumbnailUrl() != null) {
                         fileStorageService.deleteFile(course.getThumbnailUrl());
                 }
@@ -143,7 +148,6 @@ public class CourseService {
 
         @Transactional
         public CourseResponse deactivateCourse(Long courseId) {
-                // NO ownership check here because this is an ADMIN operation
                 Course course = courseRepository.findById(courseId)
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Course not found"));
@@ -178,6 +182,12 @@ public class CourseService {
         }
 
         public CourseResponse toResponse(Course course) {
+                long sectionCount = course.getSections() != null ? course.getSections().size() : 0;
+                long lessonCount = course.getSections() != null ? course.getSections().stream()
+                                .filter(section -> section.getLessons() != null)
+                                .mapToLong(section -> section.getLessons().size())
+                                .sum() : 0;
+
                 return new CourseResponse(
                                 course.getId(),
                                 course.getTitle(),
@@ -189,6 +199,8 @@ public class CourseService {
                                 course.getCategory().getName(),
                                 course.getInstructorProfile().getId(),
                                 course.getInstructorProfile().getUser().getFullName(),
+                                sectionCount,
+                                lessonCount,
                                 course.getCreatedAt(),
                                 course.getUpdatedAt());
         }

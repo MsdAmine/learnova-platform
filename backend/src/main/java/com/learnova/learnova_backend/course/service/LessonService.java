@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -70,12 +69,12 @@ public class LessonService {
     public void deleteLesson(Long courseId, Long sectionId, Long lessonId, Long userId) {
         validateSectionOwnership(courseId, sectionId, userId);
         Lesson lesson = findLessonAndValidateSection(lessonId, sectionId);
-        
+
         // Delete associated file if it exists
         if (lesson.getContentUrl() != null) {
             fileStorageService.deleteFile(lesson.getContentUrl());
         }
-        
+
         lessonRepository.delete(lesson);
     }
 
