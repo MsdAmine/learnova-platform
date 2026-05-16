@@ -1,8 +1,6 @@
 package com.learnova.learnova_backend.course.service;
 
-import com.learnova.learnova_backend.course.dto.CourseRequest;
-import com.learnova.learnova_backend.course.dto.CourseResponse;
-import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
+import com.learnova.learnova_backend.course.dto.*;
 import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.entity.Section;
@@ -24,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,10 +34,6 @@ public class CourseService {
         private final SectionRepository sectionRepository;
         private final FileStorageService fileStorageService;
 
-        /**
-         * CORE OWNERSHIP UTILITY
-         * Validates if the authenticated user is the owner of the course.
-         */
         public Course validateAndGetCourseOwnership(Long courseId, Long userId) {
                 Course course = courseRepository.findById(courseId)
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -52,13 +47,54 @@ public class CourseService {
                 return course;
         }
 
-        // --- THIS METHOD RESOLVES THE CONTROLLER ERROR ---
         @Transactional(readOnly = true)
         public Page<CourseResponse> getInstructorCourses(CustomUserDetails currentUser, Pageable pageable) {
                 InstructorProfile instructor = getInstructorProfile(currentUser.getId());
                 return courseRepository.findByInstructorProfileId(instructor.getId(), pageable)
                                 .map(this::toResponse);
         }
+
+        // --- NEW PUBLIC BROWSING METHODS ---
+
+        @Transactional(readOnly = true)
+        public Page<CourseResponse> getPublicCourses(Pageable pageable) {
+                return courseRepository.findByStatus(CourseStatus.PUBLISHED, pageable)
+                                .map(this::toResponse);
+        }
+
+        @Transactional(readOnly = true)
+        public PublicCourseDetailResponse getPublicCourseDetail(Long courseId) {
+                Course course = courseRepository.findByIdAndStatus(courseId, CourseStatus.PUBLISHED)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Course not found or is not available publicly"));
+
+                List<PublicSectionPreview> sectionPreviews = course.getSections().stream()
+                                .map(section -> new PublicSectionPreview(
+                                                section.getId(),
+                                                section.getTitle(),
+                                                section.getPosition(),
+                                                section.getLessons().stream()
+                                                                .map(lesson -> new PublicLessonPreview(
+                                                                                lesson.getId(),
+                                                                                lesson.getTitle(),
+                                                                                lesson.getPosition(),
+                                                                                lesson.getContentType()))
+                                                                .collect(Collectors.toList())))
+                                .collect(Collectors.toList());
+
+                return new PublicCourseDetailResponse(
+                                course.getId(),
+                                course.getTitle(),
+                                course.getDescription(),
+                                course.getLevel(),
+                                course.getThumbnailUrl(),
+                                course.getCategory().getId(),
+                                course.getCategory().getName(),
+                                course.getInstructorProfile().getUser().getFullName(),
+                                sectionPreviews);
+        }
+
+        // --- EXISTING MUTATION METHODS ---
 
         @Transactional
         public CourseResponse createCourse(CustomUserDetails currentUser, CourseRequest request) {
@@ -87,7 +123,6 @@ public class CourseService {
                                 .level(request.level())
                                 .thumbnailUrl(request.thumbnailUrl() != null ? request.thumbnailUrl().trim() : null)
                                 .status(CourseStatus.DRAFT)
-                                // sections initialized automatically via Builder.Default in entity
                                 .build();
 
                 return toResponse(courseRepository.save(course));

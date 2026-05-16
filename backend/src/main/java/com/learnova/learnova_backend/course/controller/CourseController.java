@@ -3,6 +3,7 @@ package com.learnova.learnova_backend.course.controller;
 import com.learnova.learnova_backend.course.dto.CourseRequest;
 import com.learnova.learnova_backend.course.dto.CourseResponse;
 import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
+import com.learnova.learnova_backend.course.dto.PublicCourseDetailResponse;
 import com.learnova.learnova_backend.course.service.CourseService;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -23,6 +24,19 @@ import org.springframework.data.domain.Sort;
 public class CourseController {
 
     private final CourseService courseService;
+
+    // --- Public Browsing Endpoints ---
+
+    @GetMapping("/courses")
+    public Page<CourseResponse> getPublicCourses(
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return courseService.getPublicCourses(pageable);
+    }
+
+    @GetMapping("/courses/{id}")
+    public PublicCourseDetailResponse getPublicCourseDetail(@PathVariable Long id) {
+        return courseService.getPublicCourseDetail(id);
+    }
 
     // --- Instructor Endpoints ---
 
