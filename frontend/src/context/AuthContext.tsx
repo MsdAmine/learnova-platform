@@ -39,9 +39,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('user', JSON.stringify(user));
         setToken(token);
         setUser(user);
-        // default to LEARNER on login
-        setActiveProfileState('LEARNER');
-        localStorage.setItem('activeProfile', 'LEARNER');
+        
+        // Default to LEARNER if they have it, otherwise check roles
+        let defaultProfile: string = 'LEARNER';
+        if (user.availableProfiles && user.availableProfiles.length > 0) {
+            defaultProfile = user.availableProfiles.includes('LEARNER') ? 'LEARNER' : user.availableProfiles[0];
+        } else if (user.roles && user.roles.includes('ROLE_INSTRUCTOR') && !user.roles.includes('ROLE_LEARNER')) {
+            defaultProfile = 'INSTRUCTOR';
+        }
+            
+        setActiveProfileState(defaultProfile as ProfileType);
+        localStorage.setItem('activeProfile', defaultProfile);
     }
 
     function logout() {
