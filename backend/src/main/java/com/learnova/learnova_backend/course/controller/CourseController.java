@@ -12,6 +12,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -21,6 +25,14 @@ public class CourseController {
     private final CourseService courseService;
 
     // --- Instructor Endpoints ---
+
+    @GetMapping("/instructor/courses")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public Page<CourseResponse> getMyCourses(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return courseService.getInstructorCourses(currentUser, pageable);
+    }
 
     @PostMapping("/instructor/courses")
     @ResponseStatus(HttpStatus.CREATED)

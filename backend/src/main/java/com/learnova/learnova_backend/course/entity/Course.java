@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "courses")
@@ -20,19 +22,11 @@ public class Course {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "instructor_profile_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_courses_instructor_profile")
-    )
+    @JoinColumn(name = "instructor_profile_id", nullable = false, foreignKey = @ForeignKey(name = "fk_courses_instructor_profile"))
     private InstructorProfile instructorProfile;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(
-            name = "category_id",
-            nullable = false,
-            foreignKey = @ForeignKey(name = "fk_courses_category")
-    )
+    @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(name = "fk_courses_category"))
     private Category category;
 
     @Column(nullable = false, length = 200)
@@ -53,6 +47,11 @@ public class Course {
     @Column(nullable = false, length = 30)
     @Builder.Default
     private CourseStatus status = CourseStatus.DRAFT;
+
+    // --- Added Relationship to fix the compilation error ---
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Section> sections = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
