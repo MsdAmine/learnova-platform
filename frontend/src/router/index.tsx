@@ -5,6 +5,9 @@ import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import GuestRoute from '../components/common/GuestRoute';
 import DashboardPage from '../pages/DashboardPage';
+import RoleGuard from '../components/common/RoleGuard';
+import InstructorDashboard from '../features/instructor/pages/InstructorDashboard';
+import MainLayout from '../layouts/MainLayout';
 
 const router = createBrowserRouter([
     {
@@ -12,6 +15,18 @@ const router = createBrowserRouter([
         element: (
             <ProtectedRoute>
                 <DashboardPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/instructor/courses',
+        element: (
+            <ProtectedRoute>
+                <RoleGuard allowedProfile="INSTRUCTOR">
+                    <MainLayout>
+                        <InstructorDashboard />
+                    </MainLayout>
+                </RoleGuard>
             </ProtectedRoute>
         ),
     },
