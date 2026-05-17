@@ -7,6 +7,7 @@ import GuestRoute from '../components/common/GuestRoute';
 import DashboardPage from '../pages/DashboardPage';
 import RoleGuard from '../components/common/RoleGuard';
 import InstructorDashboard from '../features/instructor/pages/InstructorDashboard';
+import InstructorCourseCreate from '../features/instructor/pages/InstructorCourseCreate';
 import MainLayout from '../layouts/MainLayout';
 
 const router = createBrowserRouter([
@@ -25,6 +26,18 @@ const router = createBrowserRouter([
                 <RoleGuard allowedProfile="INSTRUCTOR">
                     <MainLayout>
                         <InstructorDashboard />
+                    </MainLayout>
+                </RoleGuard>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/instructor/courses/create',
+        element: (
+            <ProtectedRoute>
+                <RoleGuard allowedProfile="INSTRUCTOR">
+                    <MainLayout>
+                        <InstructorCourseCreate />
                     </MainLayout>
                 </RoleGuard>
             </ProtectedRoute>

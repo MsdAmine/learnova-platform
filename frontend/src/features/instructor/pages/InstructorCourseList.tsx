@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
     LayoutGrid,
     List,
@@ -118,13 +119,13 @@ export default function InstructorCourseList() {
                         Manage your courses and track your student performance.
                     </p>
                 </div>
-                <button
-                    onClick={() => alert('Course creation workflow is coming soon!')}
+                <Link
+                    to="/instructor/courses/create"
                     className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition shadow-md w-full md:w-auto"
                 >
                     <Plus className="h-5 w-5 mr-2 -ml-1" />
                     Create Your First Course
-                </button>
+                </Link>
             </div>
 
             {/* Stats Bar */}
@@ -239,12 +240,12 @@ export default function InstructorCourseList() {
                     </div>
                     <h2 className="text-xl font-bold text-gray-900">No courses found</h2>
                     <p className="text-gray-500 mt-2">Get started and inspire your first students today!</p>
-                    <button
-                        onClick={() => alert('Course creation workflow is coming soon!')}
-                        className="mt-6 px-6 py-3 text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition"
+                    <Link
+                        to="/instructor/courses/create"
+                        className="mt-6 px-6 py-3 text-sm font-medium rounded-lg text-white bg-indigo-650 hover:bg-indigo-750 shadow-md transition inline-block"
                     >
                         Create Your First Course
-                    </button>
+                    </Link>
                 </div>
             ) : viewMode === 'grid' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

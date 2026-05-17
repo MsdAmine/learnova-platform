@@ -1,4 +1,4 @@
-export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type CourseLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'ALL_LEVELS';
 export type CourseStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'DEACTIVATED';
 
 export interface CourseResponse {
