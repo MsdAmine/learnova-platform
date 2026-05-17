@@ -1,0 +1,217 @@
+# Learnova Platform: Definitive Project Structure Overview
+
+This document provides a production-grade, high-fidelity directory tree mapping for both the **Spring Boot backend (`learnova-backend`)** and the **React TypeScript frontend (`learnova-frontend`)**. This reference verifies modular cohesion and architectural alignment across Phase 3 (File Storage, Public Interfaces) and Phase 4 (Instructor Course Management).
+
+---
+
+## 1. Spring Boot Backend Layer (`learnova-backend`)
+
+The backend is structured under a clean, domain-driven package organization starting from `com.learnova.learnova_backend`. The core modules are isolated into cohesive domains (`course`, `profile`, `security`, `user`, `file`, and `auth`) to promote modularity and clean separation of concerns.
+
+Key files recently established or updated include:
+*   `Course.java` (The core JPA entity for Course persistence)
+*   `CourseSpecification.java` (Criteria-based dynamic query specifications for public catalog search)
+*   `PublicCourseController.java` (The public unauthenticated endpoint gateway)
+*   `PublicCourseService.java` (Reconciled from `PublicCourseDetailsService` to handle public dynamic searches)
+
+### Backend ASCII File Tree
+
+```
+learnova-backend
+└── src
+    └── main
+        ├── java
+        │   └── com
+        │       └── learnova
+        │           └── learnova_backend
+        │               ├── LearnovaBackendApplication.java
+        │               ├── auth
+        │               │   ├── controller
+        │               │   │   └── AuthController.java
+        │               │   ├── dto
+        │               │   │   ├── CurrentUserResponse.java
+        │               │   │   ├── LoginRequest.java
+        │               │   │   ├── LoginResponse.java
+        │               │   │   ├── RegisterRequest.java
+        │               │   │   └── RegisterResponse.java
+        │               │   └── service
+        │               │       └── AuthService.java
+        │               ├── common
+        │               │   └── config
+        │               │       └── DataInitializer.java
+        │               ├── course
+        │               │   ├── controller
+        │               │   │   ├── CategoryController.java
+        │               │   │   ├── CourseController.java
+        │               │   │   ├── LessonController.java
+        │               │   │   ├── PublicCourseController.java         <-- [Key File: Public Endpoints]
+        │               │   │   └── SectionController.java
+        │               │   ├── dto
+        │               │   │   ├── CategoryRequest.java
+        │               │   │   ├── CategoryResponse.java
+        │               │   │   ├── CourseRequest.java
+        │               │   │   ├── CourseResponse.java
+        │               │   │   ├── CourseSearchCriteria.java
+        │               │   │   ├── CourseSummaryResponse.java
+        │               │   │   ├── CourseUpdateRequest.java
+        │               │   │   ├── LessonRequest.java
+        │               │   │   ├── LessonResponse.java
+        │               │   │   ├── PublicCourseDetailResponse.java
+        │               │   │   ├── PublicLessonDTO.java
+        │               │   │   ├── PublicLessonPreview.java
+        │               │   │   ├── PublicSectionDTO.java
+        │               │   │   ├── PublicSectionPreview.java
+        │               │   │   ├── SectionRequest.java
+        │               │   │   └── SectionResponse.java
+        │               │   ├── entity
+        │               │   │   ├── Category.java
+        │               │   │   ├── Course.java                         <-- [Key File: JPA Entity]
+        │               │   │   ├── CourseLevel.java
+        │               │   │   ├── CourseStatus.java
+        │               │   │   ├── Lesson.java
+        │               │   │   ├── LessonContentType.java
+        │               │   │   └── Section.java
+        │               │   ├── repository
+        │               │   │   ├── CategoryRepository.java
+        │               │   │   ├── CourseRepository.java
+        │               │   │   ├── LessonRepository.java
+        │               │   │   ├── SectionRepository.java
+        │               │   │   └── specification
+        │               │   │       └── CourseSpecification.java         <-- [Key File: Dynamic Query Spec]
+        │               │   └── service
+        │               │       ├── CategoryService.java
+        │               │       ├── CourseService.java
+        │               │       ├── LessonService.java
+        │               │       ├── PublicCourseService.java             <-- [Key File: Dynamic Course Filtering]
+        │               │       └── SectionService.java
+        │               ├── file
+        │               │   ├── exception
+        │               │   │   └── FileStorageException.java
+        │               │   └── service
+        │               │       ├── FileStorageService.java
+        │               │       └── impl
+        │               │           └── LocalFileStorageServiceImpl.java <-- [Key File: Asset Storage Management]
+        │               ├── profile
+        │               │   ├── controller
+        │               │   │   ├── AdminInstructorProfileController.java
+        │               │   │   ├── InstructorProfileController.java
+        │               │   │   └── ProfileSwitchController.java
+        │               │   ├── dto
+        │               │   │   ├── InstructorProfileRejectionRequest.java
+        │               │   │   ├── InstructorProfileRequest.java
+        │               │   │   ├── InstructorProfileResponse.java
+        │               │   │   ├── ProfileSwitchRequest.java
+        │               │   │   └── ProfileSwitchResponse.java
+        │               │   ├── entity
+        │               │   │   ├── InstructorApprovalStatus.java
+        │               │   │   ├── InstructorProfile.java
+        │               │   │   ├── LearnerProfile.java
+        │               │   │   └── ProfileType.java
+        │               │   ├── repository
+        │               │   │   ├── InstructorProfileRepository.java
+        │               │   │   └── LearnerProfileRepository.java
+        │               │   └── service
+        │               │       ├── InstructorProfileService.java
+        │               │       ├── LearnerProfileService.java
+        │               │       ├── ProfileAccessService.java
+        │               │       └── ProfileSwitchService.java
+        │               ├── security
+        │               │   ├── CustomUserDetails.java
+        │               │   ├── CustomUserDetailsService.java
+        │               │   ├── JwtAuthenticationFilter.java
+        │               │   ├── JwtService.java
+        │               │   ├── PasswordConfig.java
+        │               │   └── SecurityConfig.java                      <-- [Key File: Security Access Filters]
+        │               └── user
+        │                   ├── config
+        │                   │   └── RoleSeeder.java
+        │                   ├── entity
+        │                   │   ├── AccountStatus.java
+        │                   │   ├── Role.java
+        │                   │   ├── RoleName.java
+        │                   │   └── User.java
+        │                   └── repository
+        │                       ├── RoleRepository.java
+        │                       └── UserRepository.java
+        └── resources
+            └── application.yaml
+```
+
+---
+
+## 2. React TypeScript Frontend Layer (`learnova-frontend`)
+
+The frontend conforms to a scalable, features-based architecture. Common services, components, types, and contexts sit in the root of `/src`, while functional pages and subcomponents are encapsulated under `src/features/`.
+
+Key structural focal points include:
+*   `src/features/instructor/` (Encapsulates all Instructor workflows, with key pages for Course List, Creation, and Editing)
+*   `src/router/index.tsx` (The core application routing system using react-router-dom)
+*   `src/context/AuthContext.tsx` (Global Auth, JWT handling, and profile synchronization)
+*   `src/types/course.ts` (Central TypeScript schemas mapping Course, Section, and Lesson responses)
+
+### Frontend ASCII File Tree
+
+```
+learnova-frontend
+└── src
+    ├── api
+    │   └── axios.ts
+    ├── assets
+    ├── components
+    │   └── common
+    │       ├── GuestRoute.tsx
+    │       ├── Navbar.tsx
+    │       ├── ProtectedRoute.tsx
+    │       └── RoleGuard.tsx             <-- [Key File: Role-Based Redirection Guard]
+    ├── context
+    │   └── AuthContext.tsx               <-- [Key File: Auth & State Management Context]
+    ├── features
+    │   ├── auth
+    │   │   └── pages
+    │   │       ├── LoginPage.tsx
+    │   │       └── RegisterPage.tsx
+    │   ├── instructor
+    │   │   ├── hooks
+    │   │   │   └── useInstructorCourses.ts
+    │   │   └── pages
+    │   │       ├── InstructorCourseCreate.tsx <-- [Key File: Course Builder Wizard]
+    │   │       ├── InstructorCourseEdit.tsx   <-- [Key File: Content Editor Console]
+    │   │       ├── InstructorCourseList.tsx   <-- [Key File: Instructor Listing Dashboard]
+    │   │       └── InstructorDashboard.tsx
+    │   └── learner
+    │       └── pages
+    │           └── LearnerDashboard.tsx
+    ├── hooks
+    ├── layouts
+    │   └── MainLayout.tsx
+    ├── pages
+    │   ├── DashboardPage.tsx
+    │   └── NotFoundPage.tsx
+    ├── router
+    │   └── index.tsx                     <-- [Key File: Application Central Router]
+    ├── types
+    │   ├── common.ts
+    │   ├── course.ts                     <-- [Key File: Domain-Specific Type Definitions]
+    │   └── profile.ts
+    ├── App.css
+    ├── App.tsx
+    ├── index.css
+    ├── main.tsx
+    └── vite-env.d.ts
+```
+
+---
+
+## 3. Modular Cohesion & Architectural Highlights
+
+The alignment between `learnova-backend` and `learnova-frontend` facilitates high cohesion and rapid iteration:
+
+1.  **Public Catalog Dynamic Search**:
+    *   `PublicCourseController` maps queries directly to the JPA Specifications configured in `CourseSpecification`.
+    *   The frontend consumes this dynamic search via axios instances, passing filters for keyword, level, and category.
+2.  **Asset and Storage Pipelines**:
+    *   Backend `LocalFileStorageServiceImpl` manages file system asset life cycle.
+    *   Frontend modules (`InstructorCourseCreate`, `InstructorCourseEdit`) upload and retrieve course thumbnails and lesson files synchronously using standard multipart forms.
+3.  **Role-Based Separation of Workspaces**:
+    *   The backend validates JWT authorities via `JwtAuthenticationFilter` and checks annotations like `@PreAuthorize("hasRole('INSTRUCTOR')")`.
+    *   The frontend replicates this hierarchy through `RoleGuard` in `src/router/index.tsx`, dynamically rendering specific feature spaces like `/instructor/*` based on states synchronized inside `AuthContext`.
