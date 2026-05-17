@@ -26,7 +26,7 @@ export default function InstructorCourseCreate() {
 
     // Steps state: 1 = Basic Info, 2 = Details, 3 = Review
     const [step, setStep] = useState(1);
-    
+
     // Form fields state
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -38,7 +38,7 @@ export default function InstructorCourseCreate() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [categoriesLoading, setCategoriesLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
-    
+
     // Error / Validation states
     const [error, setError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -62,14 +62,14 @@ export default function InstructorCourseCreate() {
     // Instant client-side validation
     const validateStep = (currentStep: number): boolean => {
         const errors: Record<string, string> = {};
-        
+
         if (currentStep === 1) {
             if (!title.trim()) {
                 errors.title = 'Course title is required.';
             } else if (title.length > 200) {
                 errors.title = 'Title cannot exceed 200 characters.';
             }
-            
+
             if (!categoryId) {
                 errors.categoryId = 'Please select a course category.';
             }
@@ -102,7 +102,7 @@ export default function InstructorCourseCreate() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Final complete validation
         if (!validateStep(1) || !validateStep(2)) {
             setStep(1); // jump to the step with errors
@@ -173,9 +173,8 @@ export default function InstructorCourseCreate() {
                 <div className="flex items-center justify-between max-w-2xl mx-auto">
                     {/* Step 1 */}
                     <div className="flex items-center space-x-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${
-                            step >= 1 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${step >= 1 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
+                            }`}>
                             {step > 1 ? <Check className="h-4 w-4" /> : '1'}
                         </div>
                         <span className={`text-sm font-medium transition-colors duration-300 ${step >= 1 ? 'text-slate-900' : 'text-slate-400'}`}>
@@ -189,9 +188,8 @@ export default function InstructorCourseCreate() {
 
                     {/* Step 2 */}
                     <div className="flex items-center space-x-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${
-                            step >= 2 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${step >= 2 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
+                            }`}>
                             {step > 2 ? <Check className="h-4 w-4" /> : '2'}
                         </div>
                         <span className={`text-sm font-medium transition-colors duration-300 ${step >= 2 ? 'text-slate-900' : 'text-slate-400'}`}>
@@ -205,9 +203,8 @@ export default function InstructorCourseCreate() {
 
                     {/* Step 3 */}
                     <div className="flex items-center space-x-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${
-                            step === 3 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
-                        }`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-colors duration-300 ${step === 3 ? 'bg-indigo-600 text-white shadow-sm' : 'bg-slate-100 text-slate-400'
+                            }`}>
                             3
                         </div>
                         <span className={`text-sm font-medium transition-colors duration-300 ${step === 3 ? 'text-slate-900' : 'text-slate-400'}`}>
@@ -253,9 +250,8 @@ export default function InstructorCourseCreate() {
                                         }
                                     }}
                                     placeholder="e.g. Master Modern Java Development from Scratch"
-                                    className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all ${
-                                        validationErrors.title ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
-                                    }`}
+                                    className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all ${validationErrors.title ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
+                                        }`}
                                 />
                                 <div className="flex justify-between text-xs mt-1">
                                     <span className="text-rose-500 font-medium">{validationErrors.title}</span>
@@ -279,9 +275,8 @@ export default function InstructorCourseCreate() {
                                             }
                                         }}
                                         disabled={categoriesLoading}
-                                        className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all appearance-none cursor-pointer ${
-                                            validationErrors.categoryId ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
-                                        }`}
+                                        className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all appearance-none cursor-pointer ${validationErrors.categoryId ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
+                                            }`}
                                     >
                                         <option value="">-- Choose Category --</option>
                                         {categories.map((cat) => (
@@ -327,9 +322,8 @@ export default function InstructorCourseCreate() {
                                     }}
                                     rows={6}
                                     placeholder="Describe what your students will learn, the prerequisites, and the objectives..."
-                                    className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all resize-y ${
-                                        validationErrors.description ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
-                                    }`}
+                                    className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all resize-y ${validationErrors.description ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
+                                        }`}
                                 />
                                 <div className="flex justify-between text-xs mt-1">
                                     <span className="text-rose-500 font-medium">{validationErrors.description}</span>
@@ -370,9 +364,8 @@ export default function InstructorCourseCreate() {
                                             }
                                         }}
                                         placeholder="e.g. https://images.unsplash.com/photo-xxx"
-                                        className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all ${
-                                            validationErrors.thumbnailUrl ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
-                                        }`}
+                                        className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-slate-900 bg-slate-50/50 transition-all ${validationErrors.thumbnailUrl ? 'border-rose-300 ring-rose-500/10 ring-2' : 'border-slate-200'
+                                            }`}
                                     />
                                     {validationErrors.thumbnailUrl && (
                                         <span className="text-xs text-rose-500 font-medium">{validationErrors.thumbnailUrl}</span>
