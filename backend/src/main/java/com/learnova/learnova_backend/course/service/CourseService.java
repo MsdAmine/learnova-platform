@@ -74,30 +74,60 @@ public class CourseService {
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                 "Course not found or is not available publicly"));
 
-                List<PublicSectionPreview> sectionPreviews = course.getSections().stream()
-                                .map(section -> new PublicSectionPreview(
-                                                section.getId(),
-                                                section.getTitle(),
-                                                section.getPosition(),
-                                                section.getLessons().stream()
-                                                                .map(lesson -> new PublicLessonPreview(
-                                                                                lesson.getId(),
-                                                                                lesson.getTitle(),
-                                                                                lesson.getPosition(),
-                                                                                lesson.getContentType()))
-                                                                .collect(Collectors.toList())))
+                String instructorName = "Unknown Instructor";
+                String instructorBio = "No biography provided.";
+                if (course.getInstructorProfile() != null) {
+                        if (course.getInstructorProfile().getUser() != null) {
+                                instructorName = course.getInstructorProfile().getUser().getFullName();
+                        }
+                        if (course.getInstructorProfile().getBio() != null) {
+                                instructorBio = course.getInstructorProfile().getBio();
+                        }
+                }
+
+                String categoryName = course.getCategory() != null ? course.getCategory().getName() : "Uncategorized";
+
+                List<PublicSectionDTO> publicSections = course.getSections().stream()
+                                .map(section -> {
+                                        List<PublicLessonDTO> publicLessons = section.getLessons().stream()
+                                                        .map(lesson -> PublicLessonDTO.builder()
+                                                                        .id(lesson.getId())
+                                                                        .title(lesson.getTitle())
+                                                                        .contentType(lesson.getContentType() != null ? lesson.getContentType().toString() : "TEXT")
+                                                                        .position(lesson.getPosition())
+                                                                        .build())
+                                                        .sorted(java.util.Comparator.comparing(PublicLessonDTO::getPosition, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
+                                                        .collect(Collectors.toList());
+
+                                        return PublicSectionDTO.builder()
+                                                        .id(section.getId())
+                                                        .title(section.getTitle())
+                                                        .position(section.getPosition())
+                                                        .lessons(publicLessons)
+                                                        .build();
+                                })
+                                .sorted(java.util.Comparator.comparing(PublicSectionDTO::getPosition, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
                                 .collect(Collectors.toList());
 
-                return new PublicCourseDetailResponse(
-                                course.getId(),
-                                course.getTitle(),
-                                course.getDescription(),
-                                course.getLevel(),
-                                course.getThumbnailUrl(),
-                                course.getCategory().getId(),
-                                course.getCategory().getName(),
-                                course.getInstructorProfile().getUser().getFullName(),
-                                sectionPreviews);
+                int totalSections = publicSections.size();
+                int totalLessons = publicSections.stream()
+                                .mapToInt(s -> s.getLessons().size())
+                                .sum();
+
+                return PublicCourseDetailResponse.builder()
+                                .id(course.getId())
+                                .title(course.getTitle())
+                                .description(course.getDescription())
+                                .categoryName(categoryName)
+                                .level(course.getLevel() != null ? course.getLevel().toString() : "ALL_LEVELS")
+                                .thumbnailUrl(course.getThumbnailUrl())
+                                .status(course.getStatus() != null ? course.getStatus().toString() : "PUBLISHED")
+                                .instructorName(instructorName)
+                                .instructorBioPlaceholder(instructorBio)
+                                .totalSections(totalSections)
+                                .totalLessons(totalLessons)
+                                .sections(publicSections)
+                                .build();
         }
 
         // --- EXISTING MUTATION METHODS ---
