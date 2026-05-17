@@ -54,6 +54,12 @@ public class CourseService {
                                 .map(this::toResponse);
         }
 
+        @Transactional(readOnly = true)
+        public CourseResponse getInstructorCourse(Long courseId, CustomUserDetails currentUser) {
+                Course course = validateAndGetCourseOwnership(courseId, currentUser.getId());
+                return toResponse(course);
+        }
+
         // --- NEW PUBLIC BROWSING METHODS ---
 
         @Transactional(readOnly = true)
