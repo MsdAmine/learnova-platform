@@ -48,6 +48,14 @@ public class CourseController {
         return courseService.getInstructorCourses(currentUser, pageable);
     }
 
+    @GetMapping("/instructor/courses/{id}")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse getInstructorCourse(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        return courseService.getInstructorCourse(id, currentUser);
+    }
+
     @PostMapping("/instructor/courses")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('INSTRUCTOR')")

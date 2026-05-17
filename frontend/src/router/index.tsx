@@ -8,6 +8,7 @@ import DashboardPage from '../pages/DashboardPage';
 import RoleGuard from '../components/common/RoleGuard';
 import InstructorDashboard from '../features/instructor/pages/InstructorDashboard';
 import InstructorCourseCreate from '../features/instructor/pages/InstructorCourseCreate';
+import InstructorCourseEdit from '../features/instructor/pages/InstructorCourseEdit';
 import MainLayout from '../layouts/MainLayout';
 
 const router = createBrowserRouter([
@@ -38,6 +39,18 @@ const router = createBrowserRouter([
                 <RoleGuard allowedProfile="INSTRUCTOR">
                     <MainLayout>
                         <InstructorCourseCreate />
+                    </MainLayout>
+                </RoleGuard>
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/instructor/courses/:courseId/edit',
+        element: (
+            <ProtectedRoute>
+                <RoleGuard allowedProfile="INSTRUCTOR">
+                    <MainLayout>
+                        <InstructorCourseEdit />
                     </MainLayout>
                 </RoleGuard>
             </ProtectedRoute>

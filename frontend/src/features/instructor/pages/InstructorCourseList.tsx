@@ -270,9 +270,9 @@ export default function InstructorCourseList() {
                                     </button>
                                     {activeDropdown === course.id && (
                                         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-150 rounded-lg shadow-xl py-1 z-30">
-                                            <button onClick={() => {alert('Edit coming soon'); setActiveDropdown(null)}} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center">
+                                            <Link to={`/instructor/courses/${course.id}/edit`} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center">
                                                 <Edit className="h-4 w-4 mr-2 text-gray-400" /> Edit Course
-                                            </button>
+                                            </Link>
                                             {course.status !== 'PUBLISHED' && (
                                                 <button onClick={(e) => handleActionClick(e, 'publish', course)} className="w-full px-4 py-2 text-left text-sm text-emerald-600 hover:bg-emerald-50 flex items-center">
                                                     <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-400" /> Publish
@@ -336,7 +336,9 @@ export default function InstructorCourseList() {
                                         </button>
                                         {activeDropdown === course.id && (
                                             <div className="absolute right-6 mt-1 w-44 bg-white border border-gray-150 rounded-lg shadow-xl py-1 z-30">
-                                                <button onClick={() => alert('Edit soon')} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"><Edit className="h-4 w-4 mr-2" /> Edit</button>
+                                                <Link to={`/instructor/courses/${course.id}/edit`} className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center">
+                                                    <Edit className="h-4 w-4 mr-2 text-gray-400" /> Edit
+                                                </Link>
                                                 {course.status !== 'PUBLISHED' && <button onClick={(e) => handleActionClick(e, 'publish', course)} className="w-full px-4 py-2 text-left text-sm text-emerald-600 hover:bg-emerald-50 flex items-center"><CheckCircle2 className="h-4 w-4 mr-2" /> Publish</button>}
                                                 {course.status !== 'ARCHIVED' && <button onClick={(e) => handleActionClick(e, 'archive', course)} className="w-full px-4 py-2 text-left text-sm text-amber-600 hover:bg-amber-50 flex items-center"><Archive className="h-4 w-4 mr-2" /> Archive</button>}
                                             </div>
