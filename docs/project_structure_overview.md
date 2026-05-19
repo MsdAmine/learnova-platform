@@ -1,10 +1,10 @@
 # Learnova Platform: Definitive Project Structure Overview
 
-This document provides a production-grade, high-fidelity directory tree mapping for both the **Spring Boot backend (`learnova-backend`)** and the **React TypeScript frontend (`learnova-frontend`)**. This reference verifies modular cohesion and architectural alignment across Phase 3 (File Storage, Public Interfaces) and Phase 4 (Instructor Course Management).
+This document provides a production-grade, high-fidelity directory tree mapping for both the **Spring Boot backend (`backend`)** and the **React TypeScript frontend (`frontend`)**. This reference verifies modular cohesion and architectural alignment across Phase 3 (File Storage, Public Interfaces) and Phase 4 (Instructor Course Management).
 
 ---
 
-## 1. Spring Boot Backend Layer (`learnova-backend`)
+## 1. Spring Boot Backend Layer (`backend`)
 
 The backend is structured under a clean, domain-driven package organization starting from `com.learnova.learnova_backend`. The core modules are isolated into cohesive domains (`course`, `profile`, `security`, `user`, `file`, and `auth`) to promote modularity and clean separation of concerns.
 
@@ -17,7 +17,7 @@ Key files recently established or updated include:
 ### Backend ASCII File Tree
 
 ```
-learnova-backend
+backend
 └── src
     └── main
         ├── java
@@ -58,9 +58,7 @@ learnova-backend
         │               │   │   ├── LessonResponse.java
         │               │   │   ├── PublicCourseDetailResponse.java
         │               │   │   ├── PublicLessonDTO.java
-        │               │   │   ├── PublicLessonPreview.java
         │               │   │   ├── PublicSectionDTO.java
-        │               │   │   ├── PublicSectionPreview.java
         │               │   │   ├── SectionRequest.java
         │               │   │   └── SectionResponse.java
         │               │   ├── entity
@@ -139,7 +137,7 @@ learnova-backend
 
 ---
 
-## 2. React TypeScript Frontend Layer (`learnova-frontend`)
+## 2. React TypeScript Frontend Layer (`frontend`)
 
 The frontend conforms to a scalable, features-based architecture. Common services, components, types, and contexts sit in the root of `/src`, while functional pages and subcomponents are encapsulated under `src/features/`.
 
@@ -152,11 +150,14 @@ Key structural focal points include:
 ### Frontend ASCII File Tree
 
 ```
-learnova-frontend
+frontend
 └── src
     ├── api
     │   └── axios.ts
     ├── assets
+    │   ├── hero.png
+    │   ├── react.svg
+    │   └── vite.svg
     ├── components
     │   └── common
     │       ├── GuestRoute.tsx
@@ -182,6 +183,7 @@ learnova-frontend
     │       └── pages
     │           └── LearnerDashboard.tsx
     ├── hooks
+    │   └── useCurrentUser.ts             <-- [Key File: User State Hook]
     ├── layouts
     │   └── MainLayout.tsx
     ├── pages
@@ -204,7 +206,7 @@ learnova-frontend
 
 ## 3. Modular Cohesion & Architectural Highlights
 
-The alignment between `learnova-backend` and `learnova-frontend` facilitates high cohesion and rapid iteration:
+The alignment between `backend` and `frontend` facilitates high cohesion and rapid iteration:
 
 1.  **Public Catalog Dynamic Search**:
     *   `PublicCourseController` maps queries directly to the JPA Specifications configured in `CourseSpecification`.
