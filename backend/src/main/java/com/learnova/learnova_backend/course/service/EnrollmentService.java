@@ -1,6 +1,7 @@
 package com.learnova.learnova_backend.course.service;
 
 import com.learnova.learnova_backend.course.dto.EnrollmentResponse;
+import com.learnova.learnova_backend.course.dto.LearnerEnrollmentResponse;
 import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.entity.Enrollment;
@@ -79,5 +80,51 @@ public class EnrollmentService {
                 .enrolledAt(savedEnrollment.getEnrolledAt())
                 .accessSummary("Enrollment processed successfully. Dynamic structure clearance granted.")
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<LearnerEnrollmentResponse> getEnrolledCoursesForLearner(String username) {
+        // 1. Validation de l'utilisateur connecté
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Authenticated user account not found"));
+
+        // 2. Validation du profil apprenant
+        LearnerProfile learnerProfile = learnerProfileRepository.findByUser(user)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Learner profile record not found"));
+
+        // 3. Récupération de l'historique d'inscriptions de l'apprenant via le
+        // repository
+        return enrollmentRepository.findByLearnerProfile(learnerProfile).stream()
+                .map(enrollment -> {
+                    Course course = enrollment.getCourse();
+
+                    // Extraction sécurisée des informations de l'instructeur
+                    String instructorName = "Unknown Instructor";
+                    if (course.getInstructorProfile() != null && course.getInstructorProfile().getUser() != null) {
+                        instructorName = course.getInstructorProfile().getUser().getFullName();
+                    }
+
+                    // Extraction sécurisée du nom de la catégorie
+                    String categoryName = (course.getCategory() != null) ? course.getCategory().getName()
+                            : "Uncategorized";
+
+                    // Mapping vers le DTO de réponse
+                    return LearnerEnrollmentResponse.builder()
+                            .enrollmentId(enrollment.getId())
+                            .courseId(course.getId())
+                            .title(course.getTitle())
+                            .thumbnailUrl(course.getThumbnailUrl())
+                            .categoryName(categoryName)
+                            .level(course.getLevel() != null ? course.getLevel().toString() : null)
+                            .instructorName(instructorName)
+                            .enrollmentStatus(enrollment.getStatus().toString())
+                            .enrolledAt(enrollment.getEnrolledAt())
+                            .progressPercentage(0.0) // Prêt pour l'intégration de la logique de progression
+                            .lastAccessedLessonId(null) // Prêt pour le suivi de lecture futur
+                            .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
     }
 }
