@@ -29,12 +29,12 @@ public class EnrollmentService {
     @Transactional
     public EnrollmentResponse enrollLearnerInCourse(String username, Long courseId) {
         // 1. Validation de l'utilisateur principal connecté
-        User user = userRepository.findByEmailIgnoreCase(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Authenticated user account not found"));
 
         // 2. Validation de l'existence du profil apprenant
-        LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+        LearnerProfile learnerProfile = learnerProfileRepository.findByUser(user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "A learner profile is required to enroll in courses"));
 
@@ -63,6 +63,12 @@ public class EnrollmentService {
                 .build();
 
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
+
+        // Null-safe instructor name extraction from the Course object graph
+        String instructorName = "Unknown Instructor";
+        if (course.getInstructorProfile() != null && course.getInstructorProfile().getUser() != null) {
+            instructorName = course.getInstructorProfile().getUser().getFullName();
+        }
 
         // 7. Génération du rapport d'accès
         return EnrollmentResponse.builder()
