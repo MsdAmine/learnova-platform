@@ -69,4 +69,4 @@ public class LessonController {
             @RequestParam("file") MultipartFile file) {
         return lessonService.uploadResource(courseId, sectionId, lessonId, currentUser.getId(), file);
     }
-}
+}

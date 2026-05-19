@@ -1,6 +1,6 @@
 # Learnova Platform: Definitive Project Structure Overview
 
-This document provides a production-grade, high-fidelity directory tree mapping for both the **Spring Boot backend (`backend`)** and the **React TypeScript frontend (`frontend`)**. This reference verifies modular cohesion and architectural alignment across Phase 3 (File Storage, Public Interfaces) and Phase 4 (Instructor Course Management).
+This document provides a production-grade, high-fidelity directory tree mapping for both the **Spring Boot backend (`backend`)** and the **React TypeScript frontend (`frontend`)**. This reference verifies modular cohesion and architectural alignment across Phase 3 (File Storage, Public Interfaces) and Phase 4 (Instructor Course Management & Learner Enrollment).
 
 ---
 
@@ -13,6 +13,9 @@ Key files recently established or updated include:
 *   `CourseSpecification.java` (Criteria-based dynamic query specifications for public catalog search)
 *   `PublicCourseController.java` (The public unauthenticated endpoint gateway)
 *   `PublicCourseService.java` (Reconciled from `PublicCourseDetailsService` to handle public dynamic searches)
+*   `EnrollmentController.java` (The REST controller for Learner course enrollments)
+*   `EnrollmentService.java` (Validates eligibility and manages course registration workflow)
+*   `Enrollment.java` (The JPA Entity representing Course enrollment states)
 
 ### Backend ASCII File Tree
 
@@ -43,6 +46,7 @@ backend
         │               │   ├── controller
         │               │   │   ├── CategoryController.java
         │               │   │   ├── CourseController.java
+        │               │   │   ├── EnrollmentController.java           <-- [Key File: Course Enrollment API]
         │               │   │   ├── LessonController.java
         │               │   │   ├── PublicCourseController.java         <-- [Key File: Public Endpoints]
         │               │   │   └── SectionController.java
@@ -54,6 +58,8 @@ backend
         │               │   │   ├── CourseSearchCriteria.java
         │               │   │   ├── CourseSummaryResponse.java
         │               │   │   ├── CourseUpdateRequest.java
+        │               │   │   ├── EnrollmentResponse.java
+        │               │   │   ├── LearnerEnrollmentResponse.java
         │               │   │   ├── LessonRequest.java
         │               │   │   ├── LessonResponse.java
         │               │   │   ├── PublicCourseDetailResponse.java
@@ -66,12 +72,15 @@ backend
         │               │   │   ├── Course.java                         <-- [Key File: JPA Entity]
         │               │   │   ├── CourseLevel.java
         │               │   │   ├── CourseStatus.java
+        │               │   │   ├── Enrollment.java                     <-- [Key File: Enrollment JPA Entity]
+        │               │   │   ├── EnrollmentStatus.java
         │               │   │   ├── Lesson.java
         │               │   │   ├── LessonContentType.java
         │               │   │   └── Section.java
         │               │   ├── repository
         │               │   │   ├── CategoryRepository.java
         │               │   │   ├── CourseRepository.java
+        │               │   │   ├── EnrollmentRepository.java
         │               │   │   ├── LessonRepository.java
         │               │   │   ├── SectionRepository.java
         │               │   │   └── specification
@@ -79,6 +88,7 @@ backend
         │               │   └── service
         │               │       ├── CategoryService.java
         │               │       ├── CourseService.java
+        │               │       ├── EnrollmentService.java              <-- [Key File: Course Enrollment Business Logic]
         │               │       ├── LessonService.java
         │               │       ├── PublicCourseService.java             <-- [Key File: Dynamic Course Filtering]
         │               │       └── SectionService.java
@@ -190,7 +200,7 @@ frontend
     │   ├── DashboardPage.tsx
     │   └── NotFoundPage.tsx
     ├── router
-    │   └── index.tsx                     <-- [Key File: Application Central Router]
+    │   └── index.tsx                     <-- [Key File: Central Router with Protection Routing]
     ├── types
     │   ├── common.ts
     │   ├── course.ts                     <-- [Key File: Domain-Specific Type Definitions]
@@ -217,3 +227,6 @@ The alignment between `backend` and `frontend` facilitates high cohesion and rap
 3.  **Role-Based Separation of Workspaces**:
     *   The backend validates JWT authorities via `JwtAuthenticationFilter` and checks annotations like `@PreAuthorize("hasRole('INSTRUCTOR')")`.
     *   The frontend replicates this hierarchy through `RoleGuard` in `src/router/index.tsx`, dynamically rendering specific feature spaces like `/instructor/*` based on states synchronized inside `AuthContext`.
+4.  **Course Enrollment Engine**:
+    *   The backend orchestrates student eligibility, course validation, and status transitions via `EnrollmentService`.
+    *   Enrollment records are mapped through `EnrollmentRepository` and exposed securely via `EnrollmentController` using custom mapping DTOs like `LearnerEnrollmentResponse`.

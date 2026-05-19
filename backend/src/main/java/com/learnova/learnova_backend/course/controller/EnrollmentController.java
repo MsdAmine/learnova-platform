@@ -1,6 +1,7 @@
 package com.learnova.learnova_backend.course.controller;
 
 import com.learnova.learnova_backend.course.dto.EnrollmentResponse;
+import com.learnova.learnova_backend.course.dto.LearnerEnrollmentResponse;
 import com.learnova.learnova_backend.course.service.EnrollmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,5 +23,13 @@ public class EnrollmentController {
         String username = principal.getName(); // Extrait l'email configuré dans le token JWT
         EnrollmentResponse response = enrollmentService.enrollLearnerInCourse(username, courseId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/my-courses")
+    @PreAuthorize("hasRole('LEARNER')")
+    public ResponseEntity<java.util.List<LearnerEnrollmentResponse>> getMyEnrolledCourses(Principal principal) {
+        String username = principal.getName(); // Extrait l'email de l'apprenant depuis le token JWT
+        java.util.List<LearnerEnrollmentResponse> response = enrollmentService.getEnrolledCoursesForLearner(username);
+        return ResponseEntity.ok(response);
     }
 }

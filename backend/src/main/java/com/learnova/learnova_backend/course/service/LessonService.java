@@ -25,6 +25,32 @@ public class LessonService {
     private final SectionRepository sectionRepository;
     private final CourseService courseService;
     private final FileStorageService fileStorageService;
+    private final CourseAccessService courseAccessService; // Injecté pour l'Issue #55
+
+    @Transactional(readOnly = true)
+    public LessonResponse getLessonDetailsForUser(Long lessonId, String username) {
+        // 1. Recherche de la leçon cible
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Target lesson record not found"));
+
+        // 2. Récupération du cours parent associé à la leçon avec vérification de
+        // structure
+        if (lesson.getSection() == null || lesson.getSection().getCourse() == null) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Lesson structure configuration error: isolated section mapping");
+        }
+        var course = lesson.getSection().getCourse();
+
+        // 3. Application stricte du contrôle d'accès
+        boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
+        if (!hasAccess) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Access denied. You must be enrolled in this course to view full lesson materials.");
+        }
+
+        // 4. Construction et retour de la réponse complète
+        return toResponse(lesson);
+    }
 
     @Transactional(readOnly = true)
     public List<LessonResponse> getSectionLessons(Long sectionId) {
@@ -70,7 +96,6 @@ public class LessonService {
         validateSectionOwnership(courseId, sectionId, userId);
         Lesson lesson = findLessonAndValidateSection(lessonId, sectionId);
 
-        // Delete associated file if it exists
         if (lesson.getContentUrl() != null) {
             fileStorageService.deleteFile(lesson.getContentUrl());
         }
@@ -83,7 +108,6 @@ public class LessonService {
         validateSectionOwnership(courseId, sectionId, userId);
         Lesson lesson = findLessonAndValidateSection(lessonId, sectionId);
 
-        // Delete old resource if it exists
         if (lesson.getContentUrl() != null) {
             fileStorageService.deleteFile(lesson.getContentUrl());
         }
@@ -96,10 +120,8 @@ public class LessonService {
     }
 
     private Section validateSectionOwnership(Long courseId, Long sectionId, Long userId) {
-        // First, verify the user owns the course
         courseService.validateAndGetCourseOwnership(courseId, userId);
 
-        // Then, verify the section belongs to that course
         Section section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Section not found"));
 
