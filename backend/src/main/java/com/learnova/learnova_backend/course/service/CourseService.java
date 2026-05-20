@@ -33,6 +33,7 @@ public class CourseService {
         private final InstructorProfileRepository instructorProfileRepository;
         private final SectionRepository sectionRepository;
         private final FileStorageService fileStorageService;
+        private final CourseAccessService courseAccessService;
 
         public Course validateAndGetCourseOwnership(Long courseId, Long userId) {
                 Course course = courseRepository.findById(courseId)
@@ -250,6 +251,49 @@ public class CourseService {
                 return instructorProfileRepository.findByUserId(userId)
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
                                                 "Instructor profile not found"));
+        }
+
+        @Transactional(readOnly = true)
+        public LearnerCourseContentResponse getEnrolledCourseContent(Long courseId, String username) {
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+
+                boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
+                if (!hasAccess) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                        "Access denied. You do not have access to this course content.");
+                }
+
+                List<LearnerSectionDTO> learnerSections = course.getSections().stream()
+                                .map(section -> {
+                                        List<LearnerLessonDTO> learnerLessons = section.getLessons().stream()
+                                                        .map(lesson -> LearnerLessonDTO.builder()
+                                                                        .id(lesson.getId())
+                                                                        .title(lesson.getTitle())
+                                                                        .position(lesson.getPosition())
+                                                                        .contentType(lesson.getContentType() != null ? lesson.getContentType().toString() : "TEXT")
+                                                                        .contentUrl(lesson.getContentUrl())
+                                                                        .textContent(lesson.getTextContent())
+                                                                        .isCompleted(false) // default to false
+                                                                        .build())
+                                                        .sorted(java.util.Comparator.comparing(LearnerLessonDTO::getPosition, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
+                                                        .collect(Collectors.toList());
+
+                                        return LearnerSectionDTO.builder()
+                                                        .id(section.getId())
+                                                        .title(section.getTitle())
+                                                        .position(section.getPosition())
+                                                        .lessons(learnerLessons)
+                                                        .build();
+                                })
+                                .sorted(java.util.Comparator.comparing(LearnerSectionDTO::getPosition, java.util.Comparator.nullsLast(java.util.Comparator.naturalOrder())))
+                                .collect(Collectors.toList());
+
+                return LearnerCourseContentResponse.builder()
+                                .courseId(course.getId())
+                                .title(course.getTitle())
+                                .sections(learnerSections)
+                                .build();
         }
 
         public CourseResponse toResponse(Course course) {

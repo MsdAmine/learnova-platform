@@ -13,6 +13,8 @@ public interface InstructorProfileRepository extends JpaRepository<InstructorPro
 
     Optional<InstructorProfile> findByUser(User user);
 
+    Optional<InstructorProfile> findByUserId(Long userId);
+
     boolean existsByUserId(Long userId);
 
     List<InstructorProfile> findByApprovalStatus(InstructorApprovalStatus approvalStatus);

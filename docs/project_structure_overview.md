@@ -16,6 +16,7 @@ Key files recently established or updated include:
 *   `EnrollmentController.java` (The REST controller for Learner course enrollments)
 *   `EnrollmentService.java` (Validates eligibility and manages course registration workflow)
 *   `Enrollment.java` (The JPA Entity representing Course enrollment states)
+*   `UserLessonController.java` (Exposes student-facing course lessons and content hierarchy API)
 
 ### Backend ASCII File Tree
 
@@ -49,7 +50,8 @@ backend
         │               │   │   ├── EnrollmentController.java           <-- [Key File: Course Enrollment API]
         │               │   │   ├── LessonController.java
         │               │   │   ├── PublicCourseController.java         <-- [Key File: Public Endpoints]
-        │               │   │   └── SectionController.java
+        │               │   │   ├── SectionController.java
+        │               │   │   └── UserLessonController.java           <-- [Key File: Student Lesson & Content API]
         │               │   ├── dto
         │               │   │   ├── CategoryRequest.java
         │               │   │   ├── CategoryResponse.java
@@ -59,7 +61,10 @@ backend
         │               │   │   ├── CourseSummaryResponse.java
         │               │   │   ├── CourseUpdateRequest.java
         │               │   │   ├── EnrollmentResponse.java
+        │               │   │   ├── LearnerCourseContentResponse.java   <-- [Key File: Course Content Tree Response]
         │               │   │   ├── LearnerEnrollmentResponse.java
+        │               │   │   ├── LearnerLessonDTO.java
+        │               │   │   ├── LearnerSectionDTO.java
         │               │   │   ├── LessonRequest.java
         │               │   │   ├── LessonResponse.java
         │               │   │   ├── PublicCourseDetailResponse.java
@@ -230,3 +235,6 @@ The alignment between `backend` and `frontend` facilitates high cohesion and rap
 4.  **Course Enrollment Engine**:
     *   The backend orchestrates student eligibility, course validation, and status transitions via `EnrollmentService`.
     *   Enrollment records are mapped through `EnrollmentRepository` and exposed securely via `EnrollmentController` using custom mapping DTOs like `LearnerEnrollmentResponse`.
+5.  **Learner Course Content Delivery**:
+    *   Enrolled students can fetch the entire course section-lesson content tree via the secured endpoint exposed in `UserLessonController`.
+    *   `CourseService` fetches and maps the domain objects to nested tree payloads (`LearnerCourseContentResponse`, `LearnerSectionDTO`, `LearnerLessonDTO`) after running strict checks via `CourseAccessService`.
