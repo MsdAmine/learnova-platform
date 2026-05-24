@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -82,5 +83,82 @@ public class CourseService {
                 course.getCreatedAt(),
                 course.getUpdatedAt()
         );
+    }
+
+    @Transactional
+    public CourseResponse updateCourse(
+            CustomUserDetails currentUser,
+            Long courseId,
+            CourseUpdateRequest request
+    ) {
+        InstructorProfile instructorProfile = instructorProfileRepository
+                .findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "Instructor profile not found"
+                ));
+
+        if (instructorProfile.getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Your instructor profile is not approved yet"
+            );
+        }
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Course not found"
+                ));
+
+        if (!course.getInstructorProfile().getId().equals(instructorProfile.getId())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You are not the owner of this course"
+            );
+        }
+
+        if (course.getStatus() == CourseStatus.ARCHIVED) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Archived courses cannot be updated"
+            );
+        }
+
+        if (request.title() != null && !request.title().isBlank()) {
+            String newTitle = request.title().trim();
+            if (!newTitle.equalsIgnoreCase(course.getTitle()) &&
+                    courseRepository.existsByTitleIgnoreCaseAndInstructorProfileId(
+                            newTitle, instructorProfile.getId())) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "You already have a course with this title"
+                );
+            }
+            course.setTitle(newTitle);
+        }
+
+        if (request.description() != null) {
+            course.setDescription(request.description().trim());
+        }
+
+        if (request.level() != null) {
+            course.setLevel(request.level());
+        }
+
+        if (request.thumbnailUrl() != null) {
+            course.setThumbnailUrl(request.thumbnailUrl().trim());
+        }
+
+        if (request.categoryId() != null) {
+            var category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(() -> new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Category not found"
+                    ));
+            course.setCategory(category);
+        }
+
+        return toResponse(courseRepository.save(course));
     }
 }

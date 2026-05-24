@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 
 @RestController
 @RequestMapping("/api/v1/instructor/courses")
@@ -26,5 +27,15 @@ public class CourseController {
             @Valid @RequestBody CourseRequest request
     ) {
         return courseService.createCourse(currentUser, request);
+    }
+
+    @PatchMapping("/{courseId}")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse updateCourse(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long courseId,
+            @Valid @RequestBody CourseUpdateRequest request
+    ) {
+        return courseService.updateCourse(currentUser, courseId, request);
     }
 }
