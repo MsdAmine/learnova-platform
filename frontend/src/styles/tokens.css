@@ -1,0 +1,196 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Learnova Design Tokens
+   Source of truth: DESIGN.md at project root
+   All values are taken verbatim from the spec — no invented values.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+
+  /* ── Colors: Primary ──────────────────────────────────────────────────────── */
+
+  --color-salem:     #032117;   /* Forest Focus Green — action anchor, primary buttons, progress */
+  --color-salem-50:  #E8EDEB;   /* Salem 50  — subtle tinted surfaces, step circle backgrounds   */
+  --color-salem-100: #C9D5D0;   /* Salem 100                                                     */
+  --color-salem-200: #98AFA6;   /* Salem 200                                                     */
+  --color-salem-300: #5C7B6F;   /* Salem 300                                                     */
+  --color-salem-400: #1A3B2E;   /* Salem 400 — button hover (lightens from near-black base)      */
+  --color-salem-500: #032117;   /* Salem 500 — alias for base salem                              */
+  --color-salem-600: #02180F;   /* Salem 600 — button pressed                                    */
+  --color-salem-700: #010E07;   /* Salem 700 — deepest                                           */
+
+
+  /* ── Colors: Secondary ────────────────────────────────────────────────────── */
+
+  --color-azure: #3C57B8;       /* Scholar Blue — analytics, metrics, informational UI           */
+
+
+  /* ── Colors: Tertiary ────────────────────────────────────────────────────── */
+
+  --color-coral: #FF7A59;       /* Alert Ember — warnings, high-priority notifications, streaks  */
+  --color-anzac: #E0C03A;       /* Earned Amber — certificates, achievements, completion badges  */
+
+
+  /* ── Colors: Neutral ─────────────────────────────────────────────────────── */
+
+  --color-bg-base:          #F8FAFC;  /* Base Canvas — primary page background, lowest tonal tier */
+  --color-surface:          #FFFFFF;  /* Surface White — cards, panels, first tonal tier           */
+  --color-surface-elevated: #F1F5F9;  /* Elevated Surface — hover states, nested panels            */
+  --color-text-primary:     #111827;  /* Primary Ink — body text, headings, strong labels          */
+  --color-text-secondary:   #6B7280;  /* Secondary Ink — supporting text, metadata, sublabels      */
+  --color-text-muted:       #9CA3AF;  /* Muted Ink — placeholders, disabled labels, separators     */
+  --color-border-default:   #E5E7EB;  /* Default Border — card edges, input outlines, dividers     */
+  --color-border-hover:     #CBD5E1;  /* Hover Border — border intensification on interaction      */
+
+
+  /* ── Colors: Semantic ────────────────────────────────────────────────────── */
+
+  --color-success: #10B981;     /* Enrollment confirmations, completion states, form pass         */
+  --color-warning: #F59E0B;     /* Soft warnings, expiring content, attention states              */
+  --color-error:   #EF4444;     /* Form errors, failed operations, destructive confirmations      */
+  --color-error-600: #DC2626;   /* Destructive button hover                                      */
+  --color-error-700: #B91C1C;   /* Destructive button active/pressed                             */
+  --color-info:    #3B82F6;     /* Informational banners, tooltip anchors, hint text              */
+
+
+  /* ── Colors: On-Dark (used on Salem full-bleed sections) ─────────────────── */
+
+  --color-on-dark:        rgba(255, 255, 255, 0.85);  /* Body copy on Salem bg (85% white)        */
+  --color-on-dark-muted:  rgba(255, 255, 255, 0.60);  /* Eyebrow / sub-labels on Salem bg (60%)   */
+  --color-card-dark-bg:   rgba(255, 255, 255, 0.04);  /* Dark card background on Salem sections   */
+  --color-card-dark-border: rgba(255, 255, 255, 0.10); /* Dark card border on Salem sections      */
+  --color-nav-border-dark: rgba(255, 255, 255, 0.10); /* Navbar bottom border when scrolled       */
+  --color-ghost-hover:    rgba(3, 33, 23, 0.06);      /* Ghost button hover tint (Salem at 6%)    */
+
+
+  /* ── Typography: Font Family ─────────────────────────────────────────────── */
+
+  --font-ui: 'Inter', system-ui, sans-serif;
+
+
+  /* ── Typography: Font Sizes ──────────────────────────────────────────────── */
+
+  /* Brand register: fluid clamp() from min (320px viewport) to max (1200px viewport).
+     Tailwind text-display / text-headline resolve to these variables at render time. */
+  --font-size-display:  clamp(2rem, 1.455rem + 2.727vw, 3.5rem);    /* 32px → 56px              */
+  --font-size-headline: clamp(1.5rem, 1.136rem + 1.818vw, 2.5rem);  /* 24px → 40px              */
+
+  /* Product register: fixed rem so sizes scale with user browser preferences.
+     Never use px for font sizes — rem respects user zoom and accessibility settings. */
+  --font-size-title:    1.75rem;    /* 28px — dashboard titles, panel headings, modal headers    */
+  --font-size-title-sm: 1.375rem;   /* 22px — card titles, sidebar section labels, step labels   */
+  --font-size-body-lg:  1.125rem;   /* 18px — marketing supporting copy, max 65ch               */
+  --font-size-body:     1rem;       /* 16px — default UI text, max 72ch                         */
+  --font-size-body-sm:  0.875rem;   /* 14px — metadata, timestamps, sublabels, nav links         */
+  --font-size-caption:  0.75rem;    /* 12px — compliance copy, image captions, use sparingly     */
+  --font-size-button:   0.9375rem;  /* 15px — button labels only (lg size), sentence case        */
+
+  /* Button variant sizes (sm/md override font-size-button) */
+  --font-size-btn-sm:   0.8125rem;  /* 13px — button sm, 8px 16px padding                        */
+  --font-size-btn-md:   0.875rem;   /* 14px — button md, 10px 20px padding                       */
+
+
+  /* ── Typography: Font Weights ────────────────────────────────────────────── */
+
+  --font-weight-regular:  400;  /* Body text, body-sm, body-lg, caption                          */
+  --font-weight-medium:   500;  /* Nav links                                                     */
+  --font-weight-semibold: 600;  /* Titles, button labels                                         */
+  --font-weight-bold:     700;  /* Display, headline                                             */
+
+
+  /* ── Typography: Line Heights ────────────────────────────────────────────── */
+
+  --leading-display:  1.1;      /* Display only                                                  */
+  --leading-headline: 1.2;      /* Headline only                                                 */
+  --leading-title:    1.3;      /* Title                                                         */
+  --leading-title-sm: 1.4;      /* Title-sm                                                      */
+  --leading-body:     1.6;      /* Body-lg and Body                                              */
+  --leading-body-sm:  1.5;      /* Body-sm and Caption                                           */
+  --leading-button:   1;        /* Button labels                                                 */
+
+
+  /* ── Typography: Letter Spacing ─────────────────────────────────────────── */
+
+  --tracking-display:  -0.02em; /* Display — tight tracking at large size                        */
+  --tracking-headline: -0.01em; /* Headline                                                      */
+
+
+  /* ── Spacing ─────────────────────────────────────────────────────────────── */
+
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 96px;
+
+
+  /* ── Border Radius ───────────────────────────────────────────────────────── */
+
+  --radius-sm:   4px;
+  --radius-md:   8px;    /* Buttons, inputs                                                      */
+  --radius-lg:   12px;   /* Cards, course thumbnails                                             */
+  --radius-xl:   20px;   /* Hero image, final CTA wide image                                     */
+  --radius-full: 9999px; /* Pills, progress bar track/fill, avatar crops                        */
+
+
+  /* ── Shadows ─────────────────────────────────────────────────────────────── */
+
+  /* Structural shadows — mark layer boundaries only. Never decorative. */
+  --shadow-sticky:     0 1px 0 #E5E7EB;
+  --shadow-layer:      0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.06);
+  --shadow-modal:      0 20px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-hover-lift: 0 4px 12px rgba(0, 0, 0, 0.10);
+
+
+  /* ── Motion ──────────────────────────────────────────────────────────────── */
+
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);   /* Default easing — ease-out-expo feel      */
+  --ease-quick:    cubic-bezier(0.4, 0, 0.2, 1);    /* Fast feedback — border/color state changes */
+
+  --duration-fast:     120ms;   /* Button hover, border focus, color state changes               */
+  --duration-standard: 200ms;   /* Card hover-lift, shadow, dropdown open                        */
+  --duration-entrance: 300ms;   /* Hero entrance animation (stagger 80ms across elements)        */
+
+
+  /* ── Component Dimensions ────────────────────────────────────────────────── */
+
+  /* Button padding per size */
+  --btn-padding-sm: 8px 16px;
+  --btn-padding-md: 10px 20px;
+  --btn-padding-lg: 12px 28px;
+
+  /* Card padding variants */
+  --card-padding:           24px;  /* Default                                                    */
+  --card-padding-compact:   16px;  /* Compact (information-dense contexts)                       */
+  --card-padding-editorial: 32px;  /* Editorial / marketing sections                             */
+
+  /* Input */
+  --input-padding: 12px 16px;
+
+  /* Navigation */
+  --nav-height:        72px;   /* Desktop sticky navbar                                         */
+  --nav-height-mobile: 64px;   /* Mobile navbar                                                 */
+  --nav-scroll-threshold: 80px; /* Scroll offset at which navbar gains its shadow               */
+  --nav-backdrop-blur: 4px;    /* Backdrop blur on scrolled navbar (brand pages)                */
+
+  /* Focus rings */
+  --focus-ring-width:        3px;  /* Primary focus ring (buttons)                              */
+  --focus-ring-offset:       3px;  /* Primary focus ring offset (buttons)                       */
+  --focus-ring-width-sm:     2px;  /* Smaller focus ring (nav links, inputs)                    */
+  --focus-ring-offset-sm:    2px;  /* Smaller focus ring offset (nav links, inputs)             */
+
+  /* Progress bar */
+  --progress-height: 4px;
+
+  /* Button hover transition (explicit value from Components § Buttons) */
+  --btn-hover-duration: 180ms;
+
+
+  /* ── Layout ──────────────────────────────────────────────────────────────── */
+
+  --container-prose:   720px;   /* Prose / long-form reading width                               */
+  --container-default: 1200px;  /* Max content width, centered                                   */
+  --container-wide:    1440px;  /* Wide / full-bleed marketing sections                          */
+}

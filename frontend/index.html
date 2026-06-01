@@ -4,7 +4,56 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <!-- Fonts: preconnect warms DNS+TLS before the stylesheet request -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+
+    <!-- Primary SEO -->
+    <title>Learnova — Learn what matters to you</title>
+    <meta name="description" content="Browse structured courses, track your progress, and earn certificates on Learnova. Trusted by thousands of learners." />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Learnova — Learn what matters to you" />
+    <meta property="og:description" content="Browse structured courses, track your progress, and earn certificates on Learnova. Trusted by thousands of learners." />
+    <meta property="og:image" content="/og-hero.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Learnova" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Learnova — Learn what matters to you" />
+    <meta name="twitter:description" content="Browse structured courses, track your progress, and earn certificates on Learnova." />
+    <meta name="twitter:image" content="/og-hero.jpg" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "/#organization",
+          "name": "Learnova",
+          "url": "/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "/logo-primary.png"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "/#website",
+          "url": "/",
+          "name": "Learnova",
+          "publisher": { "@id": "/#organization" }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

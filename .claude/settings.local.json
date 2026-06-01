@@ -2,7 +2,41 @@
   "permissions": {
     "allow": [
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\backend\" -Recurse -Depth 4 | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | Sort-Object FullName)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | Sort-Object FullName)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | Sort-Object FullName)",
+      "Bash(node *)",
+      "Bash(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\.impeccable\" -Force)",
+      "Bash(Out-Null)",
+      "Bash(Write-Host \"done\")",
+      "Bash(npx tsc *)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Recurse -Force | ForEach-Object { if \\($_.PSIsContainer\\) { Write-Host \"DIR:  $\\($_.FullName\\)\" } else { Write-Host \"FILE: $\\($_.FullName\\)\" } } | Sort-Object)",
+      "PowerShell(Tree \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -L -A)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Recurse | Select-Object FullName | ForEach-Object { $path = $_.FullName -replace [regex]::Escape\\(\"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\"\\), \"\"; Write-Host $path })",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Recurse -File | Select-Object @{Name=\"RelativePath\"; Expression={$_.FullName -replace [regex]::Escape\\(\"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\"\\), \"\"}} | Sort-Object RelativePath)",
+      "PowerShell(Get-Item *)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\components\\\\common\\\\Navbar.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\components\\\\common\\\\GuestRoute.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\components\\\\common\\\\ProtectedRoute.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\layouts\\\\MainLayout.tsx\" -Force)",
+      "PowerShell(Get-ChildItem -Recurse \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" | Where-Object { !$_.PSIsContainer } | Select-Object FullName)",
+      "Bash(Test-Path *)",
+      "Bash(npm install *)",
+      "Bash(Get-Content *)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(New-Item *)",
+      "Bash(copy *)",
+      "Skill(impeccable:impeccable)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}, indent=2\\)\\)\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\docs\\\\design\\\\branding\\\\logo-primary.png\" \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\assets\\\\logo-primary.png\" -Force)",
+      "Bash(Write-Output \"Copied\")",
+      "Bash(npm run *)",
+      "Bash(Remove-Item \".impeccable/critique/tmp-body-statsgrid-testimonials.md\" -ErrorAction SilentlyContinue)",
+      "Bash(git stash *)",
+      "Bash(Remove-Item *)",
+      "Bash(export IMPECCABLE_CRITIQUE_META='{\"target\":\"StatsGrid lead stat visual hierarchy at wide viewports\",\"total_score\":30,\"p0_count\":0,\"p1_count\":0}')",
+      "Bash(echo \"exit:$?\")",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(Get-ChildItem -Recurse -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Include \"*Navbar*\",\"*Nav*\",\"*Hero*\",\"*Landing*\")",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

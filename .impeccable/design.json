@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-30T00:00:00.000Z",
+  "title": "Design System: Learnova",
+  "extensions": {
+    "colorMeta": {
+      "salem": {
+        "role": "primary",
+        "displayName": "Forest Focus Green",
+        "canonical": "oklch(43% 0.14 162)",
+        "tonalRamp": ["#03221A", "#044F37", "#066B4A", "#0B6E4F", "#0F8A64", "#4FAF8D", "#9DD4BE", "#D7EDE8"]
+      },
+      "salem-50": {
+        "role": "primary-tint",
+        "displayName": "Forest Whisper",
+        "canonical": "oklch(95% 0.03 162)",
+        "tonalRamp": ["#03221A", "#066B4A", "#0B6E4F", "#52B893", "#9DD4BE", "#C8E8DF", "#E8F5F0", "#F4FAF7"]
+      },
+      "salem-700": {
+        "role": "primary-dark",
+        "displayName": "Deep Forest",
+        "canonical": "oklch(37% 0.13 162)",
+        "tonalRamp": ["#02180F", "#044033", "#085E43", "#0B6E4F", "#0F8A64", "#4FAF8D", "#9DD4BE", "#D7EDE8"]
+      },
+      "azure": {
+        "role": "secondary",
+        "displayName": "Scholar Blue",
+        "canonical": "oklch(43% 0.18 264)",
+        "tonalRamp": ["#0A1245", "#182669", "#28408D", "#3C57B8", "#5B78D4", "#8DA3E6", "#BEC9F1", "#E5EBF9"]
+      },
+      "coral": {
+        "role": "tertiary",
+        "displayName": "Alert Ember",
+        "canonical": "oklch(67% 0.17 34)",
+        "tonalRamp": ["#4A1308", "#7D2314", "#B33D25", "#D4522E", "#FF7A59", "#FF9E84", "#FFC2AE", "#FFE1D7"]
+      },
+      "anzac": {
+        "role": "tertiary-achievement",
+        "displayName": "Earned Amber",
+        "canonical": "oklch(78% 0.17 84)",
+        "tonalRamp": ["#241D00", "#4A3B00", "#756000", "#9D8500", "#C4A600", "#E0C03A", "#EDD47D", "#F8EEC0"]
+      },
+      "bg-base": {
+        "role": "neutral-bg",
+        "displayName": "Base Canvas",
+        "canonical": "oklch(98% 0.006 250)",
+        "tonalRamp": ["#C5CEDB", "#D2DAE5", "#DDE4ED", "#E8EEF4", "#F1F5F9", "#F5F8FB", "#F8FAFC", "#FDFDFE"]
+      },
+      "surface": {
+        "role": "neutral-surface",
+        "displayName": "Surface White",
+        "canonical": "oklch(99.5% 0.002 250)",
+        "tonalRamp": ["#C5CEDB", "#D2DAE5", "#E5EAF0", "#F1F5F9", "#F8FAFC", "#FBFCFD", "#FDFDFE", "#FFFFFF"]
+      },
+      "surface-elevated": {
+        "role": "neutral-elevated",
+        "displayName": "Elevated Surface",
+        "canonical": "oklch(96% 0.009 250)",
+        "tonalRamp": ["#B8C3D3", "#C9D3E0", "#D8E1EB", "#E4EAF3", "#ECF0F7", "#F1F5F9", "#F6F8FC", "#FAFBFD"]
+      },
+      "text-primary": {
+        "role": "neutral-text",
+        "displayName": "Primary Ink",
+        "canonical": "oklch(18% 0.015 264)",
+        "tonalRamp": ["#111827", "#1F2937", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#F3F4F6"]
+      },
+      "text-secondary": {
+        "role": "neutral-text-secondary",
+        "displayName": "Secondary Ink",
+        "canonical": "oklch(52% 0.010 264)",
+        "tonalRamp": ["#111827", "#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6"]
+      },
+      "text-muted": {
+        "role": "neutral-text-muted",
+        "displayName": "Muted Ink",
+        "canonical": "oklch(68% 0.008 264)",
+        "tonalRamp": ["#374151", "#4B5563", "#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB"]
+      },
+      "border-default": {
+        "role": "neutral-border",
+        "displayName": "Default Border",
+        "canonical": "oklch(92% 0.006 264)",
+        "tonalRamp": ["#6B7280", "#9CA3AF", "#D1D5DB", "#E5E7EB", "#F3F4F6", "#F9FAFB", "#FDFDFE", "#FFFFFF"]
+      },
+      "success": {
+        "role": "semantic-success",
+        "displayName": "Confirmation Green",
+        "canonical": "oklch(69% 0.17 162)",
+        "tonalRamp": ["#064E3B", "#065F46", "#10B981", "#34D399", "#6EE7B7", "#A7F3D0", "#D1FAE5", "#ECFDF5"]
+      },
+      "error": {
+        "role": "semantic-error",
+        "displayName": "Error Red",
+        "canonical": "oklch(58% 0.21 25)",
+        "tonalRamp": ["#7F1D1D", "#991B1B", "#DC2626", "#EF4444", "#F87171", "#FCA5A5", "#FECACA", "#FEF2F2"]
+      },
+      "warning": {
+        "role": "semantic-warning",
+        "displayName": "Attention Amber",
+        "canonical": "oklch(74% 0.19 76)",
+        "tonalRamp": ["#78350F", "#92400E", "#D97706", "#F59E0B", "#FCD34D", "#FDE68A", "#FEF3C7", "#FFFBEB"]
+      },
+      "info": {
+        "role": "semantic-info",
+        "displayName": "Info Blue",
+        "canonical": "oklch(56% 0.19 262)",
+        "tonalRamp": ["#1E3A8A", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE", "#EFF6FF"]
+      }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Hero headlines only. One per page." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles (marketing) and primary page headers (product)." },
+      "title":    { "displayName": "Title",    "purpose": "Dashboard titles, panel headings, modal headers." },
+      "title-sm": { "displayName": "Title-sm", "purpose": "Card titles, sidebar section labels, step labels." },
+      "body-lg":  { "displayName": "Body-lg",  "purpose": "Marketing supporting copy. Max 65ch." },
+      "body":     { "displayName": "Body",     "purpose": "Default UI text and descriptions. Max 72ch." },
+      "body-sm":  { "displayName": "Body-sm",  "purpose": "Metadata, timestamps, sublabels, nav links." },
+      "caption":  { "displayName": "Caption",  "purpose": "Compliance copy, image captions. Use sparingly." },
+      "button":   { "displayName": "Button",   "purpose": "Button labels only. Sentence case." }
+    },
+    "shadows": [
+      {
+        "name": "sticky",
+        "value": "0 1px 0 #E5E7EB",
+        "purpose": "Navbar only, after 80px scroll. Marks sticky/scroll boundary."
+      },
+      {
+        "name": "layer",
+        "value": "0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.06)",
+        "purpose": "Dropdowns, floating menus, autocomplete panels, command palettes."
+      },
+      {
+        "name": "modal",
+        "value": "0 20px 60px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08)",
+        "purpose": "Dialogs and modal sheets only."
+      },
+      {
+        "name": "hover-lift",
+        "value": "0 4px 12px rgba(0,0,0,0.10)",
+        "purpose": "Interactive cards on hover only. Transition: 200ms ease-out. Not at rest."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-standard",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default easing for state transitions. Ease-out-expo feel."
+      },
+      {
+        "name": "ease-out-quick",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Fast feedback transitions: button states, border changes."
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Button hover, border focus, color state changes."
+      },
+      {
+        "name": "duration-standard",
+        "value": "200ms",
+        "purpose": "Card hover-lift, shadow appearance, dropdown open."
+      },
+      {
+        "name": "duration-entrance",
+        "value": "300ms",
+        "purpose": "Hero entrance animation (fade + 8px slide-up). Stagger 80ms across elements."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm",  "value": "640px",  "note": "Stat grids go 1-col; text scale reduces." },
+      { "name": "md",  "value": "768px",  "note": "Feature cards 2-col; journey rows stay stacked." },
+      { "name": "lg",  "value": "1024px", "note": "Full desktop: 2-col hero, 3-col stats, 3-col features." },
+      { "name": "xl",  "value": "1280px", "note": "Max content width hits container-default (1200px)." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single filled action button. One per view zone. Salem fill, white text.",
+      "html": "<button class=\"ds-btn-primary\">Get started</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #0B6E4F; color: #FFFFFF; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; line-height: 1; letter-spacing: 0; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; transition: background 180ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 180ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #085E43; } .ds-btn-primary:focus-visible { outline: 3px solid #0B6E4F; outline-offset: 3px; } .ds-btn-primary:active { background: #074E38; transform: translateY(1px); } .ds-btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Inverted Button",
+      "kind": "button",
+      "refersTo": "button-inverted",
+      "description": "White fill, Salem text. Used on Salem full-bleed sections (hero, brand-intro).",
+      "html": "<button class=\"ds-btn-inverted\">Explore courses</button>",
+      "css": ".ds-btn-inverted { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #FFFFFF; color: #0B6E4F; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; line-height: 1; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; transition: background 180ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-inverted:hover { background: #F1F5F9; } .ds-btn-inverted:focus-visible { outline: 3px solid #FFFFFF; outline-offset: 3px; } .ds-btn-inverted:active { background: #E5EAF0; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "White fill, default border, Primary Ink text. Paired with primary for secondary actions.",
+      "html": "<button class=\"ds-btn-secondary\">Browse catalog</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #FFFFFF; color: #111827; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; line-height: 1; padding: 12px 24px; border: 1px solid #E5E7EB; border-radius: 8px; cursor: pointer; transition: border-color 180ms cubic-bezier(0.4, 0, 0.2, 1), background 180ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { border-color: #CBD5E1; background: #F8FAFC; } .ds-btn-secondary:focus-visible { outline: 3px solid #0B6E4F; outline-offset: 3px; } .ds-btn-secondary:active { background: #F1F5F9; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Transparent fill, Salem text. Soft secondary action. Often paired with a text arrow.",
+      "html": "<button class=\"ds-btn-ghost\">Learn more <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14M12 5l7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; gap: 6px; background: transparent; color: #0B6E4F; font-family: 'Inter', system-ui, sans-serif; font-size: 15px; font-weight: 600; line-height: 1; padding: 12px 16px; border: none; border-radius: 8px; cursor: pointer; transition: background 180ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-ghost:hover { background: rgba(11, 110, 79, 0.06); } .ds-btn-ghost:focus-visible { outline: 3px solid #0B6E4F; outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Stroke-only field, Salem focus border. No filled variant.",
+      "html": "<div class=\"ds-input-wrap\"><label class=\"ds-input-label\" for=\"ds-input\">Email address</label><input class=\"ds-input\" type=\"email\" id=\"ds-input\" placeholder=\"you@company.com\" /></div>",
+      "css": ".ds-input-wrap { display: flex; flex-direction: column; gap: 6px; } .ds-input-label { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 500; color: #111827; } .ds-input { background: #FFFFFF; color: #111827; font-family: 'Inter', system-ui, sans-serif; font-size: 16px; font-weight: 400; padding: 12px 16px; border: 1px solid #E5E7EB; border-radius: 8px; width: 100%; transition: border-color 120ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input::placeholder { color: #9CA3AF; } .ds-input:focus { outline: none; border-color: #0B6E4F; } .ds-input:disabled { background: #F1F5F9; color: #9CA3AF; cursor: not-allowed; }"
+    },
+    {
+      "name": "Default Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "White surface on Base Canvas. No shadow at rest. Hover-lift only when interactive.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-eyebrow\">Progress</p><h3 class=\"ds-card-title\">Track every step forward</h3><p class=\"ds-card-body\">Watch your skills grow with clear progress tracking across every enrolled course.</p></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; } .ds-card-eyebrow { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #9CA3AF; text-transform: none; letter-spacing: 0.02em; margin-bottom: 8px; } .ds-card-title { font-family: 'Inter', system-ui, sans-serif; font-size: 22px; font-weight: 600; color: #111827; line-height: 1.4; margin-bottom: 12px; } .ds-card-body { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; font-weight: 400; color: #6B7280; line-height: 1.6; }"
+    },
+    {
+      "name": "Interactive Card (hover-lift)",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Clickable card variant. Gains hover-lift shadow and image scale on hover.",
+      "html": "<div class=\"ds-card-interactive\"><p class=\"ds-card-eyebrow\">Course</p><h3 class=\"ds-card-title\">Introduction to Product Design</h3><p class=\"ds-card-meta\">Sarah Chen · Design</p></div>",
+      "css": ".ds-card-interactive { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; cursor: pointer; transition: box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1), transform 200ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-card-interactive:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.10); transform: translateY(-1px); } .ds-card-eyebrow { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #9CA3AF; margin-bottom: 8px; } .ds-card-title { font-family: 'Inter', system-ui, sans-serif; font-size: 22px; font-weight: 600; color: #111827; line-height: 1.4; margin-bottom: 8px; } .ds-card-meta { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 400; color: #6B7280; }"
+    },
+    {
+      "name": "Progress Bar",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Learning progress indicator. Salem fill, 4px height, radius-full. Label below in Caption.",
+      "html": "<div class=\"ds-progress-wrap\"><div class=\"ds-progress-track\"><div class=\"ds-progress-fill\" style=\"width:68%\"></div></div><span class=\"ds-progress-label\">68% complete</span></div>",
+      "css": ".ds-progress-wrap { display: flex; flex-direction: column; gap: 6px; } .ds-progress-track { background: #F1F5F9; border-radius: 9999px; height: 4px; overflow: hidden; } .ds-progress-fill { background: #0B6E4F; height: 100%; border-radius: 9999px; transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-progress-label { font-family: 'Inter', system-ui, sans-serif; font-size: 12px; font-weight: 400; color: #9CA3AF; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Product app navigation item. Body-sm, Salem underline on active.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"#\">Dashboard</a><a class=\"ds-nav-link ds-nav-link--active\" href=\"#\">My courses</a><a class=\"ds-nav-link\" href=\"#\">Browse</a><a class=\"ds-nav-link\" href=\"#\">Certificates</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; } .ds-nav-link { font-family: 'Inter', system-ui, sans-serif; font-size: 14px; font-weight: 500; color: #6B7280; text-decoration: none; padding: 8px 12px; border-radius: 6px; transition: color 120ms, background 120ms; } .ds-nav-link:hover { color: #111827; background: #F1F5F9; } .ds-nav-link:focus-visible { outline: 2px solid #0B6E4F; outline-offset: 2px; } .ds-nav-link--active { color: #0B6E4F; background: #E8F5F0; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clarity Workbench",
+    "overview": "Learnova's visual system is built for the professional who has chosen to learn with intent. The surface is clean because the work is serious. Whitespace is not decorative emptiness; it is the margin on a well-used desk. Every element is present because it belongs, not because it fills space, or signals effort, or performs capability.\n\nThe interface does not congratulate you for opening it. It is already arranged, already ready. The Forest Focus Green of Salem anchors action with a color that earns attention without demanding it. Inter handles information with precision, never straining for personality it doesn't need. Shadows mark layer boundaries, not importance.\n\nThis system explicitly rejects: the bazaar-style urgency of Udemy; the cold institutional bureaucracy of Coursera; the dated clutter of Moodle; the badge-and-XP-explosion theater of generic LMS dashboards; and the overworked SaaS aesthetic of hero-metric grids and glassmorphism used as decoration.",
+    "keyCharacteristics": [
+      "Forest Focus Green as the sole action anchor on neutral surfaces",
+      "Inter at every scale, differentiated by weight and size contrast only",
+      "Structural shadows on layer boundaries; flat within layers",
+      "Salem carries no more than 15% of any product screen's surface area",
+      "Generous whitespace as the primary rhythm mechanism, varied deliberately",
+      "No gradient text, no glassmorphism, no side-stripe accent borders"
+    ],
+    "rules": [
+      { "name": "The Forest Rule",        "body": "Salem is the single voice for action. One primary button per view section. If everything is Salem, nothing is.", "section": "colors" },
+      { "name": "The Field Rule",         "body": "Coral and Anzac are earned, not applied. Coral appears when something requires the user's attention. Anzac appears when the user has completed something. Neither is available for decoration.", "section": "colors" },
+      { "name": "The On-Dark Rule",       "body": "On Salem full-bleed sections, body copy uses white at 85% opacity; headings use white at 100%. Neutral Field colors are never used on Salem backgrounds.", "section": "colors" },
+      { "name": "The Single Typeface Rule", "body": "Inter handles every scale. No second typeface for personality. The script wordmark lives in the logo SVG only.", "section": "typography" },
+      { "name": "The Scale Ratio Rule",   "body": "Each step in the hierarchy is at least 1.25x larger than the one below it. Never introduce an in-between size as a third level in the same zone.", "section": "typography" },
+      { "name": "The Flat-At-Rest Rule",  "body": "Cards, panels, and form elements carry no shadow at rest. Shadow appears only when an element changes stacking context (dropdown, modal) or responds to hover (interactive cards only).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Salem (#0B6E4F) as the sole filled-button color. Its authority comes from scarcity: no more than 15% of any product screen's surface.",
+      "Do use whitespace as the primary rhythm mechanism. Vary padding between sections deliberately.",
+      "Do use tonal layering (bg-base, surface, surface-elevated) to communicate depth before reaching for a shadow.",
+      "Do cap body text at 65-72ch.",
+      "Do use Anzac and Coral in status-bearing contexts only: completion moments, warnings, streaks.",
+      "Do apply structural shadows only to surfaces that change stacking context.",
+      "Do handle prefers-reduced-motion on all entrance animations.",
+      "Do present one primary button per view zone.",
+      "Do write button and nav labels in sentence case."
+    ],
+    "donts": [
+      "Don't replicate Udemy's urgency patterns: no Best Seller badges, no countdown timers, no discount language on thumbnails.",
+      "Don't use Coursera's corporate-blue-and-white palette. Scholar Blue is a secondary data-context color only.",
+      "Don't adopt Moodle-style dense enterprise layouts.",
+      "Don't add XP explosions, leaderboards, or trophy dashboards.",
+      "Don't use gradient text (background-clip: text with a gradient fill).",
+      "Don't use glassmorphism decoratively. Backdrop blur exists only on the sticky navbar in its scrolled state.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe.",
+      "Don't build identical-card grids. Same-sized icon-heading-text cards in a repeating grid is the default AI reflex for this category.",
+      "Don't add shadow to elements at rest if they do not change stacking context.",
+      "Don't use the hero-metric template: big number, small label, supporting stat, gradient accent.",
+      "Don't write em dashes in UI copy. Use commas, colons, or periods instead.",
+      "Don't use Salem as an ambient background on product surfaces."
+    ]
+  }
+}

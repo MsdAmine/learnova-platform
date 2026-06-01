@@ -94,13 +94,82 @@ Each feature is a sub-package following this layout:
 
 ## Frontend Architecture
 
+**Design system:** Before generating UI, read `DESIGN.md` at the project root. For the landing page implementation spec, read `docs/design/final-specs/landing-page.md`.
+
 **Auth state** lives in `AuthContext` (`src/context/AuthContext.tsx`). It stores the JWT token, user object, and `activeProfile` in `localStorage`. `useAuth()` is the hook to consume it.
 
 **Routing** (`src/router/index.tsx`) uses React Router v7. `ProtectedRoute` redirects unauthenticated users to `/login`. `GuestRoute` redirects authenticated users away from auth pages.
 
 **Feature pages** live under `src/features/<feature>/pages/`. Shared components go under `src/components/common/`. API calls are centralized in `src/api/axios.ts`.
 
-**Active profile switching:** The `activeProfile` field in `AuthContext` controls which dashboard/experience is shown. Its value is one of the `ProfileType` union type values (`'LEARNER' | 'INSTRUCTOR'`).
+### Active Profile Switching
+
+`ProfileType` (`src/types/profile.ts`) is `'LEARNER' | 'INSTRUCTOR'`. The `activeProfile` field in `AuthContext` controls which dashboard/experience is rendered.
+
+**Rules:**
+- Users are registered as learners. `login()` always initialises `activeProfile` to `'LEARNER'`.
+- The `User` object in `AuthContext` carries three profile-relevant fields from `/api/v1/auth/me`:
+  - `availableProfiles: ProfileType[]` — the profiles the user may actually switch to (backend-controlled).
+  - `roles: string[]` — granted roles (`ROLE_LEARNER`, `ROLE_INSTRUCTOR`, `ROLE_ADMIN`).
+  - `instructorApprovalStatus: string | null` — `null` (no request), `'PENDING'`, `'APPROVED'`, or `'REJECTED'`.
+- `setActiveProfile()` is only valid for a profile listed in `user.availableProfiles`. Never allow switching to `'INSTRUCTOR'` unless `availableProfiles` includes it.
+- **Backend is the source of truth.** Do not derive instructor access from `activeProfile` alone or from stale localStorage. Use `useCurrentUser` (`src/hooks/useCurrentUser.ts`) on app load to re-fetch `/api/v1/auth/me` and refresh the user object.
+- UI states to surface based on `instructorApprovalStatus`:
+  - `null` → show "Become an Instructor" CTA.
+  - `'PENDING'` → show pending badge; hide Instructor mode option.
+  - `'APPROVED'` → `availableProfiles` will include `'INSTRUCTOR'`; show profile switcher.
+  - `'REJECTED'` → show rejected status; optionally allow resubmission depending on implementation.
+
+### Route Guard Patterns
+
+Route guards live in `src/components/common/`. Do not duplicate authorization logic inside individual pages.
+
+| Guard | File | Behaviour |
+|-------|------|-----------|
+| `GuestRoute` | `GuestRoute.tsx` | Redirects authenticated users to `/` |
+| `ProtectedRoute` | `ProtectedRoute.tsx` | Redirects unauthenticated users to `/login` |
+| `InstructorRoute` | _not yet implemented_ | Requires authenticated + `'INSTRUCTOR'` in `user.availableProfiles` |
+| `AdminRoute` | _not yet implemented_ | Requires authenticated + `'ROLE_ADMIN'` in `user.roles` |
+
+**Route categories:**
+
+- **Public** — landing page, course catalog, course detail pages. No guard.
+- **Guest-only** — `/login`, `/register`. Wrapped in `GuestRoute`.
+- **Protected** — dashboard, settings, learner pages. Wrapped in `ProtectedRoute`.
+- **Instructor** — course management, course editor. Wrap in `InstructorRoute` (checks `user.availableProfiles`).
+- **Admin** — admin panel, instructor approval. Wrap in `AdminRoute` (checks `user.roles`).
+
+Unauthorized access to instructor/admin routes should redirect to `/` (or `/unauthorized` if that page exists), not to `/login`, since the user is already authenticated.
+
+### Axios Interceptor Setup
+
+The shared client is `src/api/axios.ts`. Never import axios directly in feature code; always use this instance.
+
+**What is implemented:**
+- Base URL from `VITE_API_BASE_URL` env variable (falls back to `http://localhost:8080`).
+- Request interceptor: reads `token` from `localStorage` and attaches `Authorization: Bearer <token>`. Do not add auth headers manually in API call files.
+
+**What is not yet implemented (intended convention):**
+- Response interceptor for `401 Unauthorized`: clear auth state (`logout()`) and redirect to `/login`. This must be added to `src/api/axios.ts` — not handled per-page.
+- Response interceptor for `403 Forbidden`: treat as an authorization failure (user is authenticated but lacks permission). Show an error or redirect to `/unauthorized`. Do not conflate with `401`.
+
+Skeleton for the response interceptor when implementing:
+```ts
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // call logout(), then navigate to /login
+    }
+    if (error.response?.status === 403) {
+      // navigate to /unauthorized or surface an error
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+Because `AuthContext` is a React context, the interceptor cannot call `useAuth()` directly. Pass `logout` and a navigation callback into the interceptor setup, or use a module-level event bus / ref pattern to bridge React state into the Axios layer.
 
 ## API Surface (current)
 
@@ -125,3 +194,10 @@ Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 Branch prefixes: `feat/`, `fix/`, `docs/`, `chore/`, `refactor/`, `test/`
 
 Commit format: `type: short description` (e.g., `feat: implement enrollment endpoint`)
+
+**Design specs (required reading before any UI work):**
+- `docs/design/final-specs/design-system.md` — tokens, primitives, components
+- `docs/design/final-specs/landing-page.md` — landing page section specs
+- `docs/design/branding/brand-guidelines.md` — brand voice and direction
+
+Always reference tokens by name from design-system.md. Never invent new colors, spacing, or component variants.

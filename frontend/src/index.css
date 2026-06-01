@@ -1,3 +1,9 @@
+@import './styles/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -5,9 +11,11 @@
 }
 
 body {
-    font-family: sans-serif;
-    background-color: #f5f5f5;
-    color: #1a1a1a;
+    font-family: var(--font-ui);
+    background-color: var(--color-bg-base);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #root {

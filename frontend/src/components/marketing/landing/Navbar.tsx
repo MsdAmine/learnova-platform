@@ -1,0 +1,342 @@
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '../../ui/Button';
+import { cn } from '../../../lib/cn';
+import logoWhiteUrl from '../../../assets/logo-white.png';
+import logoPrimaryUrl from '../../../assets/logo-primary.png';
+
+const NAV_LINKS = [
+  { label: 'Course catalog', href: '/courses' },
+  { label: 'How it works', href: '/#how-it-works' },
+  { label: 'About us', href: '/#about' },
+  { label: 'Resources', href: '/#resources' },
+] as const;
+
+export function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Switch to light mode when hero scrolls fully out of view.
+  // Falls back to a scroll listener if #hero-section isn't in the DOM.
+  useEffect(() => {
+    // Watch the last dark-green section (BrandIntro). Light mode kicks in
+    // only when that section's bottom has scrolled fully off screen.
+    const darkZoneEl =
+      document.getElementById('brand-intro-section') ??
+      document.getElementById('hero-section');
+
+    if (!darkZoneEl) {
+      function onScroll() {
+        setScrolled(window.scrollY > window.innerHeight * 0.8);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+      return () => window.removeEventListener('scroll', onScroll);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setScrolled(false);
+        } else {
+          // below the fold → not yet reached → stay dark
+          // above the fold → scrolled past → go light
+          setScrolled(entry.boundingClientRect.top < 0);
+        }
+      },
+      { threshold: 0 },
+    );
+    observer.observe(darkZoneEl);
+    return () => observer.disconnect();
+  }, []);
+
+  // Lock body scroll while the mobile panel is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
+
+  // Move focus into the panel and trap it; close on Escape
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    closeButtonRef.current?.focus();
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        closeMobile();
+        return;
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return;
+
+      const focusable = Array.from(
+        panelRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mobileOpen]);
+
+  function closeMobile() {
+    setMobileOpen(false);
+    hamburgerRef.current?.focus();
+  }
+
+  return (
+    <>
+      {/* ── Sticky header ─────────────────────────────────────────────────── */}
+      <header
+        className={cn(
+          'fixed top-0 left-0 right-0 w-full z-40',
+          'h-[64px] md:h-[72px]',
+          'transition-[background-color,box-shadow,border-color] duration-300 ease-in-out',
+          scrolled
+            ? 'bg-white border-b border-border-default shadow-sticky'
+            : 'bg-transparent border-b border-transparent',
+        )}
+      >
+        <div className="w-full max-w-[1200px] mx-auto h-full px-4 md:px-12 flex items-center justify-between">
+          {/* Logo — cross-fades between white and primary versions */}
+          <Link
+            to="/"
+            className={cn(
+              'relative flex-shrink-0 rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+              scrolled ? 'focus-visible:outline-salem' : 'focus-visible:outline-white',
+            )}
+            aria-label="Learnova – home"
+          >
+            {!logoError ? (
+              <div className="relative h-8">
+                <img
+                  src={logoWhiteUrl}
+                  alt="Learnova"
+                  height={32}
+                  className={cn(
+                    'h-8 w-auto transition-opacity duration-300',
+                    scrolled ? 'opacity-0' : 'opacity-100',
+                  )}
+                  onError={() => setLogoError(true)}
+                />
+                <img
+                  src={logoPrimaryUrl}
+                  alt=""
+                  aria-hidden="true"
+                  height={32}
+                  className={cn(
+                    'h-8 w-auto absolute inset-0 transition-opacity duration-300',
+                    scrolled ? 'opacity-100' : 'opacity-0',
+                  )}
+                />
+              </div>
+            ) : (
+              <span
+                className={cn(
+                  'text-[20px] font-semibold leading-none transition-colors duration-300',
+                  scrolled ? 'text-salem' : 'text-white',
+                )}
+              >
+                Learnova
+              </span>
+            )}
+          </Link>
+
+          {/* Desktop nav */}
+          <nav aria-label="Main navigation" className="hidden md:flex items-center gap-8">
+            {NAV_LINKS.map(({ label, href }) => (
+              <Link
+                key={label}
+                to={href}
+                className={cn(
+                  'text-[14px] font-medium leading-[1.5]',
+                  'transition-colors duration-300',
+                  scrolled
+                    ? 'text-text-primary hover:text-salem focus-visible:outline-salem'
+                    : 'text-on-dark hover:text-white focus-visible:outline-white',
+                  'rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+                )}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop CTA */}
+          <Button
+            variant="primary"
+            size="md"
+            asChild
+            className="hidden md:inline-flex bg-azure text-white border-transparent rounded-full hover:bg-[#3044A8] focus-visible:outline-white"
+          >
+            <Link to="/login">Login</Link>
+          </Button>
+
+          {/* Mobile hamburger */}
+          <button
+            ref={hamburgerRef}
+            type="button"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav-panel"
+            className={cn(
+              'md:hidden p-[10px] -mr-[10px] rounded-[4px]',
+              'transition-colors duration-300',
+              scrolled
+                ? 'text-text-primary focus-visible:outline-salem'
+                : 'text-white focus-visible:outline-white',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+            )}
+            onClick={() => setMobileOpen(true)}
+          >
+            <MenuIcon />
+          </button>
+        </div>
+      </header>
+
+      {/* ── Mobile full-screen panel ──────────────────────────────────────── */}
+      <div
+        id="mobile-nav-panel"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation"
+        inert={!mobileOpen}
+        className={cn(
+          'fixed inset-0 z-50 flex flex-col bg-salem',
+          'transition-transform duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
+          mobileOpen ? 'translate-x-0' : 'translate-x-full',
+        )}
+      >
+        {/* Panel header */}
+        <div className="h-[64px] px-4 flex items-center justify-between flex-shrink-0">
+          <Link
+            to="/"
+            className="rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            aria-label="Learnova – home"
+            onClick={closeMobile}
+          >
+            {!logoError ? (
+              <img
+                src={logoWhiteUrl}
+                alt="Learnova"
+                height={32}
+                className="h-8 w-auto"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <span className="text-white text-[20px] font-semibold leading-none">
+                Learnova
+              </span>
+            )}
+          </Link>
+
+          <button
+            ref={closeButtonRef}
+            type="button"
+            aria-label="Close navigation menu"
+            className={cn(
+              'text-white p-[10px] -mr-[10px] rounded-[4px]',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+            )}
+            onClick={closeMobile}
+          >
+            <CloseIcon />
+          </button>
+        </div>
+
+        {/* Nav links — h3 / title size, stacked */}
+        <nav
+          aria-label="Mobile navigation"
+          className="flex-1 flex flex-col justify-center px-8 gap-1 overflow-y-auto"
+        >
+          {NAV_LINKS.map(({ label, href }) => (
+            <Link
+              key={label}
+              to={href}
+              className={cn(
+                'text-[28px] font-semibold leading-[1.3] text-on-dark',
+                'hover:text-white transition-colors duration-[120ms]',
+                'py-3 rounded-[4px]',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
+              )}
+              onClick={closeMobile}
+            >
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Login CTA pinned to bottom */}
+        <div className="px-8 pb-12 flex-shrink-0">
+          <Button variant="inverted" size="md" asChild className="w-full justify-center">
+            <Link to="/login" onClick={closeMobile}>
+              Login
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M4 6h16M4 12h16M4 18h16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M6 6l12 12M6 18L18 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

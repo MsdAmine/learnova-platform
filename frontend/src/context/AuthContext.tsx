@@ -15,6 +15,7 @@ interface AuthContextType {
     token: string | null;
     activeProfile: ProfileType | null;
     login: (token: string, user: User) => void;
+    refreshUser: (user: User) => void;
     logout: () => void;
     setActiveProfile: (profile: ProfileType) => void;
     isAuthenticated: boolean;
@@ -44,6 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('activeProfile', 'LEARNER');
     }
 
+    function refreshUser(freshUser: User) {
+        localStorage.setItem('user', JSON.stringify(freshUser));
+        setUser(freshUser);
+    }
+
     function logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -65,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 token,
                 activeProfile,
                 login,
+                refreshUser,
                 logout,
                 setActiveProfile,
                 isAuthenticated: !!token,
