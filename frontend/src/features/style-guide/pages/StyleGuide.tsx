@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { Avatar } from '../../../components/ui/Avatar';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
@@ -10,6 +12,7 @@ import {
   CardTitle,
 } from '../../../components/ui/Card';
 import { Container } from '../../../components/ui/Container';
+import { FormField, Input } from '../../../components/ui/Input';
 import { SectionHeader } from '../../../components/ui/SectionHeader';
 import { Stat } from '../../../components/ui/Stat';
 
@@ -34,6 +37,29 @@ function Grid({ children }: { children: React.ReactNode }) {
 
 function Divider() {
   return <hr className="border-border-default" />;
+}
+
+function PasswordDemo() {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="w-full max-w-sm">
+      <Input
+        id="sg-pw-toggle"
+        type={visible ? 'text' : 'password'}
+        defaultValue="mysecretpass"
+        endAdornment={
+          <button
+            type="button"
+            onClick={() => setVisible(v => !v)}
+            className="text-text-muted hover:text-text-secondary transition-colors duration-fast"
+            aria-label={visible ? 'Hide password' : 'Show password'}
+          >
+            {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        }
+      />
+    </div>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -90,6 +116,58 @@ export default function StyleGuide() {
               <Button size="sm" loading>Small</Button>
               <Button size="md" loading>Medium</Button>
               <Button size="lg" loading>Large</Button>
+            </Row>
+          </section>
+
+          {/* ── Input ───────────────────────────────────────────────────── */}
+          <section className="flex flex-col gap-8">
+            <SectionHeader eyebrow="Primitive" title="Input / FormField" />
+            <Divider />
+
+            <Row label="Default">
+              <div className="w-full max-w-sm">
+                <Input id="sg-default" type="text" placeholder="Placeholder text" />
+              </div>
+            </Row>
+
+            <Row label="Error state">
+              <div className="w-full max-w-sm">
+                <Input id="sg-error" type="text" defaultValue="wrong@value" hasError />
+              </div>
+            </Row>
+
+            <Row label="Disabled">
+              <div className="w-full max-w-sm">
+                <Input id="sg-disabled" type="text" value="locked@company.com" disabled readOnly />
+              </div>
+            </Row>
+
+            <Row label="Password with visibility toggle">
+              <PasswordDemo />
+            </Row>
+
+            <Row label="FormField — default">
+              <div className="w-full max-w-sm">
+                <FormField label="Email address" htmlFor="sg-ff-email">
+                  <Input id="sg-ff-email" type="email" placeholder="you@company.com" />
+                </FormField>
+              </div>
+            </Row>
+
+            <Row label="FormField — error">
+              <div className="w-full max-w-sm">
+                <FormField label="Password" htmlFor="sg-ff-pw" error="Incorrect email or password">
+                  <Input id="sg-ff-pw" type="password" defaultValue="hunter2" hasError />
+                </FormField>
+              </div>
+            </Row>
+
+            <Row label="FormField — hint">
+              <div className="w-full max-w-sm">
+                <FormField label="Email address" htmlFor="sg-ff-hint" hint="We'll send a confirmation link.">
+                  <Input id="sg-ff-hint" type="email" placeholder="you@company.com" />
+                </FormField>
+              </div>
             </Row>
           </section>
 

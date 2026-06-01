@@ -37,7 +37,7 @@ export function Hero() {
     <section
       id="hero-section"
       aria-labelledby="hero-heading"
-      className="w-full bg-salem min-h-[85vh] flex items-center py-20 lg:py-24"
+      className="w-full bg-salem min-h-[85vh] flex items-center pt-[68px] pb-20 lg:pt-[84px] lg:pb-24"
     >
       <div className="px-6 md:px-12 lg:px-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 items-center border border-white/[0.15]">
@@ -63,7 +63,7 @@ export function Hero() {
               className="flex flex-wrap items-center gap-3 mt-10"
               style={animStyle(2)}
             >
-              <Button variant="primary" size="lg" asChild>
+              <Button variant="inverted" size="lg" asChild>
                 <Link to="/courses">Explore</Link>
               </Button>
               <Button

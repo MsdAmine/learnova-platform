@@ -204,6 +204,25 @@ const config: Config = {
       },
 
 
+      // ── Keyframes ────────────────────────────────────────────────────────────
+      // auth-enter: form/panel slide-up fade-in on route mount
+
+      keyframes: {
+        'auth-enter': {
+          from: { opacity: '0', transform: 'translateY(14px)' },
+          to:   { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+
+
+      // ── Animation ────────────────────────────────────────────────────────────
+      // Usage: motion-safe:animate-auth-enter (degrades to instant when prefers-reduced-motion)
+
+      animation: {
+        'auth-enter': 'auth-enter 200ms ease-out both',
+      },
+
+
       // ── Max Width ────────────────────────────────────────────────────────────
       // Usage: max-w-container (centered page content)
 
