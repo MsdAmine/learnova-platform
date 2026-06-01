@@ -1,67 +1,92 @@
 import { Link } from 'react-router-dom';
 import { Container } from '../../ui/Container';
 import { SectionHeader } from '../../ui/SectionHeader';
-import { Card } from '../../ui/Card';
 import featureImageUrl from '../../../assets/feature-live-sessions.jpg';
+import journey1Url from '../../../assets/journey-1.jpg';
+import journey2Url from '../../../assets/journey-2.jpg';
 
-// ── Text card — Salem-on-Salem dark variant ──────────────────────────────────
+// ── Card: image on top, text block below ─────────────────────────────────────
 
-interface TextCardProps {
+interface TopImageCardProps {
+  imageUrl: string;
+  imageAlt: string;
+  eyebrow: string;
   title: string;
   body: string;
   linkLabel: string;
   linkTo: string;
 }
 
-function TextCard({ title, body, linkLabel, linkTo }: TextCardProps) {
+function TopImageCard({ imageUrl, imageAlt, eyebrow, title, body, linkLabel, linkTo }: TopImageCardProps) {
   return (
-    <Card className="bg-card-dark-bg border-card-dark-border p-6 flex flex-col">
-      <h4 className="text-title-sm text-white">{title}</h4>
-      <p className="text-body-sm text-on-dark mt-2">{body}</p>
-      <Link
-        to={linkTo}
-        className="mt-6 text-[14px] font-medium leading-[1.5] text-on-dark hover:text-white transition-colors duration-[120ms]"
-      >
-        {linkLabel}
-      </Link>
-    </Card>
-  );
-}
-
-// ── Image card — full-bleed photo with gradient text overlay ─────────────────
-
-function ImageCard() {
-  return (
-    <Card className="bg-transparent border-0 p-0 overflow-hidden min-h-[280px] relative md:col-span-2 lg:col-span-1">
-      <img
-        src={featureImageUrl}
-        alt="Students collaborating with an instructor during a live learning session"
-        loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
-      />
-      <div className="absolute bottom-0 left-0 p-6">
-        <h4 className="text-title-sm text-white">
-          Live sessions and real instructors
-        </h4>
-        <p className="text-body-sm text-on-dark mt-2">
-          Connect with instructors in real time during live sessions
-        </p>
+    <div className="rounded-xl overflow-hidden border border-card-dark-border bg-card-dark-bg flex flex-col min-h-[400px]">
+      <div className="h-[220px] flex-shrink-0 overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={imageAlt}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="flex flex-col flex-1 p-6">
+        <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-on-dark-muted mb-3">
+          {eyebrow}
+        </span>
+        <h3 className="text-title text-white">{title}</h3>
+        <p className="text-body-sm text-on-dark mt-2 flex-1">{body}</p>
         <Link
-          to="/courses"
-          className="mt-6 inline-block text-[14px] font-medium leading-[1.5] text-on-dark hover:text-white transition-colors duration-[120ms]"
+          to={linkTo}
+          className="mt-6 text-[14px] font-medium leading-[1.5] text-on-dark hover:text-white transition-colors duration-fast"
         >
-          Find a session
+          {linkLabel}
         </Link>
       </div>
-    </Card>
+    </div>
   );
 }
 
-// ── Section ──────────────────────────────────────────────────────────────────
+// ── Card: image left, text vertically centered right ─────────────────────────
+
+interface SplitImageCardProps {
+  imageUrl: string;
+  imageAlt: string;
+  eyebrow: string;
+  title: string;
+  body: string;
+  linkLabel: string;
+  linkTo: string;
+  className?: string;
+}
+
+function SplitImageCard({ imageUrl, imageAlt, eyebrow, title, body, linkLabel, linkTo, className = '' }: SplitImageCardProps) {
+  return (
+    <div className={`rounded-xl overflow-hidden border border-card-dark-border bg-card-dark-bg flex flex-col lg:flex-row min-h-[400px] ${className}`}>
+      <div className="h-[220px] lg:h-auto lg:w-1/2 flex-shrink-0 overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={imageAlt}
+          loading="lazy"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="flex flex-col justify-center flex-1 p-6">
+        <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-on-dark-muted mb-3">
+          {eyebrow}
+        </span>
+        <h3 className="text-title text-white">{title}</h3>
+        <p className="text-body-sm text-on-dark mt-2">{body}</p>
+        <Link
+          to={linkTo}
+          className="mt-6 text-[14px] font-medium leading-[1.5] text-on-dark hover:text-white transition-colors duration-fast"
+        >
+          {linkLabel}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
 
 export function BrandIntro() {
   return (
@@ -73,27 +98,43 @@ export function BrandIntro() {
       <Container>
         <SectionHeader
           id="brand-intro-heading"
+          eyebrow="Platform"
           title="Built for real learning"
           description="Browse thousands of courses across every skill level"
           align="center"
           onDark
-          titleSize="display"
+          titleSize="brand-display"
         />
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <TextCard
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1.5fr] gap-4">
+          <TopImageCard
+            imageUrl={journey1Url}
+            imageAlt="Students browsing the course catalog"
+            eyebrow="Discover"
             title="Find your course"
             body="Search by category, level, or instructor expertise"
-            linkLabel="Browse courses"
+            linkLabel="Browse →"
             linkTo="/courses"
           />
-          <TextCard
+          <TopImageCard
+            imageUrl={journey2Url}
+            imageAlt="Learner tracking their progress"
+            eyebrow="Progress"
             title="Track every step forward"
             body="Watch your skills grow with clear progress tracking"
-            linkLabel="Start learning"
+            linkLabel="Learn →"
             linkTo="/courses"
           />
-          <ImageCard />
+          <SplitImageCard
+            imageUrl={featureImageUrl}
+            imageAlt="Students collaborating during a live learning session"
+            eyebrow="Tagline"
+            title="Live sessions and real instructors"
+            body="Connect with instructors in real time during live sessions"
+            linkLabel="Join →"
+            linkTo="/courses"
+            className="lg:col-span-2"
+          />
         </div>
       </Container>
     </section>

@@ -75,6 +75,10 @@ const config: Config = {
       // exactly as specified in DESIGN.md § 3 Typography.
 
       fontSize: {
+        'brand-display': [
+          'var(--font-size-brand-display)',
+          { lineHeight: '1.05', letterSpacing: '-0.03em', fontWeight: '500' },
+        ],
         'display':  [
           'var(--font-size-display)',
           { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' },

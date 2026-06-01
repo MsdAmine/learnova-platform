@@ -34,8 +34,8 @@ export interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
    * Use inside Salem full-bleed sections (hero, brand-intro).
    */
   onDark?: boolean;
-  /** Override title type scale. Default: 'headline'. Use 'display' for hero-scale headings. */
-  titleSize?: 'headline' | 'display';
+  /** Override title type scale. Default: 'headline'. Use 'display' for hero-scale, 'brand-display' for 52→120px brand statements. */
+  titleSize?: 'headline' | 'display' | 'brand-display';
 }
 
 export const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
@@ -77,7 +77,9 @@ export const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
 
         <h2
           className={cn(
-            titleSize === 'display' ? 'text-display' : 'text-headline',
+            titleSize === 'brand-display' ? 'text-brand-display'
+              : titleSize === 'display' ? 'text-display'
+              : 'text-headline',
             onDark ? 'text-white' : 'text-text-primary',
           )}
         >
