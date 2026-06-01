@@ -45,7 +45,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 const sizeClasses: Record<ButtonSize, string> = {
   sm: 'text-[13px] py-2 px-4',
   md: 'text-[14px] py-2.5 px-5',
-  lg: 'text-[15px] py-3 px-7',
+  lg: 'text-[15px] py-3 px-7 min-h-[44px]',
 };
 
 const buttonClasses = (
@@ -107,6 +107,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <Spinner />
           </span>
         )}
+        <span className="sr-only" aria-live="polite" aria-atomic="true">
+          {loading ? 'Loading' : ''}
+        </span>
       </button>
     );
   }

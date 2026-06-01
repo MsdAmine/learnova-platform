@@ -71,7 +71,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
-                  className="text-text-muted hover:text-text-secondary transition-colors duration-fast"
+                  className="w-11 h-11 flex items-center justify-center rounded text-text-muted hover:text-text-secondary transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salem focus-visible:ring-offset-1"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -82,7 +82,7 @@ export default function LoginPage() {
           <div className="flex justify-end">
             <Link
               to="/forgot-password"
-              className="text-body-sm text-salem hover:underline focus-visible:outline-none focus-visible:underline"
+              className="text-body-sm text-salem hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem focus-visible:rounded-sm"
             >
               Forgot password?
             </Link>
@@ -110,7 +110,7 @@ export default function LoginPage() {
         Don't have an account?{' '}
         <Link
           to="/register"
-          className="text-salem font-medium hover:underline focus-visible:outline-none focus-visible:underline"
+          className="text-salem font-medium hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem focus-visible:rounded-sm"
         >
           Create one free
         </Link>

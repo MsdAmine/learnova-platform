@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { cloneElement, forwardRef, type InputHTMLAttributes, type ReactElement, type ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -19,22 +19,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         disabled={disabled}
+        aria-invalid={hasError || undefined}
         className={cn(
           'w-full bg-surface text-text-primary text-body',
           'border border-border-default rounded-md',
           'py-3 px-4',
           'placeholder:text-text-muted',
           'transition-colors duration-fast ease-out',
-          'focus:outline-none focus:border-salem',
-          hasError && 'border-error focus:border-error',
+          'focus:outline-none',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1',
+          hasError
+            ? 'border-error focus:border-error focus-visible:outline-error'
+            : 'focus:border-salem focus-visible:outline-salem',
           disabled && 'bg-surface-elevated text-text-muted cursor-not-allowed',
-          endAdornment && 'pr-10',
+          endAdornment && 'pr-11',
           className,
         )}
         {...props}
       />
       {endAdornment && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+        <div className="absolute inset-y-0 right-0 flex items-center">
           {endAdornment}
         </div>
       )}
@@ -60,6 +64,10 @@ export interface FormFieldProps {
 }
 
 export function FormField({ label, htmlFor, error, hint, children, className }: FormFieldProps) {
+  const errorId = error ? `${htmlFor}-error` : undefined;
+  const hintId = hint && !error ? `${htmlFor}-hint` : undefined;
+  const describedBy = [errorId, hintId].filter(Boolean).join(' ') || undefined;
+
   return (
     <div className={cn('flex flex-col gap-xs', className)}>
       <label
@@ -68,11 +76,11 @@ export function FormField({ label, htmlFor, error, hint, children, className }: 
       >
         {label}
       </label>
-      {children}
+      {cloneElement(children as ReactElement, { 'aria-describedby': describedBy })}
       {error ? (
-        <p className="text-body-sm text-error" role="alert">{error}</p>
+        <p id={errorId} className="text-body-sm text-error" role="alert">{error}</p>
       ) : hint ? (
-        <p className="text-body-sm text-text-muted">{hint}</p>
+        <p id={hintId} className="text-body-sm text-text-muted">{hint}</p>
       ) : null}
     </div>
   );

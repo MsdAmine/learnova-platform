@@ -205,21 +205,43 @@ const config: Config = {
 
 
       // ── Keyframes ────────────────────────────────────────────────────────────
-      // auth-enter: form/panel slide-up fade-in on route mount
+      // auth-enter:       initial page-load slide-up fade-in
+      // auth-exit-left/right: outgoing panel slides out (directional)
+      // auth-enter-right/left: incoming panel slides in (directional)
 
       keyframes: {
         'auth-enter': {
           from: { opacity: '0', transform: 'translateY(14px)' },
           to:   { opacity: '1', transform: 'translateY(0)' },
         },
+        'auth-exit-left': {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to:   { opacity: '0', transform: 'translateX(-28px)' },
+        },
+        'auth-exit-right': {
+          from: { opacity: '1', transform: 'translateX(0)' },
+          to:   { opacity: '0', transform: 'translateX(28px)' },
+        },
+        'auth-enter-right': {
+          from: { opacity: '0', transform: 'translateX(28px)' },
+          to:   { opacity: '1', transform: 'translateX(0)' },
+        },
+        'auth-enter-left': {
+          from: { opacity: '0', transform: 'translateX(-28px)' },
+          to:   { opacity: '1', transform: 'translateX(0)' },
+        },
       },
 
 
       // ── Animation ────────────────────────────────────────────────────────────
-      // Usage: motion-safe:animate-auth-enter (degrades to instant when prefers-reduced-motion)
+      // Usage: motion-safe:animate-* (all degrade to instant at prefers-reduced-motion)
 
       animation: {
-        'auth-enter': 'auth-enter 200ms ease-out both',
+        'auth-enter':       'auth-enter 200ms ease-out both',
+        'auth-exit-left':   'auth-exit-left 160ms cubic-bezier(0.25,1,0.5,1) both',
+        'auth-exit-right':  'auth-exit-right 160ms cubic-bezier(0.25,1,0.5,1) both',
+        'auth-enter-right': 'auth-enter-right 220ms cubic-bezier(0.25,1,0.5,1) both',
+        'auth-enter-left':  'auth-enter-left 220ms cubic-bezier(0.25,1,0.5,1) both',
       },
 
 
