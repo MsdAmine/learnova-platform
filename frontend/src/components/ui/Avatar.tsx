@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -71,55 +71,50 @@ const SIZES: Record<AvatarSize, { wh: string; fs: string }> = {
 // Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ src, name, size = 40, stroke = false, className, style, ...props }, ref) => {
-    const { wh, fs } = SIZES[size];
-    const initials  = name ? getInitials(name) : '';
-    const showImage = Boolean(src);
-    const showInitials = !showImage && initials.length > 0;
-    const palette   = showInitials && name ? paletteFor(name) : null;
+export function Avatar({ src, name, size = 40, stroke = false, className, style, ref, ...props }: AvatarProps & { ref?: Ref<HTMLSpanElement> }) {
+  const { wh, fs } = SIZES[size];
+  const initials  = name ? getInitials(name) : '';
+  const showImage = Boolean(src);
+  const showInitials = !showImage && initials.length > 0;
+  const palette   = showInitials && name ? paletteFor(name) : null;
 
-    return (
-      <span
-        ref={ref}
-        role="img"
-        aria-label={name ? `${name}'s avatar` : 'User avatar'}
-        className={cn(
-          'relative inline-flex shrink-0 items-center justify-center',
-          'rounded-full overflow-hidden select-none',
-          wh,
-          stroke && 'ring-2 ring-white',
-          // No-content fallback: neutral tint
-          !showImage && !showInitials && 'bg-surface-elevated',
-          className,
-        )}
-        style={
-          palette
-            ? { backgroundColor: palette.bg, color: palette.fg, ...style }
-            : style
-        }
-        {...props}
-      >
-        {showImage && (
-          <img
-            src={src}
-            alt={name ?? ''}
-            draggable={false}
-            className="w-full h-full object-cover"
-          />
-        )}
+  return (
+    <span
+      ref={ref}
+      aria-label={name ? `${name}'s avatar` : 'User avatar'}
+      className={cn(
+        'relative inline-flex shrink-0 items-center justify-center',
+        'rounded-full overflow-hidden select-none',
+        wh,
+        stroke && 'ring-2 ring-white',
+        // No-content fallback: neutral tint
+        !showImage && !showInitials && 'bg-surface-elevated',
+        className,
+      )}
+      style={
+        palette
+          ? { backgroundColor: palette.bg, color: palette.fg, ...style }
+          : style
+      }
+      {...props}
+    >
+      {showImage && (
+        <img
+          src={src}
+          alt={name ?? ''}
+          draggable={false}
+          className="w-full h-full object-cover"
+        />
+      )}
 
-        {showInitials && (
-          <span
-            aria-hidden="true"
-            className={cn('font-semibold leading-none', fs)}
-          >
-            {initials}
-          </span>
-        )}
-      </span>
-    );
-  },
-);
-
-Avatar.displayName = 'Avatar';
+      {showInitials && (
+        <span
+          aria-hidden="true"
+          className={cn('font-semibold leading-none', fs)}
+        >
+          {initials}
+        </span>
+      )}
+    </span>
+  );
+}

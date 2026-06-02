@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -28,8 +28,8 @@ const variantClasses: Record<BadgeVariant, string> = {
   azure:   'bg-[#E5EBF9] text-azure',
 };
 
-export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ variant = 'default', className, ...props }, ref) => (
+export function Badge({ variant = 'default', className, ref, ...props }: BadgeProps & { ref?: Ref<HTMLSpanElement> }) {
+  return (
     <span
       ref={ref}
       className={cn(
@@ -41,6 +41,5 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       )}
       {...props}
     />
-  ),
-);
-Badge.displayName = 'Badge';
+  );
+}

@@ -36,7 +36,13 @@
       "Bash(echo \"exit:$?\")",
       "Bash(echo \"EXIT:$?\")",
       "Bash(Get-ChildItem -Recurse -Path \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\" -Include \"*Navbar*\",\"*Nav*\",\"*Hero*\",\"*Landing*\")",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "WebFetch(domain:www.react.doctor)",
+      "Bash(npx react-doctor@latest --verbose)",
+      "Bash(Select-String -Pattern \"\\(design-no-redundant-size-axes|no-cascading-set-state|prefer-tag-over-role|heading-has-content|button-has-type|no-redundant-roles|rendering-hydration-mismatch-time|AuthLayout|Avatar\\\\.tsx|Footer\\\\.tsx|Card\\\\.tsx|Button\\\\.tsx\\)\")",
+      "Bash(Select-Object -First 40)",
+      "PowerShell(cd \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\"; $output = npx react-doctor@latest --verbose 2>&1 | Out-String; $lines = $output -split \"`n\"; $relevant = $lines | Where-Object { $_ -match \"\\(design-no-redundant-size-axes|no-cascading-set-state|prefer-tag-over-role|heading-has-content|button-has-type|no-redundant-roles|rendering-hydration-mismatch-time|AuthLayout|Avatar\\\\.tsx|Footer\\\\.tsx|Card\\\\.tsx|Button\\\\.tsx|score|Score|Great|warnings\\)\" }; $relevant | Select-Object -First 50)",
+      "PowerShell(cd \"C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\"; $output = npx react-doctor@latest 2>&1 | Out-String; $match = [regex]::Match\\($output, 'react-doctor-[a-f0-9-]+'\\); if \\($match.Success\\) { $path = \"C:\\\\Users\\\\massi\\\\AppData\\\\Local\\\\Temp\\\\\" + $match.Value + \"\\\\diagnostics.json\"; Get-Content $path })"
     ]
   }
 }

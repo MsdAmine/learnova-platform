@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 export type ContainerSize = 'prose' | 'default' | 'wide';
@@ -13,8 +13,8 @@ const maxWidthClass: Record<ContainerSize, string> = {
   wide:    'max-w-container-wide',
 };
 
-export const Container = forwardRef<HTMLDivElement, ContainerProps>(
-  ({ size = 'default', className, children, ...props }, ref) => (
+export function Container({ size = 'default', className, children, ref, ...props }: ContainerProps & { ref?: Ref<HTMLDivElement> }) {
+  return (
     <div
       ref={ref}
       className={cn(
@@ -26,7 +26,5 @@ export const Container = forwardRef<HTMLDivElement, ContainerProps>(
     >
       {children}
     </div>
-  ),
-);
-
-Container.displayName = 'Container';
+  );
+}

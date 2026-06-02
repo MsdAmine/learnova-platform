@@ -1,4 +1,4 @@
-import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { type ButtonHTMLAttributes, type Ref } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cn } from '../../lib/cn';
 
@@ -67,55 +67,50 @@ const buttonClasses = (
     className,
   );
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      variant = 'primary',
-      size = 'md',
-      loading = false,
-      disabled,
-      asChild = false,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    if (asChild) {
-      return (
-        <Slot
-          ref={ref}
-          className={buttonClasses(variant, size, loading, className)}
-          {...props}
-        >
-          {children}
-        </Slot>
-      );
-    }
-
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled,
+  asChild = false,
+  className,
+  children,
+  ref,
+  ...props
+}: ButtonProps & { ref?: Ref<HTMLButtonElement> }) {
+  if (asChild) {
     return (
-      <button
+      <Slot
         ref={ref}
-        disabled={disabled || loading}
-        aria-busy={loading || undefined}
         className={buttonClasses(variant, size, loading, className)}
         {...props}
       >
-        <span className={cn(loading && 'invisible')}>{children}</span>
-        {loading && (
-          <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
-            <Spinner />
-          </span>
-        )}
-        <span className="sr-only" aria-live="polite" aria-atomic="true">
-          {loading ? 'Loading' : ''}
-        </span>
-      </button>
+        {children}
+      </Slot>
     );
   }
-);
 
-Button.displayName = 'Button';
+  return (
+    <button
+      ref={ref}
+      type="button"
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={buttonClasses(variant, size, loading, className)}
+      {...props}
+    >
+      <span className={cn(loading && 'invisible')}>{children}</span>
+      {loading && (
+        <span className="absolute inset-0 flex items-center justify-center" aria-hidden="true">
+          <Spinner />
+        </span>
+      )}
+      <span className="sr-only" aria-live="polite" aria-atomic="true">
+        {loading ? 'Loading' : ''}
+      </span>
+    </button>
+  );
+}
 
 function Spinner() {
   return (

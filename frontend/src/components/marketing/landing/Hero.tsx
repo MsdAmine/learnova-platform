@@ -18,10 +18,9 @@ export function Hero() {
   const [visible, setVisible] = useState(prefersReduced);
 
   useEffect(() => {
-    if (visible) return;
+    if (prefersReduced) return;
     const id = requestAnimationFrame(() => setVisible(true));
     return () => cancelAnimationFrame(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function animStyle(index: number): React.CSSProperties {

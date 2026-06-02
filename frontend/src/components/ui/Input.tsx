@@ -1,4 +1,4 @@
-import { cloneElement, forwardRef, type InputHTMLAttributes, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, type InputHTMLAttributes, type ReactElement, type ReactNode, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -13,8 +13,8 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   endAdornment?: ReactNode;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ hasError = false, endAdornment, disabled, className, ...props }, ref) => (
+export function Input({ hasError = false, endAdornment, disabled, className, ref, ...props }: InputProps & { ref?: Ref<HTMLInputElement> }) {
+  return (
     <div className="relative">
       <input
         ref={ref}
@@ -43,10 +43,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
       )}
     </div>
-  ),
-);
-
-Input.displayName = 'Input';
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FormField
@@ -76,7 +74,7 @@ export function FormField({ label, htmlFor, error, hint, children, className }: 
       >
         {label}
       </label>
-      {cloneElement(children as ReactElement, { 'aria-describedby': describedBy })}
+      {cloneElement(children as ReactElement<Record<string, unknown>>, { 'aria-describedby': describedBy })}
       {error ? (
         <p id={errorId} className="text-body-sm text-error" role="alert">{error}</p>
       ) : hint ? (
