@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Check, BookOpen, GraduationCap, Award } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
@@ -62,7 +62,7 @@ function RegisterPitch() {
       <ol className="flex flex-col gap-xl mb-12">
         {REGISTER_STEPS.map(({ Icon, title, description }, i) => (
           <li key={title} className="flex items-start gap-4">
-            <span className="w-8 h-8 rounded-full bg-salem-50 text-salem flex items-center justify-center shrink-0 mt-0.5">
+            <span className="size-8 rounded-full bg-salem-50 text-salem flex items-center justify-center shrink-0 mt-0.5">
               <Icon size={16} aria-hidden="true" />
             </span>
             <div>
@@ -85,21 +85,40 @@ function RegisterPitch() {
 // 'initial' = first-load slide-up; 'exiting' = slide out; 'entering' = slide in; null = settled
 type AnimState = 'initial' | 'exiting' | 'entering' | null;
 
+type TransitionState = { displayedPath: string; animState: AnimState; forward: boolean };
+type TransitionAction =
+  | { type: 'SETTLE' }
+  | { type: 'SKIP'; pathname: string }
+  | { type: 'EXIT'; forward: boolean }
+  | { type: 'ENTER'; pathname: string }
+  | { type: 'IDLE' };
+
+function transitionReducer(state: TransitionState, action: TransitionAction): TransitionState {
+  switch (action.type) {
+    case 'SETTLE': return { ...state, animState: null };
+    case 'SKIP':   return { ...state, displayedPath: action.pathname, animState: null };
+    case 'EXIT':   return { ...state, animState: 'exiting', forward: action.forward };
+    case 'ENTER':  return { ...state, displayedPath: action.pathname, animState: 'entering' };
+    case 'IDLE':   return { ...state, animState: null };
+    default:       return state;
+  }
+}
+
 export default function AuthLayout() {
   const { pathname } = useLocation();
 
-  // displayedPath lags behind pathname during transitions so the exiting
-  // content stays visible until the exit animation completes.
-  const [displayedPath, setDisplayedPath] = useState(pathname);
-  const [animState, setAnimState] = useState<AnimState>('initial');
-  const [forward, setForward] = useState(true); // true = /login→/register, false = reverse
+  const [{ displayedPath, animState, forward }, dispatch] = useReducer(transitionReducer, {
+    displayedPath: pathname,
+    animState: 'initial',
+    forward: true,
+  });
   const hasMounted = useRef(false);
-  const exitTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const enterTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const enterTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Settle initial entrance animation after 220 ms
   useEffect(() => {
-    const t = setTimeout(() => setAnimState(null), 220);
+    const t = setTimeout(() => dispatch({ type: 'SETTLE' }), 220);
     return () => clearTimeout(t);
   }, []);
 
@@ -115,18 +134,15 @@ export default function AuthLayout() {
     clearTimeout(enterTimerRef.current);
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setDisplayedPath(pathname);
-      setAnimState(null);
+      dispatch({ type: 'SKIP', pathname });
       return;
     }
 
-    setForward(pathname === '/register');
-    setAnimState('exiting');
+    dispatch({ type: 'EXIT', forward: pathname === '/register' });
 
     exitTimerRef.current = setTimeout(() => {
-      setDisplayedPath(pathname);
-      setAnimState('entering');
-      enterTimerRef.current = setTimeout(() => setAnimState(null), 220);
+      dispatch({ type: 'ENTER', pathname });
+      enterTimerRef.current = setTimeout(() => dispatch({ type: 'IDLE' }), 220);
     }, 160);
 
     return () => {

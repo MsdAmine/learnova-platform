@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { isAxiosError } from 'axios';
@@ -7,20 +7,44 @@ import { loginUser } from '../../../api/auth';
 import { Button } from '../../../components/ui/Button';
 import { Input, FormField } from '../../../components/ui/Input';
 
+type LoginState = {
+  email: string;
+  password: string;
+  isSubmitting: boolean;
+  formError: string | null;
+};
+
+type LoginAction =
+  | { type: 'SET_FIELD'; field: 'email' | 'password'; value: string }
+  | { type: 'SUBMIT_START' }
+  | { type: 'SET_ERROR'; error: string }
+  | { type: 'SUBMIT_END' };
+
+function loginReducer(state: LoginState, action: LoginAction): LoginState {
+  switch (action.type) {
+    case 'SET_FIELD':    return { ...state, [action.field]: action.value };
+    case 'SUBMIT_START': return { ...state, formError: null, isSubmitting: true };
+    case 'SET_ERROR':    return { ...state, formError: action.error };
+    case 'SUBMIT_END':   return { ...state, isSubmitting: false };
+    default:             return state;
+  }
+}
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [{ email, password, isSubmitting, formError }, dispatch] = useReducer(loginReducer, {
+    email: '',
+    password: '',
+    isSubmitting: false,
+    formError: null,
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setFormError(null);
-    setIsSubmitting(true);
+    dispatch({ type: 'SUBMIT_START' });
 
     try {
       const { token, user } = await loginUser(email, password);
@@ -28,12 +52,12 @@ export default function LoginPage() {
       navigate('/');
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 401) {
-        setFormError('Incorrect email or password.');
+        dispatch({ type: 'SET_ERROR', error: 'Incorrect email or password.' });
       } else {
-        setFormError('Something went wrong. Please try again.');
+        dispatch({ type: 'SET_ERROR', error: 'Something went wrong. Please try again.' });
       }
     } finally {
-      setIsSubmitting(false);
+      dispatch({ type: 'SUBMIT_END' });
     }
   }
 
@@ -52,7 +76,7 @@ export default function LoginPage() {
             type="email"
             placeholder="you@company.com"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => dispatch({ type: 'SET_FIELD', field: 'email', value: e.target.value })}
             autoComplete="email"
             required
           />
@@ -64,14 +88,14 @@ export default function LoginPage() {
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => dispatch({ type: 'SET_FIELD', field: 'password', value: e.target.value })}
               autoComplete="current-password"
               required
               endAdornment={
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
-                  className="w-11 h-11 flex items-center justify-center rounded text-text-muted hover:text-text-secondary transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salem focus-visible:ring-offset-1"
+                  className="size-11 flex items-center justify-center rounded text-text-muted hover:text-text-secondary transition-colors duration-fast focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salem focus-visible:ring-offset-1"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}

@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import { type HTMLAttributes, type ReactNode, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -39,8 +39,8 @@ const valueClass: Record<StatSize, string> = {
   lead:    'text-display text-text-primary',
 };
 
-export const Stat = forwardRef<HTMLDivElement, StatProps>(
-  ({ label, value, description, size = 'default', className, ...props }, ref) => (
+export function Stat({ label, value, description, size = 'default', className, ref, ...props }: StatProps & { ref?: Ref<HTMLDivElement> }) {
+  return (
     <div ref={ref} className={cn('flex flex-col min-w-0', className)} {...props}>
 
       {/*
@@ -74,7 +74,5 @@ export const Stat = forwardRef<HTMLDivElement, StatProps>(
       )}
 
     </div>
-  ),
-);
-
-Stat.displayName = 'Stat';
+  );
+}

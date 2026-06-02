@@ -66,17 +66,17 @@ const SOCIAL_LINKS = [
   { label: 'Watch on YouTube',         href: 'https://youtube.com/@learnova',         Icon: IconYoutube },
 ] as const;
 
+function validateEmail(value: string): string {
+  if (!value.trim()) return 'Email address is required.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
+  return '';
+}
+
 export function Footer() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [logoError, setLogoError] = useState(false);
-
-  function validateEmail(value: string): string {
-    if (!value.trim()) return 'Email address is required.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Enter a valid email address.';
-    return '';
-  }
 
   function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,13 +113,13 @@ export function Footer() {
 
           <div>
             {submitted ? (
-              <div className="flex items-start gap-3 py-1" role="status">
+              <output className="flex items-start gap-3 py-1">
                 <IconCheck />
-                <div>
-                  <p className="text-body-sm font-semibold text-text-primary">You're on the list.</p>
-                  <p className="mt-1 text-caption text-text-muted">We'll be in touch when new courses arrive.</p>
-                </div>
-              </div>
+                <span>
+                  <span className="block text-body-sm font-semibold text-text-primary">You're on the list.</span>
+                  <span className="block mt-1 text-caption text-text-muted">We'll be in touch when new courses arrive.</span>
+                </span>
+              </output>
             ) : (
               <form onSubmit={handleSubscribe} noValidate aria-label="Newsletter subscription">
                 <label
@@ -207,7 +207,7 @@ export function Footer() {
               <p className="text-[14px] leading-[1.5] font-semibold text-text-primary mb-4">
                 {label}
               </p>
-              <ul className="flex flex-col gap-3" role="list">
+              <ul className="flex flex-col gap-3">
                 {links.map(({ label: linkLabel, to }) => (
                   <li key={linkLabel}>
                     <Link
@@ -235,7 +235,7 @@ export function Footer() {
           'flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4',
         )}>
           <p className="text-caption text-text-muted flex flex-wrap items-center gap-x-1 gap-y-1">
-            <span>© {new Date().getFullYear()} Learnova. All rights reserved.</span>
+            <span suppressHydrationWarning>© {new Date().getFullYear()} Learnova. All rights reserved.</span>
             <span aria-hidden="true" className="mx-1">·</span>
             <Link
               to="/privacy"

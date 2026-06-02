@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,68 +38,62 @@ export interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
   titleSize?: 'headline' | 'display' | 'brand-display';
 }
 
-export const SectionHeader = forwardRef<HTMLDivElement, SectionHeaderProps>(
-  (
-    {
-      eyebrow,
-      title,
-      description,
-      align = 'left',
-      onDark = false,
-      titleSize = 'headline',
-      className,
-      ...props
-    },
-    ref,
-  ) => {
-    const centered = align === 'center';
+export function SectionHeader({
+  eyebrow,
+  title,
+  description,
+  align = 'left',
+  onDark = false,
+  titleSize = 'headline',
+  className,
+  ref,
+  ...props
+}: SectionHeaderProps & { ref?: Ref<HTMLDivElement> }) {
+  const centered = align === 'center';
 
-    return (
-      <div
-        ref={ref}
-        className={cn(
-          'flex flex-col',
-          centered && 'items-center text-center',
-          className,
-        )}
-        {...props}
-      >
-        {eyebrow && (
-          <span
-            className={cn(
-              'mb-3 text-[12px] font-semibold leading-none tracking-[0.08em] uppercase',
-              onDark ? 'text-on-dark-muted' : 'text-text-muted',
-            )}
-          >
-            {eyebrow}
-          </span>
-        )}
-
-        <h2
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'flex flex-col',
+        centered && 'items-center text-center',
+        className,
+      )}
+      {...props}
+    >
+      {eyebrow && (
+        <span
           className={cn(
-            titleSize === 'brand-display' ? 'text-brand-display'
-              : titleSize === 'display' ? 'text-display'
-              : 'text-headline',
-            onDark ? 'text-white' : 'text-text-primary',
+            'mb-3 text-[12px] font-semibold leading-none tracking-[0.08em] uppercase',
+            onDark ? 'text-on-dark-muted' : 'text-text-muted',
           )}
         >
-          {title}
-        </h2>
+          {eyebrow}
+        </span>
+      )}
 
-        {description && (
-          <p
-            className={cn(
-              'mt-md text-body-lg max-w-[560px]',
-              onDark ? 'text-on-dark' : 'text-text-secondary',
-              centered && 'mx-auto',
-            )}
-          >
-            {description}
-          </p>
+      <h2
+        className={cn(
+          titleSize === 'brand-display' ? 'text-brand-display'
+            : titleSize === 'display' ? 'text-display'
+            : 'text-headline',
+          onDark ? 'text-white' : 'text-text-primary',
         )}
-      </div>
-    );
-  },
-);
+      >
+        {title}
+      </h2>
 
-SectionHeader.displayName = 'SectionHeader';
+      {description && (
+        <p
+          className={cn(
+            'mt-md text-body-lg max-w-[560px]',
+            onDark ? 'text-on-dark' : 'text-text-secondary',
+            centered && 'mx-auto',
+          )}
+        >
+          {description}
+        </p>
+      )}
+    </div>
+  );
+}

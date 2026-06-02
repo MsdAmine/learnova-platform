@@ -1,4 +1,4 @@
-import { forwardRef, type HTMLAttributes } from 'react';
+import { type HTMLAttributes, type Ref } from 'react';
 import { cn } from '../../lib/cn';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -26,71 +26,61 @@ const variantClasses: Record<CardVariant, string> = {
 
 // ── Card ─────────────────────────────────────────────────────────────────────
 
-export const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ variant = 'default', className, ...props }, ref) => (
+export function Card({ variant = 'default', className, ref, ...props }: CardProps & { ref?: Ref<HTMLDivElement> }) {
+  return (
     <div
       ref={ref}
       className={cn('rounded-lg', variantClasses[variant], className)}
       {...props}
     />
-  ),
-);
-Card.displayName = 'Card';
+  );
+}
 
 // ── CardHeader ───────────────────────────────────────────────────────────────
 // Stacks CardTitle and CardDescription with tight 4px coupling.
 
-export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col gap-xs', className)} {...props} />
-  ),
-);
-CardHeader.displayName = 'CardHeader';
+export function CardHeader({ className, ref, ...props }: HTMLAttributes<HTMLDivElement> & { ref?: Ref<HTMLDivElement> }) {
+  return <div ref={ref} className={cn('flex flex-col gap-xs', className)} {...props} />;
+}
 
 // ── CardTitle ────────────────────────────────────────────────────────────────
 // Title-sm scale (22px / 600 / 1.4). Renders as h3 by default.
 
-export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
+export function CardTitle({ className, ref, children, ...props }: HTMLAttributes<HTMLHeadingElement> & { ref?: Ref<HTMLHeadingElement> }) {
+  return (
     <h3
       ref={ref}
       className={cn('text-title-sm text-text-primary', className)}
       {...props}
-    />
-  ),
-);
-CardTitle.displayName = 'CardTitle';
+    >
+      {children}
+    </h3>
+  );
+}
 
 // ── CardDescription ───────────────────────────────────────────────────────────
 // Body-sm scale (14px / 400 / 1.5) in Secondary Ink. Renders as p.
 
-export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
+export function CardDescription({ className, ref, ...props }: HTMLAttributes<HTMLParagraphElement> & { ref?: Ref<HTMLParagraphElement> }) {
+  return (
     <p
       ref={ref}
       className={cn('text-body-sm text-text-secondary', className)}
       {...props}
     />
-  ),
-);
-CardDescription.displayName = 'CardDescription';
+  );
+}
 
 // ── CardContent ───────────────────────────────────────────────────────────────
 // Semantic wrapper. No inherent styles; spacing is the consumer's responsibility.
 
-export const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn(className)} {...props} />
-  ),
-);
-CardContent.displayName = 'CardContent';
+export function CardContent({ className, ref, ...props }: HTMLAttributes<HTMLDivElement> & { ref?: Ref<HTMLDivElement> }) {
+  return <div ref={ref} className={cn(className)} {...props} />;
+}
 
 // ── CardFooter ────────────────────────────────────────────────────────────────
 // Horizontal action row. gap-sm (8px) between items.
 
-export const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex items-center gap-sm', className)} {...props} />
-  ),
-);
-CardFooter.displayName = 'CardFooter';
+export function CardFooter({ className, ref, ...props }: HTMLAttributes<HTMLDivElement> & { ref?: Ref<HTMLDivElement> }) {
+  return <div ref={ref} className={cn('flex items-center gap-sm', className)} {...props} />;
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../ui/Button';
 import { cn } from '../../../lib/cn';
@@ -12,48 +12,31 @@ const NAV_LINKS = [
   { label: 'Resources', href: '/#resources' },
 ] as const;
 
+// ── Scroll detection via useSyncExternalStore ────────────────────────────────
+// Reads element position on every scroll event; getBoundingClientRect is
+// equivalent to IntersectionObserver for a simple above/below check.
+
+function subscribeScroll(cb: () => void) {
+  window.addEventListener('scroll', cb, { passive: true });
+  return () => window.removeEventListener('scroll', cb);
+}
+
+function getScrollSnap() {
+  const el =
+    document.getElementById('brand-intro-section') ??
+    document.getElementById('hero-section');
+  if (el) return el.getBoundingClientRect().bottom <= 0;
+  return window.scrollY > window.innerHeight * 0.8;
+}
+
 export function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useSyncExternalStore(subscribeScroll, getScrollSnap, () => false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  // Switch to light mode when hero scrolls fully out of view.
-  // Falls back to a scroll listener if #hero-section isn't in the DOM.
-  useEffect(() => {
-    // Watch the last dark-green section (BrandIntro). Light mode kicks in
-    // only when that section's bottom has scrolled fully off screen.
-    const darkZoneEl =
-      document.getElementById('brand-intro-section') ??
-      document.getElementById('hero-section');
-
-    if (!darkZoneEl) {
-      function onScroll() {
-        setScrolled(window.scrollY > window.innerHeight * 0.8);
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-      return () => window.removeEventListener('scroll', onScroll);
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setScrolled(false);
-        } else {
-          // below the fold → not yet reached → stay dark
-          // above the fold → scrolled past → go light
-          setScrolled(entry.boundingClientRect.top < 0);
-        }
-      },
-      { threshold: 0 },
-    );
-    observer.observe(darkZoneEl);
-    return () => observer.disconnect();
-  }, []);
+  const panelRef = useRef<HTMLDialogElement>(null);
 
   // Lock body scroll while the mobile panel is open
   useEffect(() => {
@@ -216,15 +199,18 @@ export function Navbar() {
       </header>
 
       {/* ── Mobile full-screen panel ──────────────────────────────────────── */}
-      <div
+      {/* Using <dialog open> keeps the element always in the layout so the  */}
+      {/* slide transition works; inert gates interaction when visually hidden */}
+      <dialog
         id="mobile-nav-panel"
         ref={panelRef}
-        role="dialog"
-        aria-modal="true"
+        open
         aria-label="Navigation"
+        aria-modal={mobileOpen}
         inert={!mobileOpen}
         className={cn(
           'fixed inset-0 z-50 flex flex-col bg-salem',
+          'w-full h-full max-w-none max-h-none m-0 p-0 border-0',
           'transition-transform duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
           mobileOpen ? 'translate-x-0' : 'translate-x-full',
         )}
@@ -296,7 +282,7 @@ export function Navbar() {
             </Link>
           </Button>
         </div>
-      </div>
+      </dialog>
     </>
   );
 }
