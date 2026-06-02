@@ -4,6 +4,8 @@ import com.learnova.learnova_backend.course.entity.LessonProgress;
 import com.learnova.learnova_backend.course.entity.Lesson;
 import com.learnova.learnova_backend.profile.entity.LearnerProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -16,4 +18,13 @@ public interface LessonProgressRepository extends JpaRepository<LessonProgress, 
 
     // Vérifier si un enregistrement de progression existe déjà
     boolean existsByLearnerProfileAndLesson(LearnerProfile learnerProfile, Lesson lesson);
+
+    // Compte le nombre de leçons validées par un apprenant pour un cours spécifique
+    @Query("SELECT COUNT(lp) FROM LessonProgress lp " +
+            "WHERE lp.learnerProfile = :learnerProfile " +
+            "AND lp.lesson.section.course.id = :courseId " +
+            "AND lp.isCompleted = true")
+    int countCompletedLessonsByLearnerAndCourse(@Param("learnerProfile") LearnerProfile learnerProfile,
+            @Param("courseId") Long courseId);
+
 }

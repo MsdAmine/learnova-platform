@@ -2,6 +2,7 @@ package com.learnova.learnova_backend.course.controller;
 
 import com.learnova.learnova_backend.course.dto.LessonProgressUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressResponse;
+import com.learnova.learnova_backend.course.dto.CourseProgressResponse;
 import com.learnova.learnova_backend.course.service.CourseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,23 @@ public class UserLessonController {
             @PathVariable Long lessonId,
             Principal principal,
             @Valid @RequestBody LessonProgressUpdateRequest request) {
-        
+
         LessonProgressResponse response = courseService.updateLessonProgress(
-                lessonId, 
-                principal.getName(), 
-                request
-        );
+                lessonId,
+                principal.getName(),
+                request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/course/{courseId}/progress")
+    @PreAuthorize("hasRole('LEARNER')")
+    public ResponseEntity<CourseProgressResponse> getCourseProgress(
+            @PathVariable Long courseId,
+            Principal principal) {
+
+        CourseProgressResponse response = courseService.calculateCourseProgress(
+                courseId,
+                principal.getName());
         return ResponseEntity.ok(response);
     }
 }

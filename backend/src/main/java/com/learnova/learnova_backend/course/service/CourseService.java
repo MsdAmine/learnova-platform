@@ -5,6 +5,7 @@ import com.learnova.learnova_backend.course.dto.CourseResponse;
 import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressResponse;
+import com.learnova.learnova_backend.course.dto.CourseProgressResponse;
 import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.entity.Lesson;
@@ -35,7 +36,7 @@ public class CourseService {
         private final CategoryRepository categoryRepository;
         private final InstructorProfileRepository instructorProfileRepository;
 
-        // Nouvelles dépendances requises pour l'Issue #58
+        // Nouvelles dépendances requises pour l'Issue #58 & #59
         private final LessonRepository lessonRepository;
         private final UserRepository userRepository;
         private final LearnerProfileRepository learnerProfileRepository;
@@ -226,5 +227,59 @@ public class CourseService {
                                 savedProgress.getLastPositionSeconds(),
                                 savedProgress.getTimeSpentSeconds(),
                                 savedProgress.getUpdatedAt());
+        }
+
+        // --- LOGIQUE MÉTIER DE L'ISSUE #59 ---
+        @Transactional(readOnly = true)
+        public CourseProgressResponse calculateCourseProgress(Long courseId, String username) {
+
+                // 1. Validation de l'existence du cours
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Target course context not found"));
+
+                // 2. Récupération du profil utilisateur et de son profil apprenant
+                User user = userRepository.findByEmailIgnoreCase(username)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "User authentication context not found"));
+
+                LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                                "User profile is missing an active Learner assignment"));
+
+                // 3. Contrôle des droits d'accès
+                boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
+                if (!hasAccess) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                        "Access denied. You must be actively enrolled to view progress records.");
+                }
+
+                // 4. Extraction du volume total de leçons du cours
+                int totalLessons = lessonRepository.countTotalLessonsByCourseId(courseId);
+
+                // Cas limite : Si le cours est vide, la progression vaut 0% (Évite la division
+                // par 0)
+                if (totalLessons == 0) {
+                        return new CourseProgressResponse(courseId, 0, 0, 0, false);
+                }
+
+                // 5. Calcul de la formule de pourcentage
+                int completedLessons = lessonProgressRepository.countCompletedLessonsByLearnerAndCourse(learnerProfile,
+                                courseId);
+                int progressPercentage = (completedLessons * 100) / totalLessons;
+
+                // Garde-fou de sécurité pour l'indice de complétion
+                if (progressPercentage > 100) {
+                        progressPercentage = 100;
+                }
+
+                boolean isFullyCompleted = (progressPercentage == 100);
+
+                return new CourseProgressResponse(
+                                courseId,
+                                totalLessons,
+                                completedLessons,
+                                progressPercentage,
+                                isFullyCompleted);
         }
 }
