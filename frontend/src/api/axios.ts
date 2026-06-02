@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+const DEFAULT_API_BASE_URL = 'http://localhost:8080';
+
+function resolveApiBaseUrl() {
+    const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+    return configuredBaseUrl.replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+}
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+    baseURL: resolveApiBaseUrl(),
     headers: {
         'Content-Type': 'application/json',
     },
