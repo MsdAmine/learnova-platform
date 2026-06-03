@@ -31,7 +31,9 @@ const config: Config = {
         // Secondary / Tertiary
         'azure': 'var(--color-azure)',
         'coral': 'var(--color-coral)',
-        'anzac': 'var(--color-anzac)',
+        'anzac':     'var(--color-anzac)',
+        'anzac-50':  'var(--color-anzac-50)',
+        'anzac-700': 'var(--color-anzac-700)',
 
         // Neutral
         'bg-base':          'var(--color-bg-base)',

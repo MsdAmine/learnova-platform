@@ -28,6 +28,8 @@
 
   --color-coral: #FF7A59;       /* Alert Ember — warnings, high-priority notifications, streaks  */
   --color-anzac: #E0C03A;       /* Earned Amber — certificates, achievements, completion badges  */
+  --color-anzac-50:  #FEFCE8;   /* Anzac tint surface — achievement badge / icon backgrounds     */
+  --color-anzac-700: #7A5C00;   /* Anzac on-surface text — readable on anzac-50 backgrounds      */
 
 
   /* ── Colors: Neutral ─────────────────────────────────────────────────────── */
@@ -194,4 +196,31 @@
   --container-prose:   720px;   /* Prose / long-form reading width                               */
   --container-default: 1200px;  /* Max content width, centered                                   */
   --container-wide:    1440px;  /* Wide / full-bleed marketing sections                          */
+}
+
+
+/* ── Skeleton shimmer ─────────────────────────────────────────────────────────
+   .skeleton-bone: animated shimmer block used in loading skeleton components.
+   Animation fires only when the user hasn't opted out of motion.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position:  200% 0; }
+}
+
+.skeleton-bone {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-surface-elevated) 0%,
+    var(--color-border-default)   50%,
+    var(--color-surface-elevated) 100%
+  );
+  background-size: 200% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skeleton-bone {
+    animation: shimmer 1.6s linear infinite;
+  }
 }

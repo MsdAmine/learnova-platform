@@ -1,12 +1,25 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { GuestRoute } from '../components/common/GuestRoute';
+import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import { LandingPageSkeleton } from '../components/common/skeletons/LandingPageSkeleton';
+import { AuthLayoutSkeleton } from '../components/common/skeletons/AuthLayoutSkeleton';
+import { DashboardLayoutSkeleton } from '../components/common/skeletons/DashboardLayoutSkeleton';
+import { DashboardPageSkeleton } from '../components/common/skeletons/DashboardPageSkeleton';
 
-const LandingPage  = lazy(() => import('../features/landing/pages/LandingPage'));
-const AuthLayout   = lazy(() => import('../features/auth/components/AuthLayout'));
-const LoginPage    = lazy(() => import('../features/auth/pages/LoginPage'));
-const RegisterPage = lazy(() => import('../features/auth/pages/RegisterPage'));
-const StyleGuide   = lazy(() => import('../features/style-guide/pages/StyleGuide'));
+const LandingPage      = lazy(() => import('../features/landing/pages/LandingPage'));
+const AuthLayout       = lazy(() => import('../features/auth/components/AuthLayout'));
+const LoginPage        = lazy(() => import('../features/auth/pages/LoginPage'));
+const RegisterPage     = lazy(() => import('../features/auth/pages/RegisterPage'));
+const StyleGuide       = lazy(() => import('../features/style-guide/pages/StyleGuide'));
+
+const DashboardLayout  = lazy(() => import('../features/dashboard/components/DashboardLayout'));
+const LearnerDashboard = lazy(() => import('../features/dashboard/pages/LearnerDashboard'));
+const MyCoursesPage    = lazy(() => import('../features/dashboard/pages/MyCoursesPage'));
+const ProgressPage     = lazy(() => import('../features/dashboard/pages/ProgressPage'));
+const CertificatesPage = lazy(() => import('../features/dashboard/pages/CertificatesPage'));
+const LiveSessionsPage = lazy(() => import('../features/dashboard/pages/LiveSessionsPage'));
+const SettingsPage     = lazy(() => import('../features/dashboard/pages/SettingsPage'));
 
 const devRoutes = import.meta.env.DEV
   ? [{ path: '/style-guide', element: <Suspense fallback={null}><StyleGuide /></Suspense> }]
@@ -16,7 +29,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={<LandingPageSkeleton />}>
         <LandingPage />
       </Suspense>
     ),
@@ -24,7 +37,7 @@ const router = createBrowserRouter([
   {
     element: (
       <GuestRoute>
-        <Suspense fallback={null}>
+        <Suspense fallback={<AuthLayoutSkeleton />}>
           <AuthLayout />
         </Suspense>
       </GuestRoute>
@@ -33,7 +46,7 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: (
-          <Suspense fallback={null}>
+          <Suspense fallback={<AuthLayoutSkeleton />}>
             <LoginPage />
           </Suspense>
         ),
@@ -41,8 +54,68 @@ const router = createBrowserRouter([
       {
         path: '/register',
         element: (
-          <Suspense fallback={null}>
+          <Suspense fallback={<AuthLayoutSkeleton />}>
             <RegisterPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/dashboard',
+    element: (
+      <ProtectedRoute>
+        <Suspense fallback={<DashboardLayoutSkeleton />}>
+          <DashboardLayout />
+        </Suspense>
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <LearnerDashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'courses',
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <MyCoursesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'progress',
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <ProgressPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'certificates',
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <CertificatesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'live-sessions',
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <LiveSessionsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <Suspense fallback={<DashboardPageSkeleton />}>
+            <SettingsPage />
           </Suspense>
         ),
       },
