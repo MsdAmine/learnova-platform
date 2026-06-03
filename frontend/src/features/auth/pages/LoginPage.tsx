@@ -49,7 +49,7 @@ export default function LoginPage() {
     try {
       const { token, user } = await loginUser(email, password);
       login(token, user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       if (isAxiosError(err) && err.response?.status === 401) {
         dispatch({ type: 'SET_ERROR', error: 'Incorrect email or password.' });

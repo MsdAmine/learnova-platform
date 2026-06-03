@@ -169,10 +169,15 @@ export default function AuthLayout() {
 
       {/* Logo — centered at top, floats above both panels */}
       <div className="absolute inset-x-0 top-8 flex justify-center z-10">
-        <Link to="/">
+        <Link
+          to="/"
+          aria-label="Learnova – home"
+          className="rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+        >
           <img
             src={logoPrimaryUrl}
-            alt="Learnova"
+            alt=""
+            aria-hidden="true"
             className="h-9 w-auto object-contain"
           />
         </Link>

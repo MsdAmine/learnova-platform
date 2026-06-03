@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../ui/Button';
 import heroImageUrl from '../../../assets/hero-collaboration.jpg';
+import heroSrcset from '../../../assets/hero-collaboration.jpg?w=480;720;960&format=webp&as=srcset';
 
 // Checked once at module load; stable for the lifetime of the page.
 const prefersReduced =
@@ -83,10 +84,14 @@ export function Hero() {
           >
             <img
               src={heroImageUrl}
+              srcSet={heroSrcset}
+              sizes="(min-width: 1024px) calc(50vw - 32px)"
               width={960}
               height={720}
               alt="Two people collaborating over a laptop in warm natural daylight"
               loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="h-full w-full object-contain object-right"
             />
           </div>

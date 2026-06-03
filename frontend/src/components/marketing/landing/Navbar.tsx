@@ -94,14 +94,14 @@ export function Navbar() {
       <header
         className={cn(
           'fixed top-0 left-0 right-0 w-full z-40',
-          'h-[64px] md:h-[72px]',
-          'transition-[background-color,box-shadow,border-color] duration-300 ease-in-out',
+          'h-nav-mobile md:h-nav',
+          'transition-[background-color,box-shadow,border-color] duration-standard ease-standard',
           scrolled
             ? 'bg-white border-b border-border-default shadow-sticky'
             : 'bg-transparent border-b border-transparent',
         )}
       >
-        <div className="w-full max-w-[1200px] mx-auto h-full px-4 md:px-12 flex items-center justify-between">
+        <div className="w-full max-w-container mx-auto h-full px-4 md:px-12 flex items-center justify-between">
           {/* Logo — cross-fades between white and primary versions */}
           <Link
             to="/"
@@ -137,7 +137,7 @@ export function Navbar() {
             ) : (
               <span
                 className={cn(
-                  'text-[20px] font-semibold leading-none transition-colors duration-300',
+                  'text-title-sm leading-none transition-colors duration-fast',
                   scrolled ? 'text-salem' : 'text-white',
                 )}
               >
@@ -153,8 +153,8 @@ export function Navbar() {
                 key={label}
                 to={href}
                 className={cn(
-                  'text-[14px] font-medium leading-[1.5]',
-                  'transition-colors duration-300',
+                  'text-body-sm font-medium',
+                  'transition-colors duration-fast',
                   scrolled
                     ? 'text-text-primary hover:text-salem focus-visible:outline-salem'
                     : 'text-on-dark hover:text-white focus-visible:outline-white',
@@ -168,10 +168,13 @@ export function Navbar() {
 
           {/* Desktop CTA */}
           <Button
-            variant="primary"
+            variant="inverted"
             size="md"
             asChild
-            className="hidden md:inline-flex bg-azure text-white border-transparent rounded-full hover:bg-[#3044A8] focus-visible:outline-white"
+            className={cn(
+              'hidden md:inline-flex',
+              scrolled ? 'focus-visible:outline-salem' : 'focus-visible:outline-white',
+            )}
           >
             <Link to="/login">Login</Link>
           </Button>
@@ -211,12 +214,12 @@ export function Navbar() {
         className={cn(
           'fixed inset-0 z-50 flex flex-col bg-salem',
           'w-full h-full max-w-none max-h-none m-0 p-0 border-0',
-          'transition-transform duration-[200ms] ease-[cubic-bezier(0.16,1,0.3,1)]',
+          'transition-transform duration-standard ease-standard',
           mobileOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >
         {/* Panel header */}
-        <div className="h-[64px] px-4 flex items-center justify-between flex-shrink-0">
+        <div className="h-nav-mobile px-4 flex items-center justify-between flex-shrink-0">
           <Link
             to="/"
             className="rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -232,7 +235,7 @@ export function Navbar() {
                 onError={() => setLogoError(true)}
               />
             ) : (
-              <span className="text-white text-[20px] font-semibold leading-none">
+              <span className="text-white text-title-sm leading-none">
                 Learnova
               </span>
             )}
@@ -262,8 +265,8 @@ export function Navbar() {
               key={label}
               to={href}
               className={cn(
-                'text-[28px] font-semibold leading-[1.3] text-on-dark',
-                'hover:text-white transition-colors duration-[120ms]',
+                'text-title text-on-dark',
+                'hover:text-white transition-colors duration-fast',
                 'py-3 rounded-[4px]',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white',
               )}
