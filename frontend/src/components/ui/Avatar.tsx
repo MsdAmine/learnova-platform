@@ -60,11 +60,11 @@ function paletteFor(name: string): (typeof PALETTE)[number] {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SIZES: Record<AvatarSize, { wh: string; fs: string }> = {
-  24: { wh: 'w-6  h-6',   fs: 'text-[9px]'  },
-  32: { wh: 'w-8  h-8',   fs: 'text-[11px]' },
-  40: { wh: 'w-10 h-10',  fs: 'text-[14px]' },
-  56: { wh: 'w-14 h-14',  fs: 'text-[20px]' },
-  80: { wh: 'w-20 h-20',  fs: 'text-[26px]' },
+  24: { wh: 'w-6  h-6',   fs: 'text-[9px]'   },
+  32: { wh: 'w-8  h-8',   fs: 'text-caption'  },
+  40: { wh: 'w-10 h-10',  fs: 'text-body-sm'  },
+  56: { wh: 'w-14 h-14',  fs: 'text-title-sm' },
+  80: { wh: 'w-20 h-20',  fs: 'text-title'    },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -143,7 +143,7 @@ export function Footer() {
                       'bg-surface text-text-primary rounded-md',
                       'border',
                       error ? 'border-error' : 'border-border-default',
-                      'text-[16px] leading-[1.6] px-4 py-3',
+                      'text-body px-4 py-3',
                       'placeholder:text-text-muted',
                       error ? 'focus:border-error' : 'focus:border-salem',
                       'focus:outline-none',
@@ -194,7 +194,7 @@ export function Footer() {
                   onError={() => setLogoError(true)}
                 />
               ) : (
-                <span className="text-text-primary text-[20px] font-semibold leading-none">
+                <span className="text-text-primary text-title-sm leading-none">
                   Learnova
                 </span>
               )}
@@ -204,7 +204,7 @@ export function Footer() {
           {/* Nav columns */}
           {NAV_COLUMNS.map(({ label, links }) => (
             <nav key={label} aria-label={`${label} links`}>
-              <p className="text-[14px] leading-[1.5] font-semibold text-text-primary mb-4">
+              <p className="text-body-sm font-semibold text-text-primary mb-4">
                 {label}
               </p>
               <ul className="flex flex-col gap-3">

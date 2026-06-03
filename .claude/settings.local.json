@@ -49,7 +49,10 @@
       "Read(//c/Users/massi/AppData/Local/Temp/**)",
       "Bash(npm init *)",
       "Bash(dir C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\components\\\\common\\\\skeletons *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Skill(impeccable)",
+      "Bash(grep -v \"node_modules\\\\|//\\\\|\\\\.d\\\\.ts\")",
+      "Bash(Select-String -Pattern \"tailwind|postcss\" -SimpleMatch)"
     ]
   }
 }

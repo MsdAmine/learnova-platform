@@ -23,12 +23,12 @@ export function FinalCta() {
         <div className="flex flex-col items-center justify-center text-center lg:text-left lg:items-start w-full lg:w-1/2 bg-salem px-8 py-14 sm:px-12 lg:px-16 xl:px-20">
           <h2
             id="final-cta-heading"
-            className="text-[40px] sm:text-[48px] lg:text-[52px] font-bold leading-[1.1] tracking-[-0.02em] text-white"
+            className="text-display text-white"
           >
             Ready to begin<br className="hidden sm:block" /> learning
           </h2>
 
-          <p className="mt-5 text-[18px] leading-[1.6] text-white/80 max-w-[400px]">
+          <p className="mt-5 text-body-lg text-on-dark max-w-[400px]">
             Join thousands of learners already advancing their skills on Learnova.
           </p>
 
@@ -39,7 +39,7 @@ export function FinalCta() {
 
             <Link
               to="/courses"
-              className="text-[15px] font-semibold text-white/70 hover:text-white transition-colors duration-[180ms] underline-offset-4 hover:underline"
+              className="text-button text-on-dark-muted hover:text-white transition-colors duration-fast underline-offset-4 hover:underline rounded-[4px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               Browse courses
             </Link>

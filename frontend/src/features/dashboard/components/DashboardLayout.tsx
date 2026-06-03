@@ -99,7 +99,7 @@ export default function DashboardLayout() {
           <div className="flex items-center gap-2.5 pl-1">
             <div
               aria-hidden="true"
-              className="w-8 h-8 rounded-full bg-salem-50 text-salem flex items-center justify-center text-[11px] font-semibold select-none"
+              className="w-8 h-8 rounded-full bg-salem-50 text-salem flex items-center justify-center text-caption font-semibold leading-none select-none"
             >
               {initials}
             </div>
