@@ -11,6 +11,7 @@ export function Testimonials() {
       <Container>
         <SectionHeader
           title="Learner stories"
+          description="From first course to career change — what learners and instructors say about their time on Learnova."
           align="left"
         />
 

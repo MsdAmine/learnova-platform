@@ -9,11 +9,10 @@ const NAV_COLUMNS = [
   {
     label: 'Platform',
     links: [
-      { label: 'Home',            to: '/' },
-      { label: 'Courses',         to: '/courses' },
-      { label: 'Dashboard',       to: '/dashboard' },
-      { label: 'Certificates',    to: '/certificates' },
-      { label: 'For instructors', to: '/instructor' },
+      { label: 'Home',         to: '/' },
+      { label: 'Courses',      to: '/courses' },
+      { label: 'Dashboard',    to: '/dashboard' },
+      { label: 'Certificates', to: '/certificates' },
     ],
   },
   {
@@ -21,39 +20,8 @@ const NAV_COLUMNS = [
     links: [
       { label: 'My courses',    to: '/dashboard/courses' },
       { label: 'Progress',      to: '/dashboard/progress' },
-      { label: 'Lessons',       to: '/dashboard/lessons' },
-      { label: 'Quizzes',       to: '/dashboard/quizzes' },
-      { label: 'Live sessions', to: '/dashboard/live' },
-    ],
-  },
-  {
-    label: 'Instructors',
-    links: [
-      { label: 'Create course', to: '/instructor/courses/new' },
-      { label: 'Manage',        to: '/instructor/courses' },
-      { label: 'Analytics',     to: '/instructor/analytics' },
-      { label: 'Settings',      to: '/settings' },
-      { label: 'Support',       to: '/support' },
-    ],
-  },
-  {
-    label: 'Resources',
-    links: [
-      { label: 'Help center',   to: '/help' },
-      { label: 'Contact us',    to: '/contact' },
-      { label: 'System status', to: '/status' },
-      { label: 'Documentation', to: '/docs' },
-      { label: 'API reference', to: '/docs/api' },
-    ],
-  },
-  {
-    label: 'Company',
-    links: [
-      { label: 'About',    to: '/about' },
-      { label: 'Careers',  to: '/careers' },
-      { label: 'Blog',     to: '/blog' },
-      { label: 'Press',    to: '/press' },
-      { label: 'Partners', to: '/partners' },
+      { label: 'Live sessions', to: '/dashboard/live-sessions' },
+      { label: 'Settings',      to: '/dashboard/settings' },
     ],
   },
 ] as const;
@@ -117,7 +85,7 @@ export function Footer() {
                 <IconCheck />
                 <span>
                   <span className="block text-body-sm font-semibold text-text-primary">You're on the list.</span>
-                  <span className="block mt-1 text-caption text-text-muted">We'll be in touch when new courses arrive.</span>
+                  <span className="block mt-1 text-caption text-text-muted">You'll hear about new courses and opportunities as they go live.</span>
                 </span>
               </output>
             ) : (
@@ -173,10 +141,10 @@ export function Footer() {
         <div className="mt-12 border-t border-border-default" aria-hidden="true" />
 
         {/* ── Main columns ─────────────────────────────────────────────────── */}
-        <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-12">
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-12">
 
           {/* Logo */}
-          <div className="col-span-2 sm:col-span-1">
+          <div>
             <Link
               to="/"
               className={cn(
@@ -318,16 +286,11 @@ function IconX() {
       width="18"
       height="18"
       viewBox="0 0 24 24"
-      fill="none"
+      fill="currentColor"
       aria-hidden="true"
       focusable="false"
     >
-      <path
-        d="M4 4l16 16M20 4 4 20"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   );
 }

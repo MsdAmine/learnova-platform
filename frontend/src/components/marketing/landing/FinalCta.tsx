@@ -25,7 +25,7 @@ export function FinalCta() {
             id="final-cta-heading"
             className="text-display text-white"
           >
-            Ready to begin<br className="hidden sm:block" /> learning
+            Your learning<br className="hidden sm:block" /> starts here
           </h2>
 
           <p className="mt-5 text-body-lg text-on-dark max-w-[400px]">

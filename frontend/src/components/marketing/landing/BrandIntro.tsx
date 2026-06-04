@@ -142,7 +142,7 @@ export function BrandIntro() {
             imageUrl={featureImageUrl}
             imageSrcSet={featureSrcset}
             imageAlt="Students collaborating during a live learning session"
-            eyebrow="Tagline"
+            eyebrow="Live"
             title="Live sessions and real instructors"
             body="Connect with instructors in real time during live sessions"
             linkLabel="Join →"
