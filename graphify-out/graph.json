@@ -67,6 +67,15 @@
       "norm_label": "allow"
     },
     {
+      "label": "outputStyle",
+      "file_type": "code",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L68",
+      "id": "claude_settings_local_outputstyle",
+      "community": 92,
+      "norm_label": "outputstyle"
+    },
+    {
       "label": "design.json",
       "file_type": "code",
       "source_file": ".impeccable/design.json",
@@ -3753,7 +3762,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L1",
       "id": "security_securityconfig",
-      "community": 0,
+      "community": 8,
       "norm_label": "securityconfig.java"
     },
     {
@@ -3762,7 +3771,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L25",
       "id": "security_securityconfig_securityconfig",
-      "community": 0,
+      "community": 8,
       "norm_label": "securityconfig"
     },
     {
@@ -3771,7 +3780,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "security_securityconfig_securityconfig_securityfilterchain",
-      "community": 0,
+      "community": 8,
       "norm_label": ".securityfilterchain()"
     },
     {
@@ -3780,7 +3789,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "httpsecurity",
-      "community": 0,
+      "community": 8,
       "norm_label": "httpsecurity"
     },
     {
@@ -3789,7 +3798,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "securityfilterchain",
-      "community": 0,
+      "community": 8,
       "norm_label": "securityfilterchain"
     },
     {
@@ -3798,7 +3807,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "backend_src_main_java_com_learnova_learnova_backend_security_securityconfig_java_bean",
-      "community": 0,
+      "community": 8,
       "norm_label": "bean"
     },
     {
@@ -3807,7 +3816,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L66",
       "id": "security_securityconfig_securityconfig_authenticationprovider",
-      "community": 0,
+      "community": 8,
       "norm_label": ".authenticationprovider()"
     },
     {
@@ -3816,7 +3825,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L66",
       "id": "authenticationprovider",
-      "community": 0,
+      "community": 8,
       "norm_label": "authenticationprovider"
     },
     {
@@ -3825,7 +3834,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "security_securityconfig_securityconfig_authenticationmanager",
-      "community": 0,
+      "community": 8,
       "norm_label": ".authenticationmanager()"
     },
     {
@@ -3834,7 +3843,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "authenticationconfiguration",
-      "community": 0,
+      "community": 8,
       "norm_label": "authenticationconfiguration"
     },
     {
@@ -3843,7 +3852,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "authenticationmanager",
-      "community": 0,
+      "community": 8,
       "norm_label": "authenticationmanager"
     },
     {
@@ -3852,7 +3861,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L80",
       "id": "security_securityconfig_securityconfig_corsconfigurationsource",
-      "community": 0,
+      "community": 8,
       "norm_label": ".corsconfigurationsource()"
     },
     {
@@ -3861,7 +3870,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L80",
       "id": "corsconfigurationsource",
-      "community": 0,
+      "community": 8,
       "norm_label": "corsconfigurationsource"
     },
     {
@@ -4608,7 +4617,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L1",
       "id": "profile_profileswitchintegrationtest",
-      "community": 8,
+      "community": 23,
       "norm_label": "profileswitchintegrationtest.java"
     },
     {
@@ -4617,7 +4626,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L29",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest",
-      "community": 8,
+      "community": 23,
       "norm_label": "profileswitchintegrationtest"
     },
     {
@@ -4626,7 +4635,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L50",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_learnerprofileshouldalwaysbeavailableforregistereduser",
-      "community": 8,
+      "community": 23,
       "norm_label": ".learnerprofileshouldalwaysbeavailableforregistereduser()"
     },
     {
@@ -4635,7 +4644,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L50",
       "id": "backend_src_test_java_com_learnova_learnova_backend_profile_profileswitchintegrationtest_java_test",
-      "community": 8,
+      "community": 23,
       "norm_label": "test"
     },
     {
@@ -4644,7 +4653,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L61",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_shouldallowswitchingtolearnerprofile",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldallowswitchingtolearnerprofile()"
     },
     {
@@ -4653,7 +4662,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L76",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_shouldrejectswitchingtoinstructorprofilewhennotapproved",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldrejectswitchingtoinstructorprofilewhennotapproved()"
     },
     {
@@ -4662,7 +4671,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L89",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_shouldallowswitchingtoinstructorprofileafterapproval",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldallowswitchingtoinstructorprofileafterapproval()"
     },
     {
@@ -4671,7 +4680,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L115",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_currentusershouldreturninstructorprofileonlyafterapproval",
-      "community": 8,
+      "community": 23,
       "norm_label": ".currentusershouldreturninstructorprofileonlyafterapproval()"
     },
     {
@@ -4680,7 +4689,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L145",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_createinstructorrequest",
-      "community": 8,
+      "community": 23,
       "norm_label": ".createinstructorrequest()"
     },
     {
@@ -4689,7 +4698,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L145",
       "id": "backend_src_test_java_com_learnova_learnova_backend_profile_profileswitchintegrationtest_java_string",
-      "community": 8,
+      "community": 23,
       "norm_label": "string"
     },
     {
@@ -4698,7 +4707,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L145",
       "id": "backend_src_test_java_com_learnova_learnova_backend_profile_profileswitchintegrationtest_java_long",
-      "community": 8,
+      "community": 23,
       "norm_label": "long"
     },
     {
@@ -4707,7 +4716,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L168",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_createadminandlogin",
-      "community": 8,
+      "community": 23,
       "norm_label": ".createadminandlogin()"
     },
     {
@@ -4716,7 +4725,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L197",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_registerandlogin",
-      "community": 8,
+      "community": 23,
       "norm_label": ".registerandlogin()"
     },
     {
@@ -4725,7 +4734,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/ProfileSwitchIntegrationTest.java",
       "source_location": "L212",
       "id": "profile_profileswitchintegrationtest_profileswitchintegrationtest_login",
-      "community": 8,
+      "community": 23,
       "norm_label": ".login()"
     },
     {
@@ -5166,7 +5175,7 @@
       "source_file": "frontend/src/App.tsx",
       "source_location": "L1",
       "id": "src_app",
-      "community": 103,
+      "community": 35,
       "norm_label": "app.tsx"
     },
     {
@@ -5175,7 +5184,7 @@
       "source_file": "frontend/src/App.tsx",
       "source_location": "L4",
       "id": "src_app_app",
-      "community": 103,
+      "community": 35,
       "norm_label": "app()"
     },
     {
@@ -5184,7 +5193,7 @@
       "source_file": "frontend/src/api/auth.ts",
       "source_location": "L1",
       "id": "api_auth",
-      "community": 26,
+      "community": 24,
       "norm_label": "auth.ts"
     },
     {
@@ -5193,7 +5202,7 @@
       "source_file": "frontend/src/api/auth.ts",
       "source_location": "L4",
       "id": "api_auth_user",
-      "community": 26,
+      "community": 24,
       "norm_label": "user"
     },
     {
@@ -5202,7 +5211,7 @@
       "source_file": "frontend/src/api/auth.ts",
       "source_location": "L13",
       "id": "api_auth_loginresult",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginresult"
     },
     {
@@ -5211,7 +5220,7 @@
       "source_file": "frontend/src/api/auth.ts",
       "source_location": "L18",
       "id": "api_auth_registeruser",
-      "community": 26,
+      "community": 24,
       "norm_label": "registeruser()"
     },
     {
@@ -5220,7 +5229,7 @@
       "source_file": "frontend/src/api/auth.ts",
       "source_location": "L23",
       "id": "api_auth_loginuser",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginuser()"
     },
     {
@@ -5229,7 +5238,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L1",
       "id": "api_axios",
-      "community": 90,
+      "community": 43,
       "norm_label": "axios.ts"
     },
     {
@@ -5238,7 +5247,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L5",
       "id": "api_axios_resolveapibaseurl",
-      "community": 90,
+      "community": 43,
       "norm_label": "resolveapibaseurl()"
     },
     {
@@ -5247,7 +5256,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L10",
       "id": "api_axios_api",
-      "community": 90,
+      "community": 43,
       "norm_label": "api"
     },
     {
@@ -5256,7 +5265,7 @@
       "source_file": "frontend/src/components/common/GuestRoute.tsx",
       "source_location": "L1",
       "id": "common_guestroute",
-      "community": 24,
+      "community": 26,
       "norm_label": "guestroute.tsx"
     },
     {
@@ -5265,7 +5274,7 @@
       "source_file": "frontend/src/components/common/GuestRoute.tsx",
       "source_location": "L5",
       "id": "common_guestroute_guestroute",
-      "community": 24,
+      "community": 26,
       "norm_label": "guestroute()"
     },
     {
@@ -5274,7 +5283,7 @@
       "source_file": "frontend/src/components/common/ProtectedRoute.tsx",
       "source_location": "L1",
       "id": "common_protectedroute",
-      "community": 24,
+      "community": 26,
       "norm_label": "protectedroute.tsx"
     },
     {
@@ -5283,7 +5292,7 @@
       "source_file": "frontend/src/components/common/ProtectedRoute.tsx",
       "source_location": "L5",
       "id": "common_protectedroute_protectedroute",
-      "community": 24,
+      "community": 26,
       "norm_label": "protectedroute()"
     },
     {
@@ -5377,6 +5386,96 @@
       "norm_label": "landingpageskeleton()"
     },
     {
+      "label": "CourseCard.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L1",
+      "id": "dashboard_coursecard",
+      "community": 29,
+      "norm_label": "coursecard.tsx"
+    },
+    {
+      "label": "Course",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L5",
+      "id": "dashboard_coursecard_course",
+      "community": 29,
+      "norm_label": "course"
+    },
+    {
+      "label": "DEFAULT_GRADIENT",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L17",
+      "id": "dashboard_coursecard_default_gradient",
+      "community": 29,
+      "norm_label": "default_gradient"
+    },
+    {
+      "label": "courseGradient()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L19",
+      "id": "dashboard_coursecard_coursegradient",
+      "community": 29,
+      "norm_label": "coursegradient()"
+    },
+    {
+      "label": "CompletedCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L24",
+      "id": "dashboard_coursecard_completedcoursecard",
+      "community": 29,
+      "norm_label": "completedcoursecard()"
+    },
+    {
+      "label": "NotStartedCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L41",
+      "id": "dashboard_coursecard_notstartedcoursecard",
+      "community": 29,
+      "norm_label": "notstartedcoursecard()"
+    },
+    {
+      "label": "InProgressCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L62",
+      "id": "dashboard_coursecard_inprogresscoursecard",
+      "community": 29,
+      "norm_label": "inprogresscoursecard()"
+    },
+    {
+      "label": "CourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L82",
+      "id": "dashboard_coursecard_coursecard",
+      "community": 29,
+      "norm_label": "coursecard()"
+    },
+    {
+      "label": "FeaturedCourseRow.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L1",
+      "id": "dashboard_featuredcourserow",
+      "community": 29,
+      "norm_label": "featuredcourserow.tsx"
+    },
+    {
+      "label": "FeaturedCourseRow()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L6",
+      "id": "dashboard_featuredcourserow_featuredcourserow",
+      "community": 29,
+      "norm_label": "featuredcourserow()"
+    },
+    {
       "label": "BrandIntro.tsx",
       "file_type": "code",
       "source_file": "frontend/src/components/marketing/landing/BrandIntro.tsx",
@@ -5427,7 +5526,7 @@
       "source_file": "frontend/src/components/marketing/landing/BrandIntro.tsx",
       "source_location": "L102",
       "id": "landing_brandintro_brandintro",
-      "community": 49,
+      "community": 6,
       "norm_label": "brandintro()"
     },
     {
@@ -5454,7 +5553,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L1",
       "id": "landing_footer",
-      "community": 86,
+      "community": 6,
       "norm_label": "footer.tsx"
     },
     {
@@ -5463,7 +5562,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L8",
       "id": "landing_footer_nav_columns",
-      "community": 86,
+      "community": 6,
       "norm_label": "nav_columns"
     },
     {
@@ -5472,7 +5571,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L29",
       "id": "landing_footer_social_links",
-      "community": 86,
+      "community": 6,
       "norm_label": "social_links"
     },
     {
@@ -5481,7 +5580,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L37",
       "id": "landing_footer_validateemail",
-      "community": 86,
+      "community": 6,
       "norm_label": "validateemail()"
     },
     {
@@ -5490,7 +5589,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L43",
       "id": "landing_footer_footer",
-      "community": 86,
+      "community": 6,
       "norm_label": "footer()"
     },
     {
@@ -5499,7 +5598,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L258",
       "id": "landing_footer_iconcheck",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconcheck()"
     },
     {
@@ -5508,7 +5607,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L283",
       "id": "landing_footer_iconx",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconx()"
     },
     {
@@ -5517,7 +5616,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L298",
       "id": "landing_footer_iconfacebook",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconfacebook()"
     },
     {
@@ -5526,7 +5625,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L319",
       "id": "landing_footer_iconlinkedin",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconlinkedin()"
     },
     {
@@ -5535,7 +5634,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L341",
       "id": "landing_footer_iconinstagram",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconinstagram()"
     },
     {
@@ -5544,7 +5643,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L384",
       "id": "landing_footer_iconyoutube",
-      "community": 86,
+      "community": 6,
       "norm_label": "iconyoutube()"
     },
     {
@@ -5571,7 +5670,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L1",
       "id": "landing_journey",
-      "community": 35,
+      "community": 36,
       "norm_label": "journey.tsx"
     },
     {
@@ -5580,7 +5679,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L7",
       "id": "landing_journey_steps",
-      "community": 35,
+      "community": 36,
       "norm_label": "steps"
     },
     {
@@ -5589,7 +5688,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L43",
       "id": "landing_journey_journey",
-      "community": 35,
+      "community": 36,
       "norm_label": "journey()"
     },
     {
@@ -5598,7 +5697,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L1",
       "id": "landing_journeystep",
-      "community": 35,
+      "community": 36,
       "norm_label": "journeystep.tsx"
     },
     {
@@ -5607,7 +5706,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L5",
       "id": "landing_journeystep_cta",
-      "community": 35,
+      "community": 36,
       "norm_label": "cta"
     },
     {
@@ -5616,7 +5715,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L10",
       "id": "landing_journeystep_journeystepimage",
-      "community": 35,
+      "community": 36,
       "norm_label": "journeystepimage"
     },
     {
@@ -5625,7 +5724,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L15",
       "id": "landing_journeystep_journeystepprops",
-      "community": 35,
+      "community": 36,
       "norm_label": "journeystepprops"
     },
     {
@@ -5634,7 +5733,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L26",
       "id": "landing_journeystep_journeystep",
-      "community": 35,
+      "community": 36,
       "norm_label": "journeystep()"
     },
     {
@@ -5733,7 +5832,7 @@
       "source_file": "frontend/src/components/marketing/landing/Testimonials.tsx",
       "source_location": "L6",
       "id": "landing_testimonials_testimonials",
-      "community": 49,
+      "community": 6,
       "norm_label": "testimonials()"
     },
     {
@@ -5940,7 +6039,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L1",
       "id": "ui_card",
-      "community": 36,
+      "community": 11,
       "norm_label": "card.tsx"
     },
     {
@@ -5949,7 +6048,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L14",
       "id": "ui_card_cardvariant",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardvariant"
     },
     {
@@ -5958,7 +6057,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L16",
       "id": "ui_card_cardprops",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardprops"
     },
     {
@@ -5967,7 +6066,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L20",
       "id": "ui_card_variantclasses",
-      "community": 36,
+      "community": 11,
       "norm_label": "variantclasses"
     },
     {
@@ -5976,7 +6075,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L29",
       "id": "ui_card_card",
-      "community": 36,
+      "community": 11,
       "norm_label": "card()"
     },
     {
@@ -5985,7 +6084,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L42",
       "id": "ui_card_cardheader",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardheader()"
     },
     {
@@ -5994,7 +6093,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L49",
       "id": "ui_card_cardtitle",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardtitle()"
     },
     {
@@ -6003,7 +6102,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L64",
       "id": "ui_card_carddescription",
-      "community": 36,
+      "community": 11,
       "norm_label": "carddescription()"
     },
     {
@@ -6012,7 +6111,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L77",
       "id": "ui_card_cardcontent",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardcontent()"
     },
     {
@@ -6021,7 +6120,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L84",
       "id": "ui_card_cardfooter",
-      "community": 36,
+      "community": 11,
       "norm_label": "cardfooter()"
     },
     {
@@ -6070,12 +6169,48 @@
       "norm_label": "container()"
     },
     {
+      "label": "FilterTabs.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L1",
+      "id": "ui_filtertabs",
+      "community": 29,
+      "norm_label": "filtertabs.tsx"
+    },
+    {
+      "label": "FilterOption",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L3",
+      "id": "ui_filtertabs_filteroption",
+      "community": 29,
+      "norm_label": "filteroption"
+    },
+    {
+      "label": "FilterTabsProps",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L8",
+      "id": "ui_filtertabs_filtertabsprops",
+      "community": 29,
+      "norm_label": "filtertabsprops"
+    },
+    {
+      "label": "FilterTabs()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L15",
+      "id": "ui_filtertabs_filtertabs",
+      "community": 29,
+      "norm_label": "filtertabs()"
+    },
+    {
       "label": "Input.tsx",
       "file_type": "code",
       "source_file": "frontend/src/components/ui/Input.tsx",
       "source_location": "L1",
       "id": "ui_input",
-      "community": 26,
+      "community": 24,
       "norm_label": "input.tsx"
     },
     {
@@ -6084,7 +6219,7 @@
       "source_file": "frontend/src/components/ui/Input.tsx",
       "source_location": "L11",
       "id": "ui_input_inputprops",
-      "community": 26,
+      "community": 24,
       "norm_label": "inputprops"
     },
     {
@@ -6093,7 +6228,7 @@
       "source_file": "frontend/src/components/ui/Input.tsx",
       "source_location": "L16",
       "id": "ui_input_input",
-      "community": 26,
+      "community": 24,
       "norm_label": "input()"
     },
     {
@@ -6102,7 +6237,7 @@
       "source_file": "frontend/src/components/ui/Input.tsx",
       "source_location": "L55",
       "id": "ui_input_formfieldprops",
-      "community": 26,
+      "community": 24,
       "norm_label": "formfieldprops"
     },
     {
@@ -6111,8 +6246,26 @@
       "source_file": "frontend/src/components/ui/Input.tsx",
       "source_location": "L64",
       "id": "ui_input_formfield",
-      "community": 26,
+      "community": 24,
       "norm_label": "formfield()"
+    },
+    {
+      "label": "ProgressBar.tsx",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/ProgressBar.tsx",
+      "source_location": "L1",
+      "id": "ui_progressbar",
+      "community": 29,
+      "norm_label": "progressbar.tsx"
+    },
+    {
+      "label": "ProgressBar()",
+      "file_type": "code",
+      "source_file": "frontend/src/components/ui/ProgressBar.tsx",
+      "source_location": "L1",
+      "id": "ui_progressbar_progressbar",
+      "community": 29,
+      "norm_label": "progressbar()"
     },
     {
       "label": "SectionHeader.tsx",
@@ -6237,7 +6390,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L1",
       "id": "context_authcontext",
-      "community": 103,
+      "community": 35,
       "norm_label": "authcontext.tsx"
     },
     {
@@ -6246,7 +6399,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L4",
       "id": "context_authcontext_user",
-      "community": 103,
+      "community": 35,
       "norm_label": "user"
     },
     {
@@ -6255,7 +6408,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L13",
       "id": "context_authcontext_authcontexttype",
-      "community": 103,
+      "community": 35,
       "norm_label": "authcontexttype"
     },
     {
@@ -6264,7 +6417,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L24",
       "id": "context_authcontext_authcontext",
-      "community": 103,
+      "community": 35,
       "norm_label": "authcontext"
     },
     {
@@ -6273,7 +6426,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L26",
       "id": "context_authcontext_authprovider",
-      "community": 103,
+      "community": 35,
       "norm_label": "authprovider()"
     },
     {
@@ -6282,7 +6435,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L84",
       "id": "context_authcontext_useauth",
-      "community": 24,
+      "community": 26,
       "norm_label": "useauth()"
     },
     {
@@ -6291,7 +6444,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L1",
       "id": "components_authlayout",
-      "community": 43,
+      "community": 90,
       "norm_label": "authlayout.tsx"
     },
     {
@@ -6300,7 +6453,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L9",
       "id": "components_authlayout_login_benefits",
-      "community": 43,
+      "community": 90,
       "norm_label": "login_benefits"
     },
     {
@@ -6309,7 +6462,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L15",
       "id": "components_authlayout_register_steps",
-      "community": 43,
+      "community": 90,
       "norm_label": "register_steps"
     },
     {
@@ -6318,7 +6471,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L33",
       "id": "components_authlayout_loginpitch",
-      "community": 43,
+      "community": 90,
       "norm_label": "loginpitch()"
     },
     {
@@ -6327,7 +6480,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L55",
       "id": "components_authlayout_registerpitch",
-      "community": 43,
+      "community": 90,
       "norm_label": "registerpitch()"
     },
     {
@@ -6336,7 +6489,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L86",
       "id": "components_authlayout_animstate",
-      "community": 43,
+      "community": 90,
       "norm_label": "animstate"
     },
     {
@@ -6345,7 +6498,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L88",
       "id": "components_authlayout_transitionstate",
-      "community": 43,
+      "community": 90,
       "norm_label": "transitionstate"
     },
     {
@@ -6354,7 +6507,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L89",
       "id": "components_authlayout_transitionaction",
-      "community": 43,
+      "community": 90,
       "norm_label": "transitionaction"
     },
     {
@@ -6363,7 +6516,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L96",
       "id": "components_authlayout_transitionreducer",
-      "community": 43,
+      "community": 90,
       "norm_label": "transitionreducer()"
     },
     {
@@ -6372,7 +6525,7 @@
       "source_file": "frontend/src/features/auth/components/AuthLayout.tsx",
       "source_location": "L107",
       "id": "components_authlayout_authlayout",
-      "community": 43,
+      "community": 90,
       "norm_label": "authlayout()"
     },
     {
@@ -6381,7 +6534,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L1",
       "id": "pages_loginpage",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginpage.tsx"
     },
     {
@@ -6390,7 +6543,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L10",
       "id": "pages_loginpage_loginstate",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginstate"
     },
     {
@@ -6399,7 +6552,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L17",
       "id": "pages_loginpage_loginaction",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginaction"
     },
     {
@@ -6408,7 +6561,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L23",
       "id": "pages_loginpage_loginreducer",
-      "community": 26,
+      "community": 24,
       "norm_label": "loginreducer()"
     },
     {
@@ -6417,7 +6570,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L33",
       "id": "pages_loginpage_loginpage",
-      "community": 24,
+      "community": 26,
       "norm_label": "loginpage()"
     },
     {
@@ -6426,7 +6579,7 @@
       "source_file": "frontend/src/features/auth/pages/RegisterPage.tsx",
       "source_location": "L1",
       "id": "pages_registerpage",
-      "community": 26,
+      "community": 24,
       "norm_label": "registerpage.tsx"
     },
     {
@@ -6435,7 +6588,7 @@
       "source_file": "frontend/src/features/auth/pages/RegisterPage.tsx",
       "source_location": "L10",
       "id": "pages_registerpage_registerstate",
-      "community": 26,
+      "community": 24,
       "norm_label": "registerstate"
     },
     {
@@ -6444,7 +6597,7 @@
       "source_file": "frontend/src/features/auth/pages/RegisterPage.tsx",
       "source_location": "L19",
       "id": "pages_registerpage_registeraction",
-      "community": 26,
+      "community": 24,
       "norm_label": "registeraction"
     },
     {
@@ -6453,7 +6606,7 @@
       "source_file": "frontend/src/features/auth/pages/RegisterPage.tsx",
       "source_location": "L26",
       "id": "pages_registerpage_registerreducer",
-      "community": 26,
+      "community": 24,
       "norm_label": "registerreducer()"
     },
     {
@@ -6462,7 +6615,7 @@
       "source_file": "frontend/src/features/auth/pages/RegisterPage.tsx",
       "source_location": "L37",
       "id": "pages_registerpage_registerpage",
-      "community": 26,
+      "community": 24,
       "norm_label": "registerpage()"
     },
     {
@@ -6471,7 +6624,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L1",
       "id": "components_dashboardlayout",
-      "community": 24,
+      "community": 26,
       "norm_label": "dashboardlayout.tsx"
     },
     {
@@ -6480,7 +6633,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L19",
       "id": "components_dashboardlayout_nav_items",
-      "community": 24,
+      "community": 26,
       "norm_label": "nav_items"
     },
     {
@@ -6489,7 +6642,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L28",
       "id": "components_dashboardlayout_getinitials",
-      "community": 24,
+      "community": 26,
       "norm_label": "getinitials()"
     },
     {
@@ -6498,7 +6651,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L37",
       "id": "components_dashboardlayout_dashboardlayout",
-      "community": 24,
+      "community": 26,
       "norm_label": "dashboardlayout()"
     },
     {
@@ -6532,25 +6685,16 @@
       "label": "FilterValue",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L9",
+      "source_location": "L13",
       "id": "pages_learnerdashboard_filtervalue",
       "community": 29,
       "norm_label": "filtervalue"
     },
     {
-      "label": "Course",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L11",
-      "id": "pages_learnerdashboard_course",
-      "community": 29,
-      "norm_label": "course"
-    },
-    {
       "label": "Session",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L19",
+      "source_location": "L15",
       "id": "pages_learnerdashboard_session",
       "community": 29,
       "norm_label": "session"
@@ -6559,7 +6703,7 @@
       "label": "Certificate",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L26",
+      "source_location": "L22",
       "id": "pages_learnerdashboard_certificate",
       "community": 29,
       "norm_label": "certificate"
@@ -6568,7 +6712,7 @@
       "label": "CONTINUE_COURSE",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L37",
+      "source_location": "L33",
       "id": "pages_learnerdashboard_continue_course",
       "community": 29,
       "norm_label": "continue_course"
@@ -6577,7 +6721,7 @@
       "label": "STATS",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L45",
+      "source_location": "L41",
       "id": "pages_learnerdashboard_stats",
       "community": 29,
       "norm_label": "stats"
@@ -6586,7 +6730,7 @@
       "label": "COURSES",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L52",
+      "source_location": "L48",
       "id": "pages_learnerdashboard_courses",
       "community": 29,
       "norm_label": "courses"
@@ -6595,7 +6739,7 @@
       "label": "SESSIONS",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L90",
+      "source_location": "L86",
       "id": "pages_learnerdashboard_sessions",
       "community": 29,
       "norm_label": "sessions"
@@ -6604,63 +6748,18 @@
       "label": "CERTIFICATES",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L111",
+      "source_location": "L107",
       "id": "pages_learnerdashboard_certificates",
       "community": 29,
       "norm_label": "certificates"
     },
     {
-      "label": "ProgressBar()",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L118",
-      "id": "pages_learnerdashboard_progressbar",
-      "community": 29,
-      "norm_label": "progressbar()"
-    },
-    {
-      "label": "FeaturedCourseRow()",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L135",
-      "id": "pages_learnerdashboard_featuredcourserow",
-      "community": 29,
-      "norm_label": "featuredcourserow()"
-    },
-    {
-      "label": "CompletedCourseCard()",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L183",
-      "id": "pages_learnerdashboard_completedcoursecard",
-      "community": 29,
-      "norm_label": "completedcoursecard()"
-    },
-    {
-      "label": "NotStartedCourseCard()",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L204",
-      "id": "pages_learnerdashboard_notstartedcoursecard",
-      "community": 29,
-      "norm_label": "notstartedcoursecard()"
-    },
-    {
-      "label": "InProgressCourseCard()",
-      "file_type": "code",
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L235",
-      "id": "pages_learnerdashboard_inprogresscoursecard",
-      "community": 29,
-      "norm_label": "inprogresscoursecard()"
-    },
-    {
       "label": "LearnerDashboard()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L264",
+      "source_location": "L114",
       "id": "pages_learnerdashboard_learnerdashboard",
-      "community": 24,
+      "community": 26,
       "norm_label": "learnerdashboard()"
     },
     {
@@ -6687,16 +6786,34 @@
       "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
       "source_location": "L1",
       "id": "pages_mycoursespage",
-      "community": 100,
+      "community": 29,
       "norm_label": "mycoursespage.tsx"
+    },
+    {
+      "label": "FilterValue",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L8",
+      "id": "pages_mycoursespage_filtervalue",
+      "community": 29,
+      "norm_label": "filtervalue"
+    },
+    {
+      "label": "COURSES",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L14",
+      "id": "pages_mycoursespage_courses",
+      "community": 29,
+      "norm_label": "courses"
     },
     {
       "label": "MyCoursesPage()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
-      "source_location": "L1",
+      "source_location": "L54",
       "id": "pages_mycoursespage_mycoursespage",
-      "community": 100,
+      "community": 29,
       "norm_label": "mycoursespage()"
     },
     {
@@ -6885,7 +7002,7 @@
       "source_file": "frontend/src/hooks/useCurrentUser.ts",
       "source_location": "L1",
       "id": "hooks_usecurrentuser",
-      "community": 24,
+      "community": 26,
       "norm_label": "usecurrentuser.ts"
     },
     {
@@ -6894,7 +7011,7 @@
       "source_file": "frontend/src/hooks/useCurrentUser.ts",
       "source_location": "L5",
       "id": "hooks_usecurrentuser_usecurrentuser",
-      "community": 24,
+      "community": 26,
       "norm_label": "usecurrentuser()"
     },
     {
@@ -6903,7 +7020,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L1",
       "id": "lib_cn",
-      "community": 36,
+      "community": 20,
       "norm_label": "cn.ts"
     },
     {
@@ -6912,7 +7029,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L7",
       "id": "lib_cn_twmerge",
-      "community": 36,
+      "community": 20,
       "norm_label": "twmerge"
     },
     {
@@ -6921,7 +7038,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L32",
       "id": "lib_cn_cn",
-      "community": 36,
+      "community": 11,
       "norm_label": "cn()"
     },
     {
@@ -6984,7 +7101,7 @@
       "source_file": "frontend/src/main.tsx",
       "source_location": "L1",
       "id": "src_main",
-      "community": 103,
+      "community": 35,
       "norm_label": "main.tsx"
     },
     {
@@ -7119,7 +7236,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L1",
       "id": "types_profile",
-      "community": 103,
+      "community": 35,
       "norm_label": "profile.ts"
     },
     {
@@ -7128,7 +7245,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L1",
       "id": "types_profile_profiletype",
-      "community": 103,
+      "community": 35,
       "norm_label": "profiletype"
     },
     {
@@ -7137,7 +7254,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L3",
       "id": "types_profile_profileswitchresponse",
-      "community": 103,
+      "community": 35,
       "norm_label": "profileswitchresponse"
     },
     {
@@ -11281,6 +11398,60 @@
       "norm_label": "expanding the eslint configuration"
     },
     {
+      "label": "FeaturedCourseRow()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L113",
+      "community": 29,
+      "norm_label": "featuredcourserow()",
+      "id": "pages_learnerdashboard_featuredcourserow"
+    },
+    {
+      "label": "CompletedCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L161",
+      "community": 29,
+      "norm_label": "completedcoursecard()",
+      "id": "pages_learnerdashboard_completedcoursecard"
+    },
+    {
+      "label": "NotStartedCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L182",
+      "community": 29,
+      "norm_label": "notstartedcoursecard()",
+      "id": "pages_learnerdashboard_notstartedcoursecard"
+    },
+    {
+      "label": "InProgressCourseCard()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L213",
+      "community": 29,
+      "norm_label": "inprogresscoursecard()",
+      "id": "pages_learnerdashboard_inprogresscoursecard"
+    },
+    {
+      "label": "Course",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L13",
+      "community": 29,
+      "norm_label": "course",
+      "id": "pages_learnerdashboard_course"
+    },
+    {
+      "label": "ProgressBar()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L119",
+      "community": 29,
+      "norm_label": "progressbar()",
+      "id": "pages_learnerdashboard_progressbar"
+    },
+    {
       "label": "Courses Page \u2014 UI Layout Specification",
       "file_type": "document",
       "source_file": "PAGE_UI_SPEC.md",
@@ -11392,6 +11563,16 @@
       "confidence_score": 1.0,
       "source": "claude_settings_hooks",
       "target": "claude_settings_hooks_pretooluse"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "claude_settings_local",
+      "target": "claude_settings_local_outputstyle"
     },
     {
       "relation": "contains",
@@ -20457,6 +20638,394 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_completedcoursecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_course"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L90",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_coursecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_coursegradient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_default_gradient"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L63",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_inprogresscoursecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "dashboard_coursecard_notstartedcoursecard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "lib_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "ui_badge"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "ui_badge_badge"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "ui_progressbar"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard",
+      "target": "ui_progressbar_progressbar"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "dashboard_coursecard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "dashboard_coursecard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "dashboard_coursecard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "dashboard_coursecard_course"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "dashboard_coursecard_course"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "dashboard_coursecard_course"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_coursecard_inprogresscoursecard",
+      "target": "dashboard_coursecard_coursegradient"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "dashboard_coursecard_coursegradient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "dashboard_featuredcourserow_featuredcourserow",
+      "target": "dashboard_coursecard_coursegradient"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "dashboard_coursecard_notstartedcoursecard",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/dashboard/CourseCard.tsx",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "dashboard_coursecard_inprogresscoursecard",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "dashboard_coursecard_coursecard"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "dashboard_coursecard_coursecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "dashboard_featuredcourserow_featuredcourserow"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "lib_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "ui_progressbar"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "dashboard_featuredcourserow",
+      "target": "ui_progressbar_progressbar"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "dashboard_featuredcourserow"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "dashboard_featuredcourserow"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/dashboard/FeaturedCourseRow.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "dashboard_featuredcourserow_featuredcourserow",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "dashboard_featuredcourserow_featuredcourserow"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "dashboard_featuredcourserow_featuredcourserow"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "frontend/src/components/marketing/landing/BrandIntro.tsx",
       "source_location": "L102",
       "weight": 1.0,
@@ -22276,6 +22845,102 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "ui_filtertabs"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "ui_filtertabs"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_filtertabs",
+      "target": "lib_cn"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_filtertabs",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_filtertabs",
+      "target": "ui_filtertabs_filteroption"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_filtertabs",
+      "target": "ui_filtertabs_filtertabs"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/FilterTabs.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_filtertabs",
+      "target": "ui_filtertabs_filtertabsprops"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "ui_filtertabs_filtertabs"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "ui_filtertabs_filtertabs"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L8",
       "weight": 1.0,
@@ -22454,6 +23119,38 @@
       "weight": 1.0,
       "source": "ui_input_formfield",
       "target": "lib_cn_cn"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "ui_progressbar"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/components/ui/ProgressBar.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "ui_progressbar",
+      "target": "ui_progressbar_progressbar"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_learnerdashboard",
+      "target": "ui_progressbar_progressbar"
     },
     {
       "relation": "imports_from",
@@ -23428,39 +24125,6 @@
       "target": "pages_learnerdashboard_stats"
     },
     {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L158",
-      "weight": 1.0,
-      "source": "pages_learnerdashboard_featuredcourserow",
-      "target": "lib_cn_cn"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L207",
-      "weight": 1.0,
-      "source": "pages_learnerdashboard_notstartedcoursecard",
-      "target": "lib_cn_cn"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
-      "source_location": "L238",
-      "weight": 1.0,
-      "source": "pages_learnerdashboard_inprogresscoursecard",
-      "target": "lib_cn_cn"
-    },
-    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/features/dashboard/pages/LiveSessionsPage.tsx",
@@ -23469,6 +24133,26 @@
       "confidence_score": 1.0,
       "source": "pages_livesessionspage",
       "target": "pages_livesessionspage_livesessionspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "pages_mycoursespage_courses"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/MyCoursesPage.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "pages_mycoursespage",
+      "target": "pages_mycoursespage_filtervalue"
     },
     {
       "relation": "contains",
@@ -23680,6 +24364,39 @@
       "confidence_score": 1.0,
       "source": "lib_cn_cn",
       "target": "lib_cn_twmerge"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L158",
+      "weight": 1.0,
+      "source": "pages_learnerdashboard_featuredcourserow",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L238",
+      "weight": 1.0,
+      "source": "pages_learnerdashboard_inprogresscoursecard",
+      "target": "lib_cn_cn"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
+      "source_location": "L207",
+      "weight": 1.0,
+      "source": "pages_learnerdashboard_notstartedcoursecard",
+      "target": "lib_cn_cn"
     },
     {
       "relation": "contains",
@@ -25077,9 +25794,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec",
-      "target": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_my_courses_page_ui_layout_specification"
     },
     {
       "relation": "contains",
@@ -25087,9 +25804,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_0_scope_assumptions",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_0_scope_assumptions"
     },
     {
       "relation": "contains",
@@ -25097,9 +25814,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_1_layout_structure",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_1_layout_structure"
     },
     {
       "relation": "contains",
@@ -25107,9 +25824,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L73",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_2_token_mapping",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_2_token_mapping"
     },
     {
       "relation": "contains",
@@ -25117,9 +25834,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L161",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_3_component_reusability",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_3_component_reusability"
     },
     {
       "relation": "contains",
@@ -25127,9 +25844,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L190",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_4_design_rule_compliance_notes",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_4_design_rule_compliance_notes"
     },
     {
       "relation": "contains",
@@ -25147,9 +25864,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_content_column_wireframe_lg",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_content_column_wireframe_lg"
     },
     {
       "relation": "contains",
@@ -25167,9 +25884,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_responsive_behavior_table",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_responsive_behavior_table"
     },
     {
       "relation": "contains",
@@ -25217,9 +25934,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_completed",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_course_card_completed"
     },
     {
       "relation": "contains",
@@ -25227,9 +25944,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L113",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_in_progress",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_course_card_in_progress"
     },
     {
       "relation": "contains",
@@ -25237,9 +25954,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L133",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_not_started",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_course_card_not_started"
     },
     {
       "relation": "contains",
@@ -25257,9 +25974,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L143",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_featured_next_up_row_optional",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_featured_next_up_row_optional"
     },
     {
       "relation": "contains",
@@ -25277,9 +25994,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L91",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_filter_tab_group",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_filter_tab_group"
     },
     {
       "relation": "contains",
@@ -25307,9 +26024,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_page_shell_header",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_page_shell_header"
     },
     {
       "relation": "contains",
@@ -25317,9 +26034,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_progress_bar_shared",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_progress_bar_shared"
     },
     {
       "relation": "contains",
@@ -25327,9 +26044,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L99",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_section_heading",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_section_heading"
     },
     {
       "relation": "contains",
@@ -25337,9 +26054,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L83",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_summary_strip_optional",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_summary_strip_optional"
     },
     {
       "relation": "contains",
@@ -25367,9 +26084,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L174",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_existing_ui_primitives_that_fit",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_existing_ui_primitives_that_fit"
     },
     {
       "relation": "contains",
@@ -25377,9 +26094,9 @@
       "source_file": "PAGE_UI_SPEC.md",
       "source_location": "L165",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx",
-      "confidence_score": 1.0
+      "target": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx"
     },
     {
       "relation": "contains",
@@ -28213,5 +28930,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d9c8dedca586302186825c05b57ce4b16cd9a8f4"
+  "built_at_commit": "0e23c307ee2d0e65d00418cceacc15726fe107ca"
 }

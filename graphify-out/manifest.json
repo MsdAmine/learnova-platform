@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   ".claude/settings.local.json": {
-    "mtime": 1780611600.855083,
-    "ast_hash": "24e2ca48b38f16aae9c9fbb66b67baa8",
+    "mtime": 1780617401.1086957,
+    "ast_hash": "13a11fc66ab3d72fca106322b843f55c",
     "semantic_hash": ""
   },
   ".impeccable/design.json": {
@@ -525,8 +525,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/LearnerDashboard.tsx": {
-    "mtime": 1780522468.5027275,
-    "ast_hash": "3c2459563b9487b12a803e356e7d12dc",
+    "mtime": 1780708020.0588257,
+    "ast_hash": "ec0085063a6f44d56997106faeb979ca",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/LiveSessionsPage.tsx": {
@@ -535,8 +535,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/MyCoursesPage.tsx": {
-    "mtime": 1780447518.9743755,
-    "ast_hash": "b6cf94cb0f69010564438bc6dc21122f",
+    "mtime": 1780707865.1597004,
+    "ast_hash": "3798394074d5da3c9c1a6506391064f0",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/ProgressPage.tsx": {
@@ -967,6 +967,26 @@
   "PAGE_UI_SPEC.md": {
     "mtime": 1780617095.91719,
     "ast_hash": "e67c0fc67ee9bf46b451cde2bb75dfc0",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/ui/ProgressBar.tsx": {
+    "mtime": 1780707802.0320613,
+    "ast_hash": "7a67c97f402e16a24449ea6bf6acef79",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/dashboard/CourseCard.tsx": {
+    "mtime": 1780707814.876252,
+    "ast_hash": "be25820de4a31ab6427f85360caa9f54",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/dashboard/FeaturedCourseRow.tsx": {
+    "mtime": 1780707826.9291537,
+    "ast_hash": "bf299173723c432aa7a3dd2936b82f6e",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/ui/FilterTabs.tsx": {
+    "mtime": 1780707831.067198,
+    "ast_hash": "007ead42c9501bc44925066ad9b61b63",
     "semantic_hash": ""
   }
 }
