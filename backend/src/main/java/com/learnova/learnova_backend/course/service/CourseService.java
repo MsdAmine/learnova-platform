@@ -10,9 +10,11 @@ import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.entity.Lesson;
 import com.learnova.learnova_backend.course.entity.LessonProgress;
+import com.learnova.learnova_backend.course.entity.WishlistItem;
 import com.learnova.learnova_backend.course.repository.CategoryRepository;
 import com.learnova.learnova_backend.course.repository.CourseRepository;
 import com.learnova.learnova_backend.course.repository.LessonRepository;
+import com.learnova.learnova_backend.course.repository.WishlistItemRepository;
 import com.learnova.learnova_backend.course.repository.LessonProgressRepository;
 import com.learnova.learnova_backend.profile.entity.InstructorApprovalStatus;
 import com.learnova.learnova_backend.profile.entity.InstructorProfile;
@@ -35,6 +37,7 @@ public class CourseService {
         private final CourseRepository courseRepository;
         private final CategoryRepository categoryRepository;
         private final InstructorProfileRepository instructorProfileRepository;
+        private final WishlistItemRepository wishlistRepository;
 
         // Nouvelles dépendances requises pour l'Issue #58 & #59
         private final LessonRepository lessonRepository;
@@ -281,5 +284,79 @@ public class CourseService {
                                 completedLessons,
                                 progressPercentage,
                                 isFullyCompleted);
+        }
+
+        @Transactional
+        public void addCourseToWishlist(Long courseId, String username) {
+                // 1. Validation de l'existence du cours
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Target course context not found"));
+
+                // 2. Extraction du profil apprenant connecté via ton pattern habituel
+                User user = userRepository.findByEmailIgnoreCase(username)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "User authentication context not found"));
+
+                LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                                "User profile is missing an active Learner assignment"));
+
+                // 3. Empêcher les doublons
+                if (wishlistRepository.existsByLearnerProfileAndCourse(learnerProfile, course)) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                                        "This course is already present inside your wishlist");
+                }
+
+                // 4. Construction et persistance
+                WishlistItem item = WishlistItem.builder()
+                                .learnerProfile(learnerProfile)
+                                .course(course)
+                                .build();
+
+                wishlistRepository.save(item);
+        }
+
+        @Transactional
+        public void removeCourseFromWishlist(Long courseId, String username) {
+                // 1. Validation de l'existence du cours
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Target course context not found"));
+
+                // 2. Extraction du profil apprenant connecté
+                User user = userRepository.findByEmailIgnoreCase(username)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "User authentication context not found"));
+
+                LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                                "User profile is missing an active Learner assignment"));
+
+                // 3. Récupération de la ligne d'association
+                WishlistItem item = wishlistRepository.findByLearnerProfileAndCourse(learnerProfile, course)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "This course was not found inside your wishlist"));
+
+                // 4. Suppression physique de la ligne
+                wishlistRepository.delete(item);
+        }
+
+        @Transactional(readOnly = true)
+        public org.springframework.data.domain.Page<CourseResponse> getLearnerWishlist(String username,
+                        org.springframework.data.domain.Pageable pageable) {
+                // 1. Extraction du profil apprenant
+                User user = userRepository.findByEmailIgnoreCase(username)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "User authentication context not found"));
+
+                LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                                "User profile is missing an active Learner assignment"));
+
+                // 2. Récupération paginée et mapping propre vers CourseResponse via ta méthode
+                // réutilisable toResponse
+                return wishlistRepository.findByLearnerProfile(learnerProfile, pageable)
+                                .map(wishlistItem -> this.toResponse(wishlistItem.getCourse()));
         }
 }
