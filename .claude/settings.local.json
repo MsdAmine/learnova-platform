@@ -49,7 +49,21 @@
       "Read(//c/Users/massi/AppData/Local/Temp/**)",
       "Bash(npm init *)",
       "Bash(dir C:\\\\Users\\\\massi\\\\IdeaProjects\\\\Gestion-Formation-LMS\\\\frontend\\\\src\\\\components\\\\common\\\\skeletons *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Skill(impeccable)",
+      "Bash(grep -v \"node_modules\\\\|//\\\\|\\\\.d\\\\.ts\")",
+      "Bash(Select-String -Pattern \"tailwind|postcss\" -SimpleMatch)",
+      "PowerShell(node \"C:\\\\Users\\\\massi\\\\.claude\\\\plugins\\\\cache\\\\impeccable\\\\impeccable\\\\3.1.1\\\\skills\\\\impeccable\\\\scripts\\\\critique-storage.mjs\" trend \"rontend-src-features-landing-pages-landingpage-tsx\" 5 2>&1)",
+      "PowerShell(Remove-Item *)",
+      "Skill(claude-api)",
+      "WebSearch",
+      "Bash(graphify claude *)",
+      "PowerShell(pip install *)",
+      "PowerShell(\\(Get-Command uv -ErrorAction SilentlyContinue\\) -ne $null)",
+      "PowerShell(uv tool *)",
+      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" claude install 2>&1)",
+      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" --help 2>&1)"
     ]
-  }
+  },
+  "outputStyle": "Explanatory"
 }

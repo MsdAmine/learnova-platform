@@ -43,9 +43,9 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: 'text-[13px] py-2 px-4',
-  md: 'text-[14px] py-2.5 px-5',
-  lg: 'text-[15px] py-3 px-7 min-h-[44px]',
+  sm: 'text-btn-sm py-2 px-4',
+  md: 'text-btn-md py-2.5 px-5',
+  lg: 'text-button py-3 px-7 min-h-[44px]',
 };
 
 const buttonClasses = (
@@ -62,8 +62,8 @@ const buttonClasses = (
     'active:scale-[0.98]',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
     loading && 'cursor-wait',
-    variantClasses[variant],
     sizeClasses[size],
+    variantClasses[variant],
     className,
   );
 

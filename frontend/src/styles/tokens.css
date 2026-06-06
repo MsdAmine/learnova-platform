@@ -27,9 +27,12 @@
   /* ── Colors: Tertiary ────────────────────────────────────────────────────── */
 
   --color-coral: #FF7A59;       /* Alert Ember — warnings, high-priority notifications, streaks  */
+  --color-coral-50:  #FFE1D7;   /* Coral tint surface — badge/status bg, status-bearing only     */
+  --color-coral-700: #B33D25;   /* Coral on-surface text — readable on coral-50 backgrounds      */
   --color-anzac: #E0C03A;       /* Earned Amber — certificates, achievements, completion badges  */
   --color-anzac-50:  #FEFCE8;   /* Anzac tint surface — achievement badge / icon backgrounds     */
   --color-anzac-700: #7A5C00;   /* Anzac on-surface text — readable on anzac-50 backgrounds      */
+  --color-azure-50:  #E5EBF9;   /* Azure tint surface — informational badge/status bg            */
 
 
   /* ── Colors: Neutral ─────────────────────────────────────────────────────── */

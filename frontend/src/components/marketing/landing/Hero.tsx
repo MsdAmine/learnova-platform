@@ -64,7 +64,7 @@ export function Hero() {
               style={animStyle(2)}
             >
               <Button variant="inverted" size="lg" asChild>
-                <Link to="/courses">Explore</Link>
+                <Link to="/register">Get started</Link>
               </Button>
               <Button
                 variant="ghost"
@@ -72,7 +72,7 @@ export function Hero() {
                 asChild
                 className="text-white hover:bg-white/10"
               >
-                <Link to="/register">Register</Link>
+                <Link to="/courses">Browse courses</Link>
               </Button>
             </div>
           </div>
@@ -92,7 +92,7 @@ export function Hero() {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="h-full w-full object-contain object-right"
+              className="h-full w-full object-cover object-right"
             />
           </div>
 

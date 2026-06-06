@@ -64,7 +64,7 @@ export function SectionHeader({
       {eyebrow && (
         <span
           className={cn(
-            'mb-3 text-[12px] font-semibold leading-none tracking-[0.08em] uppercase',
+            'mb-3 text-caption font-semibold leading-none tracking-[0.08em] uppercase',
             onDark ? 'text-on-dark-muted' : 'text-text-muted',
           )}
         >

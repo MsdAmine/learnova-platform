@@ -1,20 +1,16 @@
 import { useState } from 'react';
-import { Award, Calendar, Download, Play, Check, ArrowRight } from 'lucide-react';
+import { Award, Calendar, Download, Play } from 'lucide-react';
+import { cn } from '../../../lib/cn';
 import { useAuth } from '../../../context/AuthContext';
 import { Button } from '../../../components/ui/Button';
-import { cn } from '../../../lib/cn';
+import { ProgressBar } from '../../../components/ui/ProgressBar';
+import { CourseCard, type Course } from '../../../components/dashboard/CourseCard';
+import { FeaturedCourseRow } from '../../../components/dashboard/FeaturedCourseRow';
+import { FilterTabs } from '../../../components/ui/FilterTabs';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type FilterValue = 'all' | 'in-progress' | 'completed';
-
-interface Course {
-  id: number;
-  title: string;
-  instructor: string;
-  progress: number;
-  gradient: { from: string; to: string };
-}
 
 interface Session {
   id: number;
@@ -113,152 +109,6 @@ const CERTIFICATES: Certificate[] = [
   { id: 2, course: 'Node.js Backend Engineering', issuedAt: 'May 2026' },
 ];
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-function ProgressBar({ value }: { value: number }) {
-  const clamped = Math.min(100, Math.max(0, value));
-  return (
-    <div className="h-1 bg-surface-elevated rounded-full overflow-hidden">
-      <div
-        className="h-full bg-salem rounded-full"
-        style={{ width: `${clamped}%` }}
-        role="progressbar"
-        aria-valuenow={clamped}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      />
-    </div>
-  );
-}
-
-// Full-width featured row for the prioritised next-up course
-function FeaturedCourseRow({ course }: { course: Course }) {
-  return (
-    <div className="bg-surface border border-border-hover rounded-lg overflow-hidden mb-4">
-      <div className="flex">
-        <div
-          className="w-20 flex-shrink-0 hidden sm:block"
-          style={{
-            background: `linear-gradient(140deg, ${course.gradient.from}, ${course.gradient.to})`,
-          }}
-          aria-hidden="true"
-        />
-        <div className="flex-1 px-5 py-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex-1">
-              <p className="text-caption text-text-muted mb-1">Next up</p>
-              <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
-                {course.title}
-              </h3>
-              <p className="text-caption text-text-secondary">{course.instructor}</p>
-            </div>
-            <button
-              type="button"
-              aria-label={`Continue ${course.title}`}
-              className={cn(
-                'flex items-center gap-1 text-body-sm font-medium text-salem flex-shrink-0 mt-0.5',
-                'hover:text-salem-400 transition-colors duration-fast',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
-              )}
-            >
-              Continue <ArrowRight size={13} aria-hidden="true" />
-            </button>
-          </div>
-          <div className="mt-3">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-caption text-text-muted">Progress</span>
-              <span className="text-caption font-medium text-text-secondary">
-                {course.progress}% complete
-              </span>
-            </div>
-            <ProgressBar value={course.progress} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Completed: no thumbnail, no progress bar; Anzac "Done" badge signals achievement
-function CompletedCourseCard({ course }: { course: Course }) {
-  return (
-    <div className="bg-surface border border-border-default rounded-lg p-4">
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="text-body-sm font-semibold text-text-primary line-clamp-2 flex-1">
-          {course.title}
-        </h3>
-        <span
-          className="flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium flex-shrink-0 mt-0.5 bg-anzac-50 text-anzac-700"
-          aria-label="Completed"
-        >
-          <Check size={10} aria-hidden="true" />
-          Done
-        </span>
-      </div>
-      <p className="text-caption text-text-secondary">{course.instructor}</p>
-    </div>
-  );
-}
-
-// Not started: text-only, no thumbnail, no progress — low visual weight by design
-function NotStartedCourseCard({ course }: { course: Course }) {
-  return (
-    <div
-      className={cn(
-        'bg-surface border border-border-default rounded-lg p-4',
-        'hover:border-border-hover transition-colors duration-fast',
-      )}
-    >
-      <h3 className="text-body-sm font-semibold text-text-primary line-clamp-2 mb-1">
-        {course.title}
-      </h3>
-      <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
-      <div className="flex items-center justify-between">
-        <span className="text-caption text-text-muted">Not started</span>
-        <button
-          type="button"
-          aria-label={`Start ${course.title}`}
-          className={cn(
-            'flex items-center gap-1 text-caption font-medium text-salem',
-            'hover:text-salem-400 transition-colors duration-fast',
-            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
-          )}
-        >
-          Start <ArrowRight size={11} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// Standard in-progress card: gradient thumbnail + progress bar
-function InProgressCourseCard({ course }: { course: Course }) {
-  return (
-    <div
-      className={cn(
-        'bg-surface border border-border-default rounded-lg overflow-hidden',
-        'transition-shadow duration-standard hover:shadow-hover-lift',
-      )}
-    >
-      <div
-        className="aspect-video w-full"
-        style={{
-          background: `linear-gradient(140deg, ${course.gradient.from}, ${course.gradient.to})`,
-        }}
-        aria-hidden="true"
-      />
-      <div className="p-4">
-        <h3 className="text-body-sm font-semibold text-text-primary mb-0.5 line-clamp-2">
-          {course.title}
-        </h3>
-        <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
-        <ProgressBar value={course.progress} />
-        <p className="text-caption text-text-muted mt-1.5">{course.progress}% complete</p>
-      </div>
-    </div>
-  );
-}
-
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function LearnerDashboard() {
@@ -273,11 +123,16 @@ export default function LearnerDashboard() {
     return true;
   });
 
-  // Surface the next-up course as a featured row only when the filter includes it
+  // Surface the next-up course (NEXT_UP_ID) as a featured row when the filter
+  // includes it, then drop it from the grid. Pure derivation, no mutation —
+  // NEXT_UP_ID is kept here on purpose so it stays distinct from the hardcoded
+  // "Continue Learning" card above (which features the highest-progress course).
   const nextUpCourse = filteredCourses.find(
     c => c.id === NEXT_UP_ID && c.progress > 0 && c.progress < 100,
   );
-  const gridCourses = filteredCourses.filter(c => c.id !== nextUpCourse?.id);
+  const gridCourses = nextUpCourse
+    ? filteredCourses.filter(c => c.id !== nextUpCourse.id)
+    : filteredCourses;
 
   return (
     <div className="px-8 py-8 pb-14 max-w-container mx-auto">
@@ -358,7 +213,10 @@ export default function LearnerDashboard() {
                     {CONTINUE_COURSE.progress}% complete
                   </span>
                 </div>
-                <ProgressBar value={CONTINUE_COURSE.progress} />
+                <ProgressBar
+                  value={CONTINUE_COURSE.progress}
+                  label={`${CONTINUE_COURSE.title} progress`}
+                />
                 <div className="mt-4">
                   <Button variant="primary" size="md">Continue</Button>
                 </div>
@@ -378,35 +236,16 @@ export default function LearnerDashboard() {
             My Courses
           </h2>
 
-          <div
-            className="flex items-center gap-0.5"
-            role="group"
+          <FilterTabs
+            options={[
+              { value: 'all',         label: 'All'         },
+              { value: 'in-progress', label: 'In Progress' },
+              { value: 'completed',   label: 'Completed'   },
+            ]}
+            value={filter}
+            onChange={(v) => setFilter(v)}
             aria-label="Filter courses"
-          >
-            {(
-              [
-                { value: 'all',         label: 'All'         },
-                { value: 'in-progress', label: 'In Progress' },
-                { value: 'completed',   label: 'Completed'   },
-              ] as const
-            ).map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setFilter(value)}
-                aria-pressed={filter === value}
-                className={cn(
-                  'px-3 py-1.5 text-body-sm font-medium rounded-md transition-colors duration-fast',
-                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
-                  filter === value
-                    ? 'bg-salem-50 text-salem'
-                    : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary',
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+          />
         </div>
 
         {filteredCourses.length === 0 ? (
@@ -419,13 +258,9 @@ export default function LearnerDashboard() {
 
             {gridCourses.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-                {gridCourses.map(course => {
-                  if (course.progress === 100)
-                    return <CompletedCourseCard key={course.id} course={course} />;
-                  if (course.progress === 0)
-                    return <NotStartedCourseCard key={course.id} course={course} />;
-                  return <InProgressCourseCard key={course.id} course={course} />;
-                })}
+                {gridCourses.map(course => (
+                  <CourseCard key={course.id} course={course} />
+                ))}
               </div>
             )}
           </>

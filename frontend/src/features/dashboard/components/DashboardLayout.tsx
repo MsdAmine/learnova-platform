@@ -98,8 +98,7 @@ export default function DashboardLayout() {
 
           <div className="flex items-center gap-2.5 pl-1">
             <div
-              aria-hidden="true"
-              className="w-8 h-8 rounded-full bg-salem-50 text-salem flex items-center justify-center text-[11px] font-semibold select-none"
+              className="w-8 h-8 rounded-full bg-salem-50 text-salem flex items-center justify-center text-caption font-semibold leading-none select-none"
             >
               {initials}
             </div>
@@ -119,7 +118,7 @@ export default function DashboardLayout() {
           aria-hidden="true"
           onClick={closeSidebar}
           className={cn(
-            'fixed top-[60px] inset-x-0 bottom-0 z-30 bg-black/20',
+            'fixed top-[60px] inset-x-0 bottom-0 z-30 bg-text-primary/15',
             'md:hidden',
             'transition-opacity duration-200',
             sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',

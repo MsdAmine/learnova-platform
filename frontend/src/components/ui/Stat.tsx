@@ -49,7 +49,7 @@ export function Stat({ label, value, description, size = 'default', className, r
        * mb-2 (8px) mirrors the design.json margin-bottom: 8px spec.
        * line-clamp-1: labels are always single-line at this scale.
        */}
-      <span className="mb-2 line-clamp-1 text-[12px] font-medium leading-none tracking-[0.02em] text-text-muted">
+      <span className="mb-2 line-clamp-1 text-caption font-medium leading-none tracking-[0.02em] text-text-muted">
         {label}
       </span>
 

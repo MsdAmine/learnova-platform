@@ -12,7 +12,7 @@ export default function LandingPage() {
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-salem focus:text-white focus:px-6 focus:py-3 focus:rounded-md focus:text-[15px] focus:font-semibold focus:leading-none focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-salem"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-salem focus:text-white focus:px-6 focus:py-3 focus:rounded-md focus:text-button focus:leading-none focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-salem"
       >
         Skip to main content
       </a>

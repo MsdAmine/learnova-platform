@@ -46,7 +46,7 @@ export function StatsGrid() {
             </div>
 
             <p className="mt-lg text-body-sm text-text-secondary">
-              Updated monthly
+              Figures are representative of platform activity.
             </p>
           </div>
 

@@ -21,7 +21,7 @@ import { Stat } from '../../../components/ui/Stat';
 function Row({ label, children }: { label: string; children?: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-text-muted">
+      <span className="text-caption font-medium leading-none tracking-[0.06em] uppercase text-text-muted">
         {label}
       </span>
       <div className="flex flex-wrap items-center gap-3">{children}</div>
@@ -383,7 +383,7 @@ function ContainerSection() {
       <div className="flex flex-col gap-4">
         {(['prose', 'default', 'wide'] as const).map((size) => (
           <div key={size} className="flex flex-col gap-1">
-            <span className="text-[11px] font-medium tracking-[0.06em] uppercase text-text-muted">
+            <span className="text-caption font-medium leading-none tracking-[0.06em] uppercase text-text-muted">
               size="{size}"
             </span>
             <Container

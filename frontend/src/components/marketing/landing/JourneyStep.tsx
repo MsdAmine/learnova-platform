@@ -37,7 +37,7 @@ export function JourneyStep({
     <div className={cn('border-t border-border-default py-20 lg:py-28', className)}>
 
       {/* Step label */}
-      <p className="text-body-sm font-medium text-text-secondary mb-6 uppercase tracking-widest">
+      <p className="text-body-sm font-medium text-text-secondary mb-6 uppercase tracking-[0.08em]">
         {label}
       </p>
 

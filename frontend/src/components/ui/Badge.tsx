@@ -23,9 +23,9 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 const variantClasses: Record<BadgeVariant, string> = {
   default: 'bg-surface-elevated text-text-secondary',
   salem:   'bg-salem-50 text-salem',
-  coral:   'bg-[#FFE1D7] text-[#B33D25]',
-  anzac:   'bg-[#F8EEC0] text-[#756000]',
-  azure:   'bg-[#E5EBF9] text-azure',
+  coral:   'bg-coral-50 text-coral-700',
+  anzac:   'bg-anzac-50 text-anzac-700',
+  azure:   'bg-azure-50 text-azure',
 };
 
 export function Badge({ variant = 'default', className, ref, ...props }: BadgeProps & { ref?: Ref<HTMLSpanElement> }) {
@@ -35,7 +35,7 @@ export function Badge({ variant = 'default', className, ref, ...props }: BadgePr
       className={cn(
         'inline-flex items-center rounded-full',
         'px-2.5 py-0.5',
-        'text-[12px] font-medium leading-none tracking-[0.04em] uppercase',
+        'text-caption font-medium leading-none tracking-[0.04em] uppercase',
         variantClasses[variant],
         className,
       )}

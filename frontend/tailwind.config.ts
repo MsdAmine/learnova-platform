@@ -29,8 +29,11 @@ const config: Config = {
         'salem-700': 'var(--color-salem-700)',
 
         // Secondary / Tertiary
-        'azure': 'var(--color-azure)',
-        'coral': 'var(--color-coral)',
+        'azure':     'var(--color-azure)',
+        'azure-50':  'var(--color-azure-50)',
+        'coral':     'var(--color-coral)',
+        'coral-50':  'var(--color-coral-50)',
+        'coral-700': 'var(--color-coral-700)',
         'anzac':     'var(--color-anzac)',
         'anzac-50':  'var(--color-anzac-50)',
         'anzac-700': 'var(--color-anzac-700)',
@@ -115,6 +118,14 @@ const config: Config = {
         ],
         'button': [
           'var(--font-size-button)',
+          { lineHeight: '1', fontWeight: '600' },
+        ],
+        'btn-sm': [
+          'var(--font-size-btn-sm)',
+          { lineHeight: '1', fontWeight: '600' },
+        ],
+        'btn-md': [
+          'var(--font-size-btn-md)',
           { lineHeight: '1', fontWeight: '600' },
         ],
       },

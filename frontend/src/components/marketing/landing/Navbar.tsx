@@ -7,9 +7,8 @@ import logoPrimaryUrl from '../../../assets/logo-primary.png';
 
 const NAV_LINKS = [
   { label: 'Course catalog', href: '/courses' },
-  { label: 'How it works', href: '/#how-it-works' },
-  { label: 'About us', href: '/#about' },
-  { label: 'Resources', href: '/#resources' },
+  { label: 'How it works',   href: '/#how-it-works' },
+  { label: 'About',          href: '/#brand-intro-section' },
 ] as const;
 
 // ── Scroll detection via useSyncExternalStore ────────────────────────────────
