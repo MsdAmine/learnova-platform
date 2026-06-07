@@ -2,6 +2,7 @@ package com.learnova.learnova_backend.course.controller;
 
 import com.learnova.learnova_backend.course.dto.QuizRequest;
 import com.learnova.learnova_backend.course.dto.QuizResponse;
+import com.learnova.learnova_backend.course.dto.QuizUpdateRequest;
 import com.learnova.learnova_backend.course.service.QuizService;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -27,6 +28,34 @@ public class InstructorQuizController {
             @Valid @RequestBody QuizRequest request) {
 
         QuizResponse response = quizService.createQuiz(currentUser, courseId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/quizzes/{quizId}")
+    public ResponseEntity<QuizResponse> updateQuiz(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @Valid @RequestBody QuizUpdateRequest request) {
+        
+        QuizResponse response = quizService.updateQuiz(currentUser, quizId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/quizzes/{quizId}/publish")
+    public ResponseEntity<QuizResponse> publishQuiz(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        
+        QuizResponse response = quizService.publishQuiz(currentUser, quizId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/quizzes/{quizId}/archive")
+    public ResponseEntity<QuizResponse> archiveQuiz(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        
+        QuizResponse response = quizService.archiveQuiz(currentUser, quizId);
+        return ResponseEntity.ok(response);
     }
 }
