@@ -105,7 +105,7 @@ export default function MyCoursesPage() {
 
       {/* 3. Filter toolbar + course list ──────────────────────────────── */}
       <section aria-label="Course list" className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-4">
           <span className="text-body-sm text-text-secondary">
             {filteredCourses.length}{' '}
             {filteredCourses.length === 1 ? 'course' : 'courses'}

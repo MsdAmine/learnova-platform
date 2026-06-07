@@ -3177,7 +3177,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L1",
       "id": "service_learnerprofileservice",
-      "community": 1,
+      "community": 86,
       "norm_label": "learnerprofileservice.java"
     },
     {
@@ -3186,7 +3186,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L9",
       "id": "service_learnerprofileservice_learnerprofileservice",
-      "community": 1,
+      "community": 86,
       "norm_label": "learnerprofileservice"
     },
     {
@@ -3195,7 +3195,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "service_learnerprofileservice_learnerprofileservice_createdefaultprofilefor",
-      "community": 1,
+      "community": 86,
       "norm_label": ".createdefaultprofilefor()"
     },
     {
@@ -3204,7 +3204,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "backend_src_main_java_com_learnova_learnova_backend_profile_service_learnerprofileservice_java_user",
-      "community": 1,
+      "community": 86,
       "norm_label": "user"
     },
     {
@@ -3213,7 +3213,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "backend_src_main_java_com_learnova_learnova_backend_profile_service_learnerprofileservice_java_learnerprofile",
-      "community": 1,
+      "community": 86,
       "norm_label": "learnerprofile"
     },
     {
@@ -3762,7 +3762,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L1",
       "id": "security_securityconfig",
-      "community": 8,
+      "community": 0,
       "norm_label": "securityconfig.java"
     },
     {
@@ -3771,7 +3771,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L25",
       "id": "security_securityconfig_securityconfig",
-      "community": 8,
+      "community": 0,
       "norm_label": "securityconfig"
     },
     {
@@ -3780,7 +3780,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "security_securityconfig_securityconfig_securityfilterchain",
-      "community": 8,
+      "community": 0,
       "norm_label": ".securityfilterchain()"
     },
     {
@@ -3789,7 +3789,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "httpsecurity",
-      "community": 8,
+      "community": 0,
       "norm_label": "httpsecurity"
     },
     {
@@ -3798,7 +3798,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "securityfilterchain",
-      "community": 8,
+      "community": 0,
       "norm_label": "securityfilterchain"
     },
     {
@@ -3807,7 +3807,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L35",
       "id": "backend_src_main_java_com_learnova_learnova_backend_security_securityconfig_java_bean",
-      "community": 8,
+      "community": 0,
       "norm_label": "bean"
     },
     {
@@ -3816,7 +3816,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L66",
       "id": "security_securityconfig_securityconfig_authenticationprovider",
-      "community": 8,
+      "community": 0,
       "norm_label": ".authenticationprovider()"
     },
     {
@@ -3825,7 +3825,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L66",
       "id": "authenticationprovider",
-      "community": 8,
+      "community": 0,
       "norm_label": "authenticationprovider"
     },
     {
@@ -3834,7 +3834,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "security_securityconfig_securityconfig_authenticationmanager",
-      "community": 8,
+      "community": 0,
       "norm_label": ".authenticationmanager()"
     },
     {
@@ -3843,7 +3843,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "authenticationconfiguration",
-      "community": 8,
+      "community": 0,
       "norm_label": "authenticationconfiguration"
     },
     {
@@ -3852,7 +3852,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L73",
       "id": "authenticationmanager",
-      "community": 8,
+      "community": 0,
       "norm_label": "authenticationmanager"
     },
     {
@@ -3861,7 +3861,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L80",
       "id": "security_securityconfig_securityconfig_corsconfigurationsource",
-      "community": 8,
+      "community": 0,
       "norm_label": ".corsconfigurationsource()"
     },
     {
@@ -3870,7 +3870,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/SecurityConfig.java",
       "source_location": "L80",
       "id": "corsconfigurationsource",
-      "community": 8,
+      "community": 0,
       "norm_label": "corsconfigurationsource"
     },
     {
@@ -4743,7 +4743,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L1",
       "id": "service_learnerprofileservicetest",
-      "community": 1,
+      "community": 86,
       "norm_label": "learnerprofileservicetest.java"
     },
     {
@@ -4752,7 +4752,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L15",
       "id": "service_learnerprofileservicetest_learnerprofileservicetest",
-      "community": 1,
+      "community": 86,
       "norm_label": "learnerprofileservicetest"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L29",
       "id": "service_learnerprofileservicetest_learnerprofileservicetest_shouldpreventduplicatelearnerprofiles",
-      "community": 1,
+      "community": 86,
       "norm_label": ".shouldpreventduplicatelearnerprofiles()"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L29",
       "id": "backend_src_test_java_com_learnova_learnova_backend_profile_service_learnerprofileservicetest_java_test",
-      "community": 1,
+      "community": 86,
       "norm_label": "test"
     },
     {
@@ -5526,7 +5526,7 @@
       "source_file": "frontend/src/components/marketing/landing/BrandIntro.tsx",
       "source_location": "L102",
       "id": "landing_brandintro_brandintro",
-      "community": 6,
+      "community": 49,
       "norm_label": "brandintro()"
     },
     {
@@ -5688,7 +5688,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L43",
       "id": "landing_journey_journey",
-      "community": 36,
+      "community": 6,
       "norm_label": "journey()"
     },
     {
@@ -5832,7 +5832,7 @@
       "source_file": "frontend/src/components/marketing/landing/Testimonials.tsx",
       "source_location": "L6",
       "id": "landing_testimonials_testimonials",
-      "community": 6,
+      "community": 49,
       "norm_label": "testimonials()"
     },
     {
@@ -5913,7 +5913,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L1",
       "id": "ui_badge",
-      "community": 11,
+      "community": 101,
       "norm_label": "badge.tsx"
     },
     {
@@ -5922,7 +5922,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L17",
       "id": "ui_badge_badgevariant",
-      "community": 11,
+      "community": 101,
       "norm_label": "badgevariant"
     },
     {
@@ -5931,7 +5931,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L19",
       "id": "ui_badge_badgeprops",
-      "community": 11,
+      "community": 101,
       "norm_label": "badgeprops"
     },
     {
@@ -5940,7 +5940,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L23",
       "id": "ui_badge_variantclasses",
-      "community": 11,
+      "community": 101,
       "norm_label": "variantclasses"
     },
     {
@@ -5949,7 +5949,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L31",
       "id": "ui_badge_badge",
-      "community": 11,
+      "community": 101,
       "norm_label": "badge()"
     },
     {
@@ -6826,10 +6826,82 @@
       "norm_label": "progresspage.tsx"
     },
     {
+      "label": "CourseProgress",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L7",
+      "id": "pages_progresspage_courseprogress",
+      "community": 101,
+      "norm_label": "courseprogress"
+    },
+    {
+      "label": "DayActivity",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L16",
+      "id": "pages_progresspage_dayactivity",
+      "community": 101,
+      "norm_label": "dayactivity"
+    },
+    {
+      "label": "COURSES",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L25",
+      "id": "pages_progresspage_courses",
+      "community": 101,
+      "norm_label": "courses"
+    },
+    {
+      "label": "WEEK_ACTIVITY",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L68",
+      "id": "pages_progresspage_week_activity",
+      "community": 101,
+      "norm_label": "week_activity"
+    },
+    {
+      "label": "WeekStrip()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L80",
+      "id": "pages_progresspage_weekstrip",
+      "community": 101,
+      "norm_label": "weekstrip()"
+    },
+    {
+      "label": "InProgressRow()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L106",
+      "id": "pages_progresspage_inprogressrow",
+      "community": 101,
+      "norm_label": "inprogressrow()"
+    },
+    {
+      "label": "CompletedRow()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L139",
+      "id": "pages_progresspage_completedrow",
+      "community": 101,
+      "norm_label": "completedrow()"
+    },
+    {
+      "label": "NotStartedRow()",
+      "file_type": "code",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L153",
+      "id": "pages_progresspage_notstartedrow",
+      "community": 101,
+      "norm_label": "notstartedrow()"
+    },
+    {
       "label": "ProgressPage()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
-      "source_location": "L1",
+      "source_location": "L175",
       "id": "pages_progresspage_progresspage",
       "community": 101,
       "norm_label": "progresspage()"
@@ -22155,6 +22227,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "ui_badge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "frontend/src/features/style-guide/pages/StyleGuide.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -22223,6 +22306,17 @@
       "confidence_score": 1.0,
       "source": "ui_badge",
       "target": "ui_badge_variantclasses"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "ui_badge_badge",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -23132,6 +23226,17 @@
       "target": "ui_progressbar"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "ui_progressbar",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/components/ui/ProgressBar.tsx",
@@ -23151,6 +23256,17 @@
       "confidence_score": 1.0,
       "source": "pages_learnerdashboard",
       "target": "ui_progressbar_progressbar"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "ui_progressbar_progressbar",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -24168,11 +24284,91 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L139",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_completedrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_courseprogress",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_courses",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_dayactivity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_inprogressrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L153",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_notstartedrow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L1",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "pages_progresspage",
       "target": "pages_progresspage_progresspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L68",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_week_activity",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "pages_progresspage",
+      "target": "pages_progresspage_weekstrip",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -28930,5 +29126,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0e23c307ee2d0e65d00418cceacc15726fe107ca"
+  "built_at_commit": "e9e1e5b6afd3485ac2bb7f777b784ebeae97c35e"
 }

@@ -535,13 +535,13 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/MyCoursesPage.tsx": {
-    "mtime": 1780707865.1597004,
-    "ast_hash": "3798394074d5da3c9c1a6506391064f0",
+    "mtime": 1780872152.764723,
+    "ast_hash": "841b6cfdb64ec9960a9aeb5cbe5b89f6",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/ProgressPage.tsx": {
-    "mtime": 1780447522.1832283,
-    "ast_hash": "dd9f4ae064afddd5c7c9304fb0ec1df7",
+    "mtime": 1780872935.206492,
+    "ast_hash": "4d196fcaec520fcb195a01dd16e2be55",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/SettingsPage.tsx": {
@@ -975,13 +975,13 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/CourseCard.tsx": {
-    "mtime": 1780707814.876252,
-    "ast_hash": "be25820de4a31ab6427f85360caa9f54",
+    "mtime": 1780872141.2313266,
+    "ast_hash": "a3e2c5e3b9cce25746a34fdb2f0fda97",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/FeaturedCourseRow.tsx": {
-    "mtime": 1780707826.9291537,
-    "ast_hash": "bf299173723c432aa7a3dd2936b82f6e",
+    "mtime": 1780872103.394715,
+    "ast_hash": "1ddc44d00489a3e242d0b2b09c3bc6ab",
     "semantic_hash": ""
   },
   "frontend/src/components/ui/FilterTabs.tsx": {
