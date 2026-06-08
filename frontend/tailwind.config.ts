@@ -276,6 +276,16 @@ const config: Config = {
         'nav-mobile': 'var(--nav-height-mobile)',
       },
 
+
+      // ── Top (inset) ──────────────────────────────────────────────────────────
+      // Usage: top-nav, top-nav-mobile — positions fixed elements below the topbar.
+      // Mirrors height tokens so sidebar/overlay offsets stay in sync with the header.
+
+      top: {
+        'nav':        'var(--nav-height)',
+        'nav-mobile': 'var(--nav-height-mobile)',
+      },
+
     },
   },
   plugins: [],

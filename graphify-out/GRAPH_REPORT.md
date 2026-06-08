@@ -1,16 +1,16 @@
-# Graph Report - Gestion-Formation-LMS  (2026-06-07)
+# Graph Report - Gestion-Formation-LMS  (2026-06-08)
 
 ## Corpus Check
-- 163 files · ~273,795 words
+- 163 files · ~273,788 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1289 nodes · 1681 edges · 123 communities (114 shown, 9 thin omitted)
+- 1289 nodes · 1681 edges · 122 communities (113 shown, 9 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 30 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e9e1e5b6`
+- Built from commit: `b3b4e3f6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -51,7 +51,6 @@
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
-- [[_COMMUNITY_Community 36|Community 36]]
 - [[_COMMUNITY_Community 37|Community 37]]
 - [[_COMMUNITY_Community 38|Community 38]]
 - [[_COMMUNITY_Community 39|Community 39]]
@@ -143,7 +142,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (123 total, 9 thin omitted)
+## Communities (122 total, 9 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.07
@@ -170,8 +169,8 @@ Cohesion: 0.06
 Nodes (35): dependencies, axios, clsx, lucide-react, @radix-ui/react-slot, react, react-dom, react-router-dom (+27 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.08
-Nodes (15): FinalCta(), Footer(), NAV_COLUMNS, SOCIAL_LINKS, Hero(), Journey(), NAV_LINKS, Navbar() (+7 more)
+Cohesion: 0.07
+Nodes (20): FinalCta(), Footer(), NAV_COLUMNS, SOCIAL_LINKS, Hero(), Journey(), steps, Cta (+12 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.08
@@ -288,10 +287,6 @@ Nodes (10): CourseRequest, CourseResponse, CourseUpdateRequest, CustomUserDetail
 ### Community 35 - "Community 35"
 Cohesion: 0.25
 Nodes (6): AuthContext, AuthContextType, AuthProvider(), User, ProfileSwitchResponse, ProfileType
-
-### Community 36 - "Community 36"
-Cohesion: 0.33
-Nodes (5): steps, Cta, JourneyStep(), JourneyStepImage, JourneyStepProps
 
 ### Community 37 - "Community 37"
 Cohesion: 0.17
@@ -519,7 +514,7 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `InstructorApprovalStatus` connect `Community 10` to `Community 9`, `Community 13`, `Community 14`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `cn()` connect `Community 11` to `Community 36`, `Community 101`, `Community 6`, `Community 12`, `Community 46`, `Community 49`, `Community 20`, `Community 24`, `Community 26`, `Community 29`?**
+- **Why does `cn()` connect `Community 11` to `Community 101`, `Community 6`, `Community 12`, `Community 46`, `Community 49`, `Community 20`, `Community 24`, `Community 26`, `Community 29`?**
   _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Why does `colorMeta` connect `Community 65` to `Community 2`, `Community 69`, `Community 70`, `Community 71`, `Community 72`, `Community 73`, `Community 74`, `Community 75`, `Community 76`, `Community 77`, `Community 78`, `Community 79`, `Community 80`, `Community 81`, `Community 82`, `Community 83`, `Community 84`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._

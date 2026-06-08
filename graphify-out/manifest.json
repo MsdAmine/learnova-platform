@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "frontend/src/components/ui/Button.tsx": {
-    "mtime": 1780530669.0694244,
-    "ast_hash": "76485a5d9ee83cfdb20e597228f5b32d",
+    "mtime": 1780876690.6835232,
+    "ast_hash": "40c3e8e0fbf4886eb44c51070bda7b41",
     "semantic_hash": ""
   },
   "frontend/src/components/ui/Card.tsx": {
@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/components/DashboardLayout.tsx": {
-    "mtime": 1780534349.0733705,
-    "ast_hash": "a4da852b8065a28dec95953704252fca",
+    "mtime": 1780877942.2095456,
+    "ast_hash": "db5908dac1a8bb9f3cb6a3065066f202",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/CertificatesPage.tsx": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/ProgressPage.tsx": {
-    "mtime": 1780872935.206492,
-    "ast_hash": "4d196fcaec520fcb195a01dd16e2be55",
+    "mtime": 1780877926.486757,
+    "ast_hash": "db03b2404eb125b6143317c8849bac32",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/SettingsPage.tsx": {
@@ -600,8 +600,8 @@
     "semantic_hash": ""
   },
   "frontend/tailwind.config.ts": {
-    "mtime": 1780523802.7872791,
-    "ast_hash": "b53fef7489f5e8781cdb1b474d0a6504",
+    "mtime": 1780877947.50643,
+    "ast_hash": "dd26c86fbc225639a2bcc32f52735acf",
     "semantic_hash": ""
   },
   "frontend/tsconfig.app.json": {
@@ -975,8 +975,8 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/CourseCard.tsx": {
-    "mtime": 1780872141.2313266,
-    "ast_hash": "a3e2c5e3b9cce25746a34fdb2f0fda97",
+    "mtime": 1780877854.1627128,
+    "ast_hash": "c99ec9265c35147cfd3f65c2c9ec7569",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/FeaturedCourseRow.tsx": {
@@ -985,8 +985,8 @@
     "semantic_hash": ""
   },
   "frontend/src/components/ui/FilterTabs.tsx": {
-    "mtime": 1780707831.067198,
-    "ast_hash": "007ead42c9501bc44925066ad9b61b63",
+    "mtime": 1780876696.0765908,
+    "ast_hash": "7e788e4935fe00cf01742f8e94a3aa55",
     "semantic_hash": ""
   }
 }

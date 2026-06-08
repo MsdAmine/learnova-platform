@@ -83,19 +83,17 @@ function WeekStrip({ days }: { days: DayActivity[] }) {
     <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
         <span className="text-body-sm font-medium text-text-secondary">This week</span>
-        <span className="text-caption text-text-muted">{activeDays} of 7 days active</span>
+        <span className="text-caption text-text-secondary">{activeDays} of 7 days active</span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" aria-hidden="true">
         {days.map((day, i) => (
-          <div key={i} className="flex flex-col items-center gap-1.5 w-9">
+          <div key={i} className="flex flex-col items-center gap-1.5 w-8 sm:w-9">
             <div
               className={`w-7 h-7 rounded-full ${
-                day.active ? 'bg-[#3C57B8]' : 'bg-surface-elevated'
+                day.active ? 'bg-azure' : 'bg-surface-elevated'
               }`}
-              role="img"
-              aria-label={`${day.label}: ${day.active ? 'active' : 'no activity'}`}
             />
-            <span className="text-caption text-text-muted">{day.label}</span>
+            <span className="text-caption text-text-secondary">{day.label}</span>
           </div>
         ))}
       </div>
@@ -105,7 +103,7 @@ function WeekStrip({ days }: { days: DayActivity[] }) {
 
 function InProgressRow({ course }: { course: CourseProgress }) {
   return (
-    <div className="px-5 py-4">
+    <li className="px-5 py-4">
       <div className="flex items-start justify-between gap-4 mb-2.5">
         <div className="min-w-0 flex-1">
           <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
@@ -116,7 +114,7 @@ function InProgressRow({ course }: { course: CourseProgress }) {
         <button
           type="button"
           aria-label={`Continue ${course.title}`}
-          className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 p-1 -m-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm p-1 -m-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Continue <ArrowRight size={11} aria-hidden="true" />
         </button>
@@ -125,20 +123,20 @@ function InProgressRow({ course }: { course: CourseProgress }) {
         <div className="flex-1">
           <ProgressBar value={course.progress} label={`${course.title} progress`} />
         </div>
-        <span className="text-caption text-text-muted w-8 text-right flex-shrink-0">
+        <span className="text-caption text-text-secondary w-8 text-right flex-shrink-0">
           {course.progress}%
         </span>
       </div>
-      <p className="text-caption text-text-muted mt-1.5">
+      <p className="text-caption text-text-secondary mt-1.5">
         {course.lessonsCompleted} of {course.totalLessons} lessons
       </p>
-    </div>
+    </li>
   );
 }
 
 function CompletedRow({ course }: { course: CourseProgress }) {
   return (
-    <div className="px-5 py-3.5 flex items-center gap-4">
+    <li className="px-5 py-3.5 flex items-center gap-4">
       <div className="min-w-0 flex-1">
         <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
           {course.title}
@@ -146,13 +144,13 @@ function CompletedRow({ course }: { course: CourseProgress }) {
         <p className="text-caption text-text-secondary">{course.instructor}</p>
       </div>
       <Badge variant="anzac" className="flex-shrink-0">Done</Badge>
-    </div>
+    </li>
   );
 }
 
 function NotStartedRow({ course }: { course: CourseProgress }) {
   return (
-    <div className="px-5 py-3.5 flex items-center gap-4">
+    <li className="px-5 py-3.5 flex items-center gap-4">
       <div className="min-w-0 flex-1">
         <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
           {course.title}
@@ -166,7 +164,7 @@ function NotStartedRow({ course }: { course: CourseProgress }) {
       >
         Start <ArrowRight size={11} aria-hidden="true" />
       </button>
-    </div>
+    </li>
   );
 }
 
@@ -178,7 +176,7 @@ export default function ProgressPage() {
   const notStarted  = COURSES.filter(c => c.progress === 0);
 
   return (
-    <div className="px-8 py-8 pb-14 max-w-container mx-auto">
+    <div className="px-4 py-6 pb-14 sm:px-8 sm:py-8 max-w-container mx-auto">
 
       {/* 1. Page header ───────────────────────────────────────────────── */}
       <div className="mb-8">
@@ -220,28 +218,28 @@ export default function ProgressPage() {
       {/* 4. In progress ───────────────────────────────────────────────── */}
       {inProgress.length > 0 && (
         <section className="mb-6" aria-label="In progress courses">
-          <h2 className="text-body-sm font-medium text-text-muted mb-3">
+          <h2 className="text-body-sm font-medium text-text-secondary mb-3">
             In progress ({inProgress.length})
           </h2>
-          <div className="bg-surface border border-border-default rounded-lg divide-y divide-border-default">
+          <ul className="list-none bg-surface border border-border-default rounded-lg divide-y divide-border-default">
             {inProgress.map(course => (
               <InProgressRow key={course.id} course={course} />
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
       {/* 5. Completed ─────────────────────────────────────────────────── */}
       {completed.length > 0 && (
         <section className="mb-6" aria-label="Completed courses">
-          <h2 className="text-body-sm font-medium text-text-muted mb-3">
+          <h2 className="text-body-sm font-medium text-text-secondary mb-3">
             Completed ({completed.length})
           </h2>
-          <div className="bg-surface border border-border-default rounded-lg divide-y divide-border-default">
+          <ul className="list-none bg-surface border border-border-default rounded-lg divide-y divide-border-default">
             {completed.map(course => (
               <CompletedRow key={course.id} course={course} />
             ))}
-          </div>
+          </ul>
           <button
             type="button"
             className="flex items-center gap-1 text-body-sm font-medium text-salem mt-3 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
@@ -254,14 +252,14 @@ export default function ProgressPage() {
       {/* 6. Not started ───────────────────────────────────────────────── */}
       {notStarted.length > 0 && (
         <section className="mb-6" aria-label="Not started courses">
-          <h2 className="text-body-sm font-medium text-text-muted mb-3">
+          <h2 className="text-body-sm font-medium text-text-secondary mb-3">
             Not started ({notStarted.length})
           </h2>
-          <div className="bg-surface border border-border-default rounded-lg divide-y divide-border-default">
+          <ul className="list-none bg-surface border border-border-default rounded-lg divide-y divide-border-default">
             {notStarted.map(course => (
               <NotStartedRow key={course.id} course={course} />
             ))}
-          </div>
+          </ul>
         </section>
       )}
 

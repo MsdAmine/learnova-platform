@@ -14,7 +14,7 @@ export interface Course {
 // valid thumbnail. Centralizing this guards both the in-progress card (which
 // otherwise crashes on `gradient.from`) and the featured row (which otherwise
 // emits an invalid `linear-gradient(…, undefined, undefined)`).
-const DEFAULT_GRADIENT = { from: '#032117', to: '#1A3B2E' } as const;
+const DEFAULT_GRADIENT = { from: 'var(--color-salem)', to: 'var(--color-salem-400)' } as const;
 
 export function courseGradient(course: Course): string {
   const { from, to } = course.gradient ?? DEFAULT_GRADIENT;
@@ -46,7 +46,7 @@ function NotStartedCourseCard({ course }: { course: Course }) {
       </h3>
       <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
       <div className="flex items-center justify-between">
-        <span className="text-caption text-text-muted">Not started</span>
+        <span className="text-caption text-text-secondary">Not started</span>
         <button
           type="button"
           aria-label={`Start ${course.title}`}
@@ -61,7 +61,7 @@ function NotStartedCourseCard({ course }: { course: Course }) {
 
 function InProgressCourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow duration-standard hover:shadow-hover-lift">
+    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow motion-safe:[will-change:box-shadow] duration-standard hover:shadow-hover-lift">
       <div
         className="aspect-video w-full"
         style={{ background: courseGradient(course) }}
@@ -73,7 +73,7 @@ function InProgressCourseCard({ course }: { course: Course }) {
         </h3>
         <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
         <ProgressBar value={course.progress} label={`${course.title} progress`} />
-        <p className="text-caption text-text-muted mt-1.5">{course.progress}% complete</p>
+        <p className="text-caption text-text-secondary mt-1.5">{course.progress}% complete</p>
       </div>
     </div>
   );

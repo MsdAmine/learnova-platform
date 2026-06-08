@@ -27,7 +27,7 @@ export function FilterTabs<T extends string>({
           onClick={() => onChange(option.value)}
           aria-pressed={value === option.value}
           className={cn(
-            'px-3 py-1.5 text-body-sm font-medium rounded-md transition-colors duration-fast',
+            'px-3 py-1.5 text-body-sm font-medium rounded-md transition-colors duration-fast min-h-[44px]',
             'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
             value === option.value
               ? 'bg-salem-50 text-salem'

@@ -5670,7 +5670,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L1",
       "id": "landing_journey",
-      "community": 36,
+      "community": 6,
       "norm_label": "journey.tsx"
     },
     {
@@ -5679,7 +5679,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L7",
       "id": "landing_journey_steps",
-      "community": 36,
+      "community": 6,
       "norm_label": "steps"
     },
     {
@@ -5697,7 +5697,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L1",
       "id": "landing_journeystep",
-      "community": 36,
+      "community": 6,
       "norm_label": "journeystep.tsx"
     },
     {
@@ -5706,7 +5706,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L5",
       "id": "landing_journeystep_cta",
-      "community": 36,
+      "community": 6,
       "norm_label": "cta"
     },
     {
@@ -5715,7 +5715,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L10",
       "id": "landing_journeystep_journeystepimage",
-      "community": 36,
+      "community": 6,
       "norm_label": "journeystepimage"
     },
     {
@@ -5724,7 +5724,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L15",
       "id": "landing_journeystep_journeystepprops",
-      "community": 36,
+      "community": 6,
       "norm_label": "journeystepprops"
     },
     {
@@ -5733,7 +5733,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L26",
       "id": "landing_journeystep_journeystep",
-      "community": 36,
+      "community": 6,
       "norm_label": "journeystep()"
     },
     {
@@ -6874,7 +6874,7 @@
       "label": "InProgressRow()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
-      "source_location": "L106",
+      "source_location": "L104",
       "id": "pages_progresspage_inprogressrow",
       "community": 101,
       "norm_label": "inprogressrow()"
@@ -6883,7 +6883,7 @@
       "label": "CompletedRow()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
-      "source_location": "L139",
+      "source_location": "L137",
       "id": "pages_progresspage_completedrow",
       "community": 101,
       "norm_label": "completedrow()"
@@ -6892,7 +6892,7 @@
       "label": "NotStartedRow()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
-      "source_location": "L153",
+      "source_location": "L151",
       "id": "pages_progresspage_notstartedrow",
       "community": 101,
       "norm_label": "notstartedrow()"
@@ -6901,7 +6901,7 @@
       "label": "ProgressPage()",
       "file_type": "code",
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
-      "source_location": "L175",
+      "source_location": "L173",
       "id": "pages_progresspage_progresspage",
       "community": 101,
       "norm_label": "progresspage()"
@@ -22230,9 +22230,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "ui_badge",
-      "confidence_score": 1.0
+      "target": "ui_badge"
     },
     {
       "relation": "imports_from",
@@ -22314,9 +22314,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "ui_badge_badge",
-      "confidence_score": 1.0
+      "target": "ui_badge_badge"
     },
     {
       "relation": "imports",
@@ -23232,9 +23232,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "ui_progressbar",
-      "confidence_score": 1.0
+      "target": "ui_progressbar"
     },
     {
       "relation": "contains",
@@ -23264,9 +23264,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "ui_progressbar_progressbar",
-      "confidence_score": 1.0
+      "target": "ui_progressbar_progressbar"
     },
     {
       "relation": "imports_from",
@@ -24286,9 +24286,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L139",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_completedrow",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_completedrow"
     },
     {
       "relation": "contains",
@@ -24296,9 +24296,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_courseprogress",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_courseprogress"
     },
     {
       "relation": "contains",
@@ -24306,9 +24306,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_courses",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_courses"
     },
     {
       "relation": "contains",
@@ -24316,9 +24316,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_dayactivity",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_dayactivity"
     },
     {
       "relation": "contains",
@@ -24326,9 +24326,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L106",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_inprogressrow",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_inprogressrow"
     },
     {
       "relation": "contains",
@@ -24336,9 +24336,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L153",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_notstartedrow",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_notstartedrow"
     },
     {
       "relation": "contains",
@@ -24356,9 +24356,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L68",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_week_activity",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_week_activity"
     },
     {
       "relation": "contains",
@@ -24366,9 +24366,9 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L80",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "pages_progresspage",
-      "target": "pages_progresspage_weekstrip",
-      "confidence_score": 1.0
+      "target": "pages_progresspage_weekstrip"
     },
     {
       "relation": "contains",
@@ -29126,5 +29126,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e9e1e5b6afd3485ac2bb7f777b784ebeae97c35e"
+  "built_at_commit": "b3b4e3f6a49d4d257a53cbe780a5073ebeaff306"
 }
