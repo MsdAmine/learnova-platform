@@ -1,5 +1,7 @@
 # Learnova Brand Guidelines
 
+> **Reference:** `PRODUCT.md` defines product strategy, user profiles, and brand personality. `DESIGN.md` defines the canonical visual system with all tokens (colors, typography, spacing, radii, components). This file is a quick brand summary only. It must not redefine tokens.
+
 # Brand Direction
 
 Learnova is a modern learning platform focused on:
@@ -82,7 +84,7 @@ Dashboards should:
 
 ## Colors
 
-* Salem is the dominant action color
+* Salem anchors primary actions and progress indicators; it should not dominate product surfaces
 * Use Coral and Anzac sparingly
 * Large surfaces should stay neutral
 

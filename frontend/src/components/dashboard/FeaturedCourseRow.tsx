@@ -5,7 +5,7 @@ import { courseGradient, type Course } from './CourseCard';
 
 export function FeaturedCourseRow({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-hover rounded-lg overflow-hidden mb-4">
+    <div className="bg-surface border border-border-default rounded-lg overflow-hidden mb-4 motion-safe:transition-colors duration-fast hover:border-border-hover">
       <div className="flex">
         <div
           className="w-20 flex-shrink-0 hidden sm:block"
@@ -25,8 +25,9 @@ export function FeaturedCourseRow({ course }: { course: Course }) {
               type="button"
               aria-label={`Continue ${course.title}`}
               className={cn(
-                'flex items-center gap-1 text-body-sm font-medium text-salem flex-shrink-0 mt-0.5',
-                'hover:text-salem-400 transition-colors duration-fast',
+                'flex items-center gap-1 text-body-sm font-medium text-salem flex-shrink-0',
+                'p-2 -m-2',
+                'hover:text-salem-400 motion-safe:transition-colors duration-fast',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
               )}
             >

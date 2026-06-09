@@ -10,3 +10,5 @@ It contains:
 A companion sidecar at **`.impeccable/design.json`** carries tonal color ramps, shadow/motion tokens, breakpoints, and self-contained HTML/CSS component snippets for the live panel.
 
 For the landing page implementation spec, see **`docs/design/final-specs/landing-page.md`**.
+
+For page-specific product UI specs (dashboard pages, learner flows, instructor tools), see **`docs/design/page-specs/`**.

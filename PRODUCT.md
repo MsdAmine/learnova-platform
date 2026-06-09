@@ -1,9 +1,5 @@
 # Product
 
-## Register
-
-split
-
 **Brand** — marketing site, landing page, campaign pages, course catalog (public). Design IS the product here; visual impression drives conversion.
 
 **Product** — learner dashboard, course player, instructor tools, admin panel, settings, auth flows. Design SERVES the workflow; clarity and speed matter most.
@@ -55,7 +51,7 @@ Emotional goals: confidence (the learner feels they are moving forward), calm (n
 ## Accessibility & Inclusion
 
 - **WCAG AA** at minimum across all surfaces
-- Salem (#0B6E4F) on white must meet AA for normal text — verify with contrast checker; use Salem-700 variants for body-size text
+- Salem (#032117) on white must meet AA for normal text. Verify with a contrast checker; use Salem-700 variants for body-size text.
 - Interactive states (focus rings, hover, active) must be visually obvious without relying on color alone
 - Support `prefers-reduced-motion` — entrance animations must degrade to instant
 - Never communicate information through color alone (status badges need icons or text)

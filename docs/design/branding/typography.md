@@ -29,50 +29,45 @@ Inter provides excellent readability for productivity-focused interfaces and mod
 
 ---
 
-# Heading Scale
+# Token Names (canonical, from DESIGN.md)
 
-## H1
+Use these exact token names when implementing UI. Sizes, weights, and line heights are authoritative.
 
-* Size: 56px
-* Weight: 700
-* Line Height: 1.1
-* Usage: Hero sections
-
-## H2
-
-* Size: 40px
-* Weight: 700
-* Usage: Section headers
-
-## H3
-
-* Size: 28px
-* Weight: 600
-* Usage: Dashboard titles
-
-## H4
-
-* Size: 22px
-* Weight: 600
+| Token | Size | Weight | Line Height | Letter Spacing | Usage |
+|---|---|---|---|---|---|
+| `display` | 56px | 700 | 1.1 | -0.02em | Hero headlines only. One per page. |
+| `headline` | 40px | 700 | 1.2 | -0.01em | Section titles on marketing pages; primary page headers in the product app. |
+| `title` | 28px | 600 | 1.3 | — | Dashboard titles, panel headings, modal headers. |
+| `title-sm` | 22px | 600 | 1.4 | — | Card titles, sidebar section labels, step labels. |
+| `body-lg` | 18px | 400 | 1.6 | — | Marketing supporting copy. Max-width 65ch. |
+| `body` | 16px | 400 | 1.6 | — | Default UI text, descriptions, form instructions, table content. Max-width 72ch. |
+| `body-sm` | 14px | 400 | 1.5 | — | Metadata, timestamps, helper text, nav links. |
+| `caption` | 12px | 400 | 1.5 | — | Compliance copy, image captions, footnotes. Use sparingly. |
+| `button` | 15px | 600 | 1.0 | — | Button labels only. Sentence case. Never all-caps. |
 
 ---
 
-# Body Text
+# Heading Scale Reference
 
-## Large Body
+The token names above replace the generic H1/H2/H3/H4 names in all implementation work.
 
-* Size: 18px
-* Weight: 400
+| Old name | Token | Size | Weight |
+|---|---|---|---|
+| H1 | `display` | 56px | 700 |
+| H2 | `headline` | 40px | 700 |
+| H3 | `title` | 28px | 600 |
+| H4 | `title-sm` | 22px | 600 |
 
-## Default Body
+---
 
-* Size: 16px
-* Weight: 400
+# Body Text Reference
 
-## Small Text
-
-* Size: 14px
-* Weight: 400
+| Old name | Token | Size | Weight |
+|---|---|---|---|
+| Large Body | `body-lg` | 18px | 400 |
+| Default Body | `body` | 16px | 400 |
+| Small Text | `body-sm` | 14px | 400 |
+| — | `caption` | 12px | 400 |
 
 ---
 
@@ -80,6 +75,7 @@ Inter provides excellent readability for productivity-focused interfaces and mod
 
 ## Primary Buttons
 
+* Token: `button`
 * Size: 15px
 * Weight: 600
 

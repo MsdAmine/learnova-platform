@@ -54,7 +54,7 @@ export default function DashboardLayout() {
       <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-surface focus:px-4 focus:py-2 focus:text-text-primary focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-salem">Skip to content</a>
 
       {/* ── Topbar ──────────────────────────────────────────────────────── */}
-      <header className="h-[60px] bg-surface border-b border-border-default flex items-center px-4 md:px-6 flex-shrink-0 z-50">
+      <header className="h-nav-mobile md:h-nav bg-surface border-b border-border-default flex items-center px-4 md:px-6 flex-shrink-0 z-50">
 
         {/* Mobile hamburger — hidden on md+ */}
         <button
@@ -77,7 +77,7 @@ export default function DashboardLayout() {
         </button>
 
         <div className="w-auto md:w-[250px] flex items-center md:pr-6 flex-shrink-0">
-          <img src={logoPrimary} alt="Learnova" className="h-7 w-auto" />
+          <img src={logoPrimary} alt="Learnova" className="h-7 w-auto" width={754} height={294} />
         </div>
 
         <div className="flex-1" />
@@ -118,7 +118,7 @@ export default function DashboardLayout() {
           aria-hidden="true"
           onClick={closeSidebar}
           className={cn(
-            'fixed top-[60px] inset-x-0 bottom-0 z-30 bg-text-primary/15',
+            'fixed top-nav-mobile md:top-nav inset-x-0 bottom-0 z-30 bg-text-primary/15',
             'md:hidden',
             'transition-opacity duration-200',
             sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
@@ -130,7 +130,7 @@ export default function DashboardLayout() {
           id="dashboard-sidebar"
           className={cn(
             // Mobile: fixed drawer sliding from left, below topbar
-            'fixed top-[60px] bottom-0 left-0 z-40 w-[250px]',
+            'fixed top-nav-mobile md:top-nav bottom-0 left-0 z-40 w-[250px]',
             // Desktop: static in flex flow, always visible
             'md:static md:top-auto md:bottom-auto md:z-auto',
             'bg-surface border-r border-border-default flex flex-col overflow-y-auto flex-shrink-0',
@@ -149,11 +149,11 @@ export default function DashboardLayout() {
                 onClick={closeSidebar}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-md',
+                    'flex items-center gap-3 px-3 py-2 rounded-md min-h-[44px]',
                     'text-body-sm font-medium transition-colors duration-fast',
                     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
                     isActive
-                      ? 'bg-salem text-white'
+                      ? 'bg-salem text-on-dark'
                       : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary',
                   )
                 }

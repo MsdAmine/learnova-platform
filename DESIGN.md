@@ -134,6 +134,8 @@ components:
 
 # Design System: Learnova
 
+> **Canonical source.** This file is the single source of truth for Learnova visual design. All other branding and design documents must summarize or point back to it. Colors, typography, spacing, shadows, radii, and component behavior must not be redefined in any other file.
+
 ## 1. Overview
 
 **Creative North Star: "The Clarity Workbench"**

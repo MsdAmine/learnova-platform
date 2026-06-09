@@ -14,7 +14,7 @@ export interface Course {
 // valid thumbnail. Centralizing this guards both the in-progress card (which
 // otherwise crashes on `gradient.from`) and the featured row (which otherwise
 // emits an invalid `linear-gradient(…, undefined, undefined)`).
-const DEFAULT_GRADIENT = { from: '#032117', to: '#1A3B2E' } as const;
+const DEFAULT_GRADIENT = { from: 'var(--color-salem)', to: 'var(--color-salem-400)' } as const;
 
 export function courseGradient(course: Course): string {
   const { from, to } = course.gradient ?? DEFAULT_GRADIENT;
@@ -40,17 +40,17 @@ function CompletedCourseCard({ course }: { course: Course }) {
 
 function NotStartedCourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-default rounded-lg p-4 hover:border-border-hover transition-colors duration-fast">
+    <div className="bg-surface border border-border-default rounded-lg p-4 hover:border-border-hover motion-safe:transition-colors duration-fast">
       <h3 className="text-body-sm font-semibold text-text-primary line-clamp-2 mb-1">
         {course.title}
       </h3>
       <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
       <div className="flex items-center justify-between">
-        <span className="text-caption text-text-muted">Not started</span>
+        <span className="text-caption text-text-secondary">Not started</span>
         <button
           type="button"
           aria-label={`Start ${course.title}`}
-          className="flex items-center gap-1 text-caption font-medium text-salem hover:text-salem-400 transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          className="flex items-center gap-1 text-caption font-medium text-salem min-h-[44px] px-1 rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Start <ArrowRight size={11} aria-hidden="true" />
         </button>
@@ -61,7 +61,7 @@ function NotStartedCourseCard({ course }: { course: Course }) {
 
 function InProgressCourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-default rounded-lg overflow-hidden transition-shadow duration-standard hover:shadow-hover-lift">
+    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow duration-standard hover:shadow-hover-lift">
       <div
         className="aspect-video w-full"
         style={{ background: courseGradient(course) }}
@@ -73,7 +73,7 @@ function InProgressCourseCard({ course }: { course: Course }) {
         </h3>
         <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
         <ProgressBar value={course.progress} label={`${course.title} progress`} />
-        <p className="text-caption text-text-muted mt-1.5">{course.progress}% complete</p>
+        <p className="text-caption text-text-secondary mt-1.5">{course.progress}% complete</p>
       </div>
     </div>
   );
