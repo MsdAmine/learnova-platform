@@ -77,7 +77,7 @@ export default function DashboardLayout() {
         </button>
 
         <div className="w-auto md:w-[250px] flex items-center md:pr-6 flex-shrink-0">
-          <img src={logoPrimary} alt="Learnova" className="h-7 w-auto" />
+          <img src={logoPrimary} alt="Learnova" className="h-7 w-auto" width={754} height={294} />
         </div>
 
         <div className="flex-1" />

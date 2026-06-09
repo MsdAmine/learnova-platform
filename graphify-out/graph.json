@@ -1269,7 +1269,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/LearnovaBackendApplication.java",
       "source_location": "L1",
       "id": "learnova_backend_learnovabackendapplication",
-      "community": 23,
+      "community": 36,
       "norm_label": "learnovabackendapplication.java"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/LearnovaBackendApplication.java",
       "source_location": "L6",
       "id": "learnova_backend_learnovabackendapplication_learnovabackendapplication",
-      "community": 23,
+      "community": 36,
       "norm_label": "learnovabackendapplication"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/LearnovaBackendApplication.java",
       "source_location": "L9",
       "id": "learnova_backend_learnovabackendapplication_learnovabackendapplication_main",
-      "community": 23,
+      "community": 36,
       "norm_label": ".main()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/LearnovaBackendApplication.java",
       "source_location": "L9",
       "id": "backend_src_main_java_com_learnova_learnova_backend_learnovabackendapplication_java_string",
-      "community": 23,
+      "community": 36,
       "norm_label": "string"
     },
     {
@@ -3177,7 +3177,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L1",
       "id": "service_learnerprofileservice",
-      "community": 86,
+      "community": 1,
       "norm_label": "learnerprofileservice.java"
     },
     {
@@ -3186,7 +3186,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L9",
       "id": "service_learnerprofileservice_learnerprofileservice",
-      "community": 86,
+      "community": 1,
       "norm_label": "learnerprofileservice"
     },
     {
@@ -3195,7 +3195,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "service_learnerprofileservice_learnerprofileservice_createdefaultprofilefor",
-      "community": 86,
+      "community": 1,
       "norm_label": ".createdefaultprofilefor()"
     },
     {
@@ -3204,7 +3204,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "backend_src_main_java_com_learnova_learnova_backend_profile_service_learnerprofileservice_java_user",
-      "community": 86,
+      "community": 1,
       "norm_label": "user"
     },
     {
@@ -3213,7 +3213,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/profile/service/LearnerProfileService.java",
       "source_location": "L15",
       "id": "backend_src_main_java_com_learnova_learnova_backend_profile_service_learnerprofileservice_java_learnerprofile",
-      "community": 86,
+      "community": 1,
       "norm_label": "learnerprofile"
     },
     {
@@ -3717,7 +3717,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/PasswordConfig.java",
       "source_location": "L1",
       "id": "security_passwordconfig",
-      "community": 8,
+      "community": 23,
       "norm_label": "passwordconfig.java"
     },
     {
@@ -3726,7 +3726,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/PasswordConfig.java",
       "source_location": "L8",
       "id": "security_passwordconfig_passwordconfig",
-      "community": 8,
+      "community": 23,
       "norm_label": "passwordconfig"
     },
     {
@@ -3735,7 +3735,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/PasswordConfig.java",
       "source_location": "L11",
       "id": "security_passwordconfig_passwordconfig_passwordencoder",
-      "community": 8,
+      "community": 23,
       "norm_label": ".passwordencoder()"
     },
     {
@@ -3744,7 +3744,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/PasswordConfig.java",
       "source_location": "L11",
       "id": "passwordencoder",
-      "community": 8,
+      "community": 23,
       "norm_label": "passwordencoder"
     },
     {
@@ -3753,7 +3753,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/security/PasswordConfig.java",
       "source_location": "L11",
       "id": "backend_src_main_java_com_learnova_learnova_backend_security_passwordconfig_java_bean",
-      "community": 8,
+      "community": 23,
       "norm_label": "bean"
     },
     {
@@ -3879,7 +3879,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/config/RoleSeeder.java",
       "source_location": "L1",
       "id": "config_roleseeder",
-      "community": 23,
+      "community": 36,
       "norm_label": "roleseeder.java"
     },
     {
@@ -3888,7 +3888,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/config/RoleSeeder.java",
       "source_location": "L10",
       "id": "config_roleseeder_roleseeder",
-      "community": 23,
+      "community": 36,
       "norm_label": "roleseeder"
     },
     {
@@ -3897,7 +3897,7 @@
       "source_file": "",
       "source_location": "",
       "id": "commandlinerunner",
-      "community": 23,
+      "community": 36,
       "norm_label": "commandlinerunner"
     },
     {
@@ -3906,7 +3906,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/config/RoleSeeder.java",
       "source_location": "L16",
       "id": "config_roleseeder_roleseeder_run",
-      "community": 23,
+      "community": 36,
       "norm_label": ".run()"
     },
     {
@@ -3915,7 +3915,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/config/RoleSeeder.java",
       "source_location": "L16",
       "id": "backend_src_main_java_com_learnova_learnova_backend_user_config_roleseeder_java_override",
-      "community": 23,
+      "community": 36,
       "norm_label": "override"
     },
     {
@@ -4077,7 +4077,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L1",
       "id": "repository_rolerepository",
-      "community": 23,
+      "community": 36,
       "norm_label": "rolerepository.java"
     },
     {
@@ -4086,7 +4086,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L9",
       "id": "repository_rolerepository_rolerepository",
-      "community": 23,
+      "community": 36,
       "norm_label": "rolerepository"
     },
     {
@@ -4095,7 +4095,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L11",
       "id": "repository_rolerepository_rolerepository_findbyname",
-      "community": 23,
+      "community": 36,
       "norm_label": ".findbyname()"
     },
     {
@@ -4104,7 +4104,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L11",
       "id": "backend_src_main_java_com_learnova_learnova_backend_user_repository_rolerepository_java_rolename",
-      "community": 23,
+      "community": 36,
       "norm_label": "rolename"
     },
     {
@@ -4113,7 +4113,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L11",
       "id": "backend_src_main_java_com_learnova_learnova_backend_user_repository_rolerepository_java_optional",
-      "community": 23,
+      "community": 36,
       "norm_label": "optional"
     },
     {
@@ -4122,7 +4122,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L11",
       "id": "backend_src_main_java_com_learnova_learnova_backend_user_repository_rolerepository_java_role",
-      "community": 23,
+      "community": 36,
       "norm_label": "role"
     },
     {
@@ -4131,7 +4131,7 @@
       "source_file": "backend/src/main/java/com/learnova/learnova_backend/user/repository/RoleRepository.java",
       "source_location": "L13",
       "id": "repository_rolerepository_rolerepository_existsbyname",
-      "community": 23,
+      "community": 36,
       "norm_label": ".existsbyname()"
     },
     {
@@ -4329,7 +4329,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L1",
       "id": "auth_authregistrationintegrationtest",
-      "community": 8,
+      "community": 23,
       "norm_label": "authregistrationintegrationtest.java"
     },
     {
@@ -4338,7 +4338,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L21",
       "id": "auth_authregistrationintegrationtest_authregistrationintegrationtest",
-      "community": 8,
+      "community": 23,
       "norm_label": "authregistrationintegrationtest"
     },
     {
@@ -4347,7 +4347,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L39",
       "id": "auth_authregistrationintegrationtest_authregistrationintegrationtest_shouldregisterusersuccessfully",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldregisterusersuccessfully()"
     },
     {
@@ -4356,7 +4356,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L39",
       "id": "backend_src_test_java_com_learnova_learnova_backend_auth_authregistrationintegrationtest_java_test",
-      "community": 8,
+      "community": 23,
       "norm_label": "test"
     },
     {
@@ -4365,7 +4365,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L70",
       "id": "auth_authregistrationintegrationtest_authregistrationintegrationtest_shouldrejectduplicateemail",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldrejectduplicateemail()"
     },
     {
@@ -4374,7 +4374,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/auth/AuthRegistrationIntegrationTest.java",
       "source_location": "L95",
       "id": "auth_authregistrationintegrationtest_authregistrationintegrationtest_shouldrejectinvalidrequest",
-      "community": 8,
+      "community": 23,
       "norm_label": ".shouldrejectinvalidrequest()"
     },
     {
@@ -4743,7 +4743,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L1",
       "id": "service_learnerprofileservicetest",
-      "community": 86,
+      "community": 1,
       "norm_label": "learnerprofileservicetest.java"
     },
     {
@@ -4752,7 +4752,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L15",
       "id": "service_learnerprofileservicetest_learnerprofileservicetest",
-      "community": 86,
+      "community": 1,
       "norm_label": "learnerprofileservicetest"
     },
     {
@@ -4761,7 +4761,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L29",
       "id": "service_learnerprofileservicetest_learnerprofileservicetest_shouldpreventduplicatelearnerprofiles",
-      "community": 86,
+      "community": 1,
       "norm_label": ".shouldpreventduplicatelearnerprofiles()"
     },
     {
@@ -4770,7 +4770,7 @@
       "source_file": "backend/src/test/java/com/learnova/learnova_backend/profile/service/LearnerProfileServiceTest.java",
       "source_location": "L29",
       "id": "backend_src_test_java_com_learnova_learnova_backend_profile_service_learnerprofileservicetest_java_test",
-      "community": 86,
+      "community": 1,
       "norm_label": "test"
     },
     {
@@ -5175,7 +5175,7 @@
       "source_file": "frontend/src/App.tsx",
       "source_location": "L1",
       "id": "src_app",
-      "community": 35,
+      "community": 103,
       "norm_label": "app.tsx"
     },
     {
@@ -5184,7 +5184,7 @@
       "source_file": "frontend/src/App.tsx",
       "source_location": "L4",
       "id": "src_app_app",
-      "community": 35,
+      "community": 103,
       "norm_label": "app()"
     },
     {
@@ -5238,7 +5238,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L1",
       "id": "api_axios",
-      "community": 43,
+      "community": 125,
       "norm_label": "axios.ts"
     },
     {
@@ -5247,7 +5247,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L5",
       "id": "api_axios_resolveapibaseurl",
-      "community": 43,
+      "community": 125,
       "norm_label": "resolveapibaseurl()"
     },
     {
@@ -5256,7 +5256,7 @@
       "source_file": "frontend/src/api/axios.ts",
       "source_location": "L10",
       "id": "api_axios_api",
-      "community": 43,
+      "community": 125,
       "norm_label": "api"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "frontend/src/components/common/GuestRoute.tsx",
       "source_location": "L1",
       "id": "common_guestroute",
-      "community": 26,
+      "community": 101,
       "norm_label": "guestroute.tsx"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "frontend/src/components/common/GuestRoute.tsx",
       "source_location": "L5",
       "id": "common_guestroute_guestroute",
-      "community": 26,
+      "community": 101,
       "norm_label": "guestroute()"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "frontend/src/components/common/ProtectedRoute.tsx",
       "source_location": "L1",
       "id": "common_protectedroute",
-      "community": 26,
+      "community": 101,
       "norm_label": "protectedroute.tsx"
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "frontend/src/components/common/ProtectedRoute.tsx",
       "source_location": "L5",
       "id": "common_protectedroute_protectedroute",
-      "community": 26,
+      "community": 101,
       "norm_label": "protectedroute()"
     },
     {
@@ -5535,7 +5535,7 @@
       "source_file": "frontend/src/components/marketing/landing/FinalCta.tsx",
       "source_location": "L1",
       "id": "landing_finalcta",
-      "community": 6,
+      "community": 49,
       "norm_label": "finalcta.tsx"
     },
     {
@@ -5544,7 +5544,7 @@
       "source_file": "frontend/src/components/marketing/landing/FinalCta.tsx",
       "source_location": "L5",
       "id": "landing_finalcta_finalcta",
-      "community": 6,
+      "community": 49,
       "norm_label": "finalcta()"
     },
     {
@@ -5553,7 +5553,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L1",
       "id": "landing_footer",
-      "community": 6,
+      "community": 43,
       "norm_label": "footer.tsx"
     },
     {
@@ -5562,7 +5562,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L8",
       "id": "landing_footer_nav_columns",
-      "community": 6,
+      "community": 43,
       "norm_label": "nav_columns"
     },
     {
@@ -5571,7 +5571,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L29",
       "id": "landing_footer_social_links",
-      "community": 6,
+      "community": 43,
       "norm_label": "social_links"
     },
     {
@@ -5580,7 +5580,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L37",
       "id": "landing_footer_validateemail",
-      "community": 6,
+      "community": 43,
       "norm_label": "validateemail()"
     },
     {
@@ -5589,7 +5589,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L43",
       "id": "landing_footer_footer",
-      "community": 6,
+      "community": 43,
       "norm_label": "footer()"
     },
     {
@@ -5598,7 +5598,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L258",
       "id": "landing_footer_iconcheck",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconcheck()"
     },
     {
@@ -5607,7 +5607,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L283",
       "id": "landing_footer_iconx",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconx()"
     },
     {
@@ -5616,7 +5616,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L298",
       "id": "landing_footer_iconfacebook",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconfacebook()"
     },
     {
@@ -5625,7 +5625,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L319",
       "id": "landing_footer_iconlinkedin",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconlinkedin()"
     },
     {
@@ -5634,7 +5634,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L341",
       "id": "landing_footer_iconinstagram",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconinstagram()"
     },
     {
@@ -5643,7 +5643,7 @@
       "source_file": "frontend/src/components/marketing/landing/Footer.tsx",
       "source_location": "L384",
       "id": "landing_footer_iconyoutube",
-      "community": 6,
+      "community": 43,
       "norm_label": "iconyoutube()"
     },
     {
@@ -5652,7 +5652,7 @@
       "source_file": "frontend/src/components/marketing/landing/Hero.tsx",
       "source_location": "L1",
       "id": "landing_hero",
-      "community": 6,
+      "community": 49,
       "norm_label": "hero.tsx"
     },
     {
@@ -5661,7 +5661,7 @@
       "source_file": "frontend/src/components/marketing/landing/Hero.tsx",
       "source_location": "L17",
       "id": "landing_hero_hero",
-      "community": 6,
+      "community": 49,
       "norm_label": "hero()"
     },
     {
@@ -5670,7 +5670,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L1",
       "id": "landing_journey",
-      "community": 6,
+      "community": 100,
       "norm_label": "journey.tsx"
     },
     {
@@ -5679,7 +5679,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L7",
       "id": "landing_journey_steps",
-      "community": 6,
+      "community": 100,
       "norm_label": "steps"
     },
     {
@@ -5688,7 +5688,7 @@
       "source_file": "frontend/src/components/marketing/landing/Journey.tsx",
       "source_location": "L43",
       "id": "landing_journey_journey",
-      "community": 6,
+      "community": 100,
       "norm_label": "journey()"
     },
     {
@@ -5697,7 +5697,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L1",
       "id": "landing_journeystep",
-      "community": 6,
+      "community": 100,
       "norm_label": "journeystep.tsx"
     },
     {
@@ -5706,7 +5706,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L5",
       "id": "landing_journeystep_cta",
-      "community": 6,
+      "community": 100,
       "norm_label": "cta"
     },
     {
@@ -5715,7 +5715,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L10",
       "id": "landing_journeystep_journeystepimage",
-      "community": 6,
+      "community": 100,
       "norm_label": "journeystepimage"
     },
     {
@@ -5724,7 +5724,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L15",
       "id": "landing_journeystep_journeystepprops",
-      "community": 6,
+      "community": 100,
       "norm_label": "journeystepprops"
     },
     {
@@ -5733,7 +5733,7 @@
       "source_file": "frontend/src/components/marketing/landing/JourneyStep.tsx",
       "source_location": "L26",
       "id": "landing_journeystep_journeystep",
-      "community": 6,
+      "community": 100,
       "norm_label": "journeystep()"
     },
     {
@@ -5823,7 +5823,7 @@
       "source_file": "frontend/src/components/marketing/landing/Testimonials.tsx",
       "source_location": "L1",
       "id": "landing_testimonials",
-      "community": 49,
+      "community": 20,
       "norm_label": "testimonials.tsx"
     },
     {
@@ -5832,7 +5832,7 @@
       "source_file": "frontend/src/components/marketing/landing/Testimonials.tsx",
       "source_location": "L6",
       "id": "landing_testimonials_testimonials",
-      "community": 49,
+      "community": 20,
       "norm_label": "testimonials()"
     },
     {
@@ -5841,7 +5841,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L1",
       "id": "ui_avatar",
-      "community": 20,
+      "community": 126,
       "norm_label": "avatar.tsx"
     },
     {
@@ -5850,7 +5850,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L8",
       "id": "ui_avatar_avatarsize",
-      "community": 20,
+      "community": 126,
       "norm_label": "avatarsize"
     },
     {
@@ -5859,7 +5859,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L10",
       "id": "ui_avatar_avatarprops",
-      "community": 20,
+      "community": 126,
       "norm_label": "avatarprops"
     },
     {
@@ -5868,7 +5868,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L25",
       "id": "ui_avatar_getinitials",
-      "community": 20,
+      "community": 126,
       "norm_label": "getinitials()"
     },
     {
@@ -5877,7 +5877,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L40",
       "id": "ui_avatar_palette",
-      "community": 20,
+      "community": 126,
       "norm_label": "palette"
     },
     {
@@ -5886,7 +5886,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L48",
       "id": "ui_avatar_palettefor",
-      "community": 20,
+      "community": 126,
       "norm_label": "palettefor()"
     },
     {
@@ -5895,7 +5895,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L62",
       "id": "ui_avatar_sizes",
-      "community": 20,
+      "community": 126,
       "norm_label": "sizes"
     },
     {
@@ -5904,7 +5904,7 @@
       "source_file": "frontend/src/components/ui/Avatar.tsx",
       "source_location": "L74",
       "id": "ui_avatar_avatar",
-      "community": 20,
+      "community": 126,
       "norm_label": "avatar()"
     },
     {
@@ -5913,7 +5913,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L1",
       "id": "ui_badge",
-      "community": 101,
+      "community": 29,
       "norm_label": "badge.tsx"
     },
     {
@@ -5922,7 +5922,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L17",
       "id": "ui_badge_badgevariant",
-      "community": 101,
+      "community": 29,
       "norm_label": "badgevariant"
     },
     {
@@ -5931,7 +5931,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L19",
       "id": "ui_badge_badgeprops",
-      "community": 101,
+      "community": 29,
       "norm_label": "badgeprops"
     },
     {
@@ -5940,7 +5940,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L23",
       "id": "ui_badge_variantclasses",
-      "community": 101,
+      "community": 29,
       "norm_label": "variantclasses"
     },
     {
@@ -5949,7 +5949,7 @@
       "source_file": "frontend/src/components/ui/Badge.tsx",
       "source_location": "L31",
       "id": "ui_badge_badge",
-      "community": 101,
+      "community": 29,
       "norm_label": "badge()"
     },
     {
@@ -6039,7 +6039,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L1",
       "id": "ui_card",
-      "community": 11,
+      "community": 8,
       "norm_label": "card.tsx"
     },
     {
@@ -6048,7 +6048,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L14",
       "id": "ui_card_cardvariant",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardvariant"
     },
     {
@@ -6057,7 +6057,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L16",
       "id": "ui_card_cardprops",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardprops"
     },
     {
@@ -6066,7 +6066,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L20",
       "id": "ui_card_variantclasses",
-      "community": 11,
+      "community": 8,
       "norm_label": "variantclasses"
     },
     {
@@ -6075,7 +6075,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L29",
       "id": "ui_card_card",
-      "community": 11,
+      "community": 8,
       "norm_label": "card()"
     },
     {
@@ -6084,7 +6084,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L42",
       "id": "ui_card_cardheader",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardheader()"
     },
     {
@@ -6093,7 +6093,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L49",
       "id": "ui_card_cardtitle",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardtitle()"
     },
     {
@@ -6102,7 +6102,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L64",
       "id": "ui_card_carddescription",
-      "community": 11,
+      "community": 8,
       "norm_label": "carddescription()"
     },
     {
@@ -6111,7 +6111,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L77",
       "id": "ui_card_cardcontent",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardcontent()"
     },
     {
@@ -6120,7 +6120,7 @@
       "source_file": "frontend/src/components/ui/Card.tsx",
       "source_location": "L84",
       "id": "ui_card_cardfooter",
-      "community": 11,
+      "community": 8,
       "norm_label": "cardfooter()"
     },
     {
@@ -6129,7 +6129,7 @@
       "source_file": "frontend/src/components/ui/Container.tsx",
       "source_location": "L1",
       "id": "ui_container",
-      "community": 49,
+      "community": 46,
       "norm_label": "container.tsx"
     },
     {
@@ -6138,7 +6138,7 @@
       "source_file": "frontend/src/components/ui/Container.tsx",
       "source_location": "L4",
       "id": "ui_container_containersize",
-      "community": 49,
+      "community": 46,
       "norm_label": "containersize"
     },
     {
@@ -6147,7 +6147,7 @@
       "source_file": "frontend/src/components/ui/Container.tsx",
       "source_location": "L6",
       "id": "ui_container_containerprops",
-      "community": 49,
+      "community": 46,
       "norm_label": "containerprops"
     },
     {
@@ -6156,7 +6156,7 @@
       "source_file": "frontend/src/components/ui/Container.tsx",
       "source_location": "L10",
       "id": "ui_container_maxwidthclass",
-      "community": 49,
+      "community": 46,
       "norm_label": "maxwidthclass"
     },
     {
@@ -6165,7 +6165,7 @@
       "source_file": "frontend/src/components/ui/Container.tsx",
       "source_location": "L16",
       "id": "ui_container_container",
-      "community": 49,
+      "community": 46,
       "norm_label": "container()"
     },
     {
@@ -6273,7 +6273,7 @@
       "source_file": "frontend/src/components/ui/SectionHeader.tsx",
       "source_location": "L1",
       "id": "ui_sectionheader",
-      "community": 49,
+      "community": 20,
       "norm_label": "sectionheader.tsx"
     },
     {
@@ -6282,7 +6282,7 @@
       "source_file": "frontend/src/components/ui/SectionHeader.tsx",
       "source_location": "L23",
       "id": "ui_sectionheader_sectionheaderprops",
-      "community": 49,
+      "community": 20,
       "norm_label": "sectionheaderprops"
     },
     {
@@ -6291,7 +6291,7 @@
       "source_file": "frontend/src/components/ui/SectionHeader.tsx",
       "source_location": "L41",
       "id": "ui_sectionheader_sectionheader",
-      "community": 49,
+      "community": 20,
       "norm_label": "sectionheader()"
     },
     {
@@ -6390,7 +6390,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L1",
       "id": "context_authcontext",
-      "community": 35,
+      "community": 103,
       "norm_label": "authcontext.tsx"
     },
     {
@@ -6399,7 +6399,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L4",
       "id": "context_authcontext_user",
-      "community": 35,
+      "community": 103,
       "norm_label": "user"
     },
     {
@@ -6408,7 +6408,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L13",
       "id": "context_authcontext_authcontexttype",
-      "community": 35,
+      "community": 103,
       "norm_label": "authcontexttype"
     },
     {
@@ -6417,7 +6417,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L24",
       "id": "context_authcontext_authcontext",
-      "community": 35,
+      "community": 103,
       "norm_label": "authcontext"
     },
     {
@@ -6426,7 +6426,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L26",
       "id": "context_authcontext_authprovider",
-      "community": 35,
+      "community": 103,
       "norm_label": "authprovider()"
     },
     {
@@ -6435,7 +6435,7 @@
       "source_file": "frontend/src/context/AuthContext.tsx",
       "source_location": "L84",
       "id": "context_authcontext_useauth",
-      "community": 26,
+      "community": 101,
       "norm_label": "useauth()"
     },
     {
@@ -6570,7 +6570,7 @@
       "source_file": "frontend/src/features/auth/pages/LoginPage.tsx",
       "source_location": "L33",
       "id": "pages_loginpage_loginpage",
-      "community": 26,
+      "community": 101,
       "norm_label": "loginpage()"
     },
     {
@@ -6624,7 +6624,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L1",
       "id": "components_dashboardlayout",
-      "community": 26,
+      "community": 101,
       "norm_label": "dashboardlayout.tsx"
     },
     {
@@ -6633,7 +6633,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L19",
       "id": "components_dashboardlayout_nav_items",
-      "community": 26,
+      "community": 101,
       "norm_label": "nav_items"
     },
     {
@@ -6642,7 +6642,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L28",
       "id": "components_dashboardlayout_getinitials",
-      "community": 26,
+      "community": 101,
       "norm_label": "getinitials()"
     },
     {
@@ -6651,7 +6651,7 @@
       "source_file": "frontend/src/features/dashboard/components/DashboardLayout.tsx",
       "source_location": "L37",
       "id": "components_dashboardlayout_dashboardlayout",
-      "community": 26,
+      "community": 101,
       "norm_label": "dashboardlayout()"
     },
     {
@@ -6759,7 +6759,7 @@
       "source_file": "frontend/src/features/dashboard/pages/LearnerDashboard.tsx",
       "source_location": "L114",
       "id": "pages_learnerdashboard_learnerdashboard",
-      "community": 26,
+      "community": 101,
       "norm_label": "learnerdashboard()"
     },
     {
@@ -6822,7 +6822,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L1",
       "id": "pages_progresspage",
-      "community": 101,
+      "community": 29,
       "norm_label": "progresspage.tsx"
     },
     {
@@ -6831,7 +6831,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L7",
       "id": "pages_progresspage_courseprogress",
-      "community": 101,
+      "community": 29,
       "norm_label": "courseprogress"
     },
     {
@@ -6840,7 +6840,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L16",
       "id": "pages_progresspage_dayactivity",
-      "community": 101,
+      "community": 29,
       "norm_label": "dayactivity"
     },
     {
@@ -6849,7 +6849,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L25",
       "id": "pages_progresspage_courses",
-      "community": 101,
+      "community": 29,
       "norm_label": "courses"
     },
     {
@@ -6858,7 +6858,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L68",
       "id": "pages_progresspage_week_activity",
-      "community": 101,
+      "community": 29,
       "norm_label": "week_activity"
     },
     {
@@ -6867,7 +6867,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L80",
       "id": "pages_progresspage_weekstrip",
-      "community": 101,
+      "community": 29,
       "norm_label": "weekstrip()"
     },
     {
@@ -6876,7 +6876,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L104",
       "id": "pages_progresspage_inprogressrow",
-      "community": 101,
+      "community": 29,
       "norm_label": "inprogressrow()"
     },
     {
@@ -6885,7 +6885,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L137",
       "id": "pages_progresspage_completedrow",
-      "community": 101,
+      "community": 29,
       "norm_label": "completedrow()"
     },
     {
@@ -6894,7 +6894,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L151",
       "id": "pages_progresspage_notstartedrow",
-      "community": 101,
+      "community": 29,
       "norm_label": "notstartedrow()"
     },
     {
@@ -6903,7 +6903,7 @@
       "source_file": "frontend/src/features/dashboard/pages/ProgressPage.tsx",
       "source_location": "L173",
       "id": "pages_progresspage_progresspage",
-      "community": 101,
+      "community": 29,
       "norm_label": "progresspage()"
     },
     {
@@ -6930,7 +6930,7 @@
       "source_file": "frontend/src/features/landing/pages/LandingPage.tsx",
       "source_location": "L1",
       "id": "pages_landingpage",
-      "community": 6,
+      "community": 49,
       "norm_label": "landingpage.tsx"
     },
     {
@@ -6939,7 +6939,7 @@
       "source_file": "frontend/src/features/landing/pages/LandingPage.tsx",
       "source_location": "L10",
       "id": "pages_landingpage_landingpage",
-      "community": 6,
+      "community": 49,
       "norm_label": "landingpage()"
     },
     {
@@ -7074,7 +7074,7 @@
       "source_file": "frontend/src/hooks/useCurrentUser.ts",
       "source_location": "L1",
       "id": "hooks_usecurrentuser",
-      "community": 26,
+      "community": 101,
       "norm_label": "usecurrentuser.ts"
     },
     {
@@ -7083,7 +7083,7 @@
       "source_file": "frontend/src/hooks/useCurrentUser.ts",
       "source_location": "L5",
       "id": "hooks_usecurrentuser_usecurrentuser",
-      "community": 26,
+      "community": 101,
       "norm_label": "usecurrentuser()"
     },
     {
@@ -7092,7 +7092,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L1",
       "id": "lib_cn",
-      "community": 20,
+      "community": 8,
       "norm_label": "cn.ts"
     },
     {
@@ -7101,7 +7101,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L7",
       "id": "lib_cn_twmerge",
-      "community": 20,
+      "community": 8,
       "norm_label": "twmerge"
     },
     {
@@ -7110,7 +7110,7 @@
       "source_file": "frontend/src/lib/cn.ts",
       "source_location": "L32",
       "id": "lib_cn_cn",
-      "community": 11,
+      "community": 8,
       "norm_label": "cn()"
     },
     {
@@ -7146,7 +7146,7 @@
       "source_file": "frontend/src/lib/landing-testimonials.ts",
       "source_location": "L1",
       "id": "lib_landing_testimonials",
-      "community": 49,
+      "community": 20,
       "norm_label": "landing-testimonials.ts"
     },
     {
@@ -7155,7 +7155,7 @@
       "source_file": "frontend/src/lib/landing-testimonials.ts",
       "source_location": "L1",
       "id": "lib_landing_testimonials_landingtestimonial",
-      "community": 49,
+      "community": 20,
       "norm_label": "landingtestimonial"
     },
     {
@@ -7164,7 +7164,7 @@
       "source_file": "frontend/src/lib/landing-testimonials.ts",
       "source_location": "L16",
       "id": "lib_landing_testimonials_landing_testimonials",
-      "community": 49,
+      "community": 20,
       "norm_label": "landing_testimonials"
     },
     {
@@ -7173,7 +7173,7 @@
       "source_file": "frontend/src/main.tsx",
       "source_location": "L1",
       "id": "src_main",
-      "community": 35,
+      "community": 103,
       "norm_label": "main.tsx"
     },
     {
@@ -7308,7 +7308,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L1",
       "id": "types_profile",
-      "community": 35,
+      "community": 103,
       "norm_label": "profile.ts"
     },
     {
@@ -7317,7 +7317,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L1",
       "id": "types_profile_profiletype",
-      "community": 35,
+      "community": 103,
       "norm_label": "profiletype"
     },
     {
@@ -7326,7 +7326,7 @@
       "source_file": "frontend/src/types/profile.ts",
       "source_location": "L3",
       "id": "types_profile_profileswitchresponse",
-      "community": 35,
+      "community": 103,
       "norm_label": "profileswitchresponse"
     },
     {
@@ -8089,7 +8089,7 @@
       "label": "Active Profile Switching",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L105",
+      "source_location": "L110",
       "id": "claude_active_profile_switching",
       "community": 32,
       "norm_label": "active profile switching"
@@ -8098,7 +8098,7 @@
       "label": "Route Guard Patterns",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L123",
+      "source_location": "L128",
       "id": "claude_route_guard_patterns",
       "community": 32,
       "norm_label": "route guard patterns"
@@ -8107,7 +8107,7 @@
       "label": "Axios Interceptor Setup",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L144",
+      "source_location": "L149",
       "id": "claude_axios_interceptor_setup",
       "community": 32,
       "norm_label": "axios interceptor setup"
@@ -8116,7 +8116,7 @@
       "label": "API Surface (current)",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L174",
+      "source_location": "L179",
       "id": "claude_api_surface_current",
       "community": 32,
       "norm_label": "api surface (current)"
@@ -8125,7 +8125,7 @@
       "label": "Branching & Commit Conventions",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L192",
+      "source_location": "L197",
       "id": "claude_branching_commit_conventions",
       "community": 32,
       "norm_label": "branching & commit conventions"
@@ -8134,7 +8134,7 @@
       "label": "graphify",
       "file_type": "document",
       "source_file": "CLAUDE.md",
-      "source_location": "L205",
+      "source_location": "L212",
       "id": "claude_graphify",
       "community": 32,
       "norm_label": "graphify"
@@ -8302,6 +8302,78 @@
       "norm_label": "project scope"
     },
     {
+      "label": "CURRENT_STATE.md",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L1",
+      "id": "current_state",
+      "community": 86,
+      "norm_label": "current_state.md"
+    },
+    {
+      "label": "Current State",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L1",
+      "id": "current_state_current_state",
+      "community": 86,
+      "norm_label": "current state"
+    },
+    {
+      "label": "Project Name",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L6",
+      "id": "current_state_project_name",
+      "community": 86,
+      "norm_label": "project name"
+    },
+    {
+      "label": "Current Milestone",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L10",
+      "id": "current_state_current_milestone",
+      "community": 86,
+      "norm_label": "current milestone"
+    },
+    {
+      "label": "Backend Status",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L14",
+      "id": "current_state_backend_status",
+      "community": 86,
+      "norm_label": "backend status"
+    },
+    {
+      "label": "Frontend Status",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L26",
+      "id": "current_state_frontend_status",
+      "community": 86,
+      "norm_label": "frontend status"
+    },
+    {
+      "label": "Current Priority",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L44",
+      "id": "current_state_current_priority",
+      "community": 86,
+      "norm_label": "current priority"
+    },
+    {
+      "label": "What Not to Do",
+      "file_type": "document",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L54",
+      "id": "current_state_what_not_to_do",
+      "community": 86,
+      "norm_label": "what not to do"
+    },
+    {
       "label": "DESIGN.md",
       "file_type": "document",
       "source_file": "DESIGN.md",
@@ -8323,7 +8395,7 @@
       "label": "1. Overview",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L137",
+      "source_location": "L139",
       "id": "design_1_overview",
       "community": 7,
       "norm_label": "1. overview"
@@ -8332,7 +8404,7 @@
       "label": "2. Colors: The Forest and the Field",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L155",
+      "source_location": "L157",
       "id": "design_2_colors_the_forest_and_the_field",
       "community": 7,
       "norm_label": "2. colors: the forest and the field"
@@ -8341,7 +8413,7 @@
       "label": "Primary",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L159",
+      "source_location": "L161",
       "id": "design_primary",
       "community": 7,
       "norm_label": "primary"
@@ -8350,7 +8422,7 @@
       "label": "Secondary",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L162",
+      "source_location": "L164",
       "id": "design_secondary",
       "community": 7,
       "norm_label": "secondary"
@@ -8359,7 +8431,7 @@
       "label": "Tertiary",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L165",
+      "source_location": "L167",
       "id": "design_tertiary",
       "community": 7,
       "norm_label": "tertiary"
@@ -8368,7 +8440,7 @@
       "label": "Neutral",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L170",
+      "source_location": "L172",
       "id": "design_neutral",
       "community": 7,
       "norm_label": "neutral"
@@ -8377,7 +8449,7 @@
       "label": "Semantic",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L180",
+      "source_location": "L182",
       "id": "design_semantic",
       "community": 7,
       "norm_label": "semantic"
@@ -8386,7 +8458,7 @@
       "label": "Named Rules",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L186",
+      "source_location": "L188",
       "id": "design_named_rules",
       "community": 7,
       "norm_label": "named rules"
@@ -8395,7 +8467,7 @@
       "label": "3. Typography",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L194",
+      "source_location": "L196",
       "id": "design_3_typography",
       "community": 7,
       "norm_label": "3. typography"
@@ -8404,7 +8476,7 @@
       "label": "Hierarchy",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L201",
+      "source_location": "L203",
       "id": "design_hierarchy",
       "community": 7,
       "norm_label": "hierarchy"
@@ -8413,8 +8485,8 @@
       "label": "Named Rules",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L212",
-      "id": "design_named_rules_212",
+      "source_location": "L214",
+      "id": "design_named_rules_214",
       "community": 7,
       "norm_label": "named rules"
     },
@@ -8422,7 +8494,7 @@
       "label": "4. Elevation",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L218",
+      "source_location": "L220",
       "id": "design_4_elevation",
       "community": 7,
       "norm_label": "4. elevation"
@@ -8431,7 +8503,7 @@
       "label": "Shadow Vocabulary",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L224",
+      "source_location": "L226",
       "id": "design_shadow_vocabulary",
       "community": 7,
       "norm_label": "shadow vocabulary"
@@ -8440,8 +8512,8 @@
       "label": "Named Rules",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L230",
-      "id": "design_named_rules_230",
+      "source_location": "L232",
+      "id": "design_named_rules_232",
       "community": 7,
       "norm_label": "named rules"
     },
@@ -8449,7 +8521,7 @@
       "label": "5. Components",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L234",
+      "source_location": "L236",
       "id": "design_5_components",
       "community": 7,
       "norm_label": "5. components"
@@ -8458,7 +8530,7 @@
       "label": "Buttons",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L236",
+      "source_location": "L238",
       "id": "design_buttons",
       "community": 7,
       "norm_label": "buttons"
@@ -8467,7 +8539,7 @@
       "label": "Cards / Containers",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L249",
+      "source_location": "L251",
       "id": "design_cards_containers",
       "community": 7,
       "norm_label": "cards / containers"
@@ -8476,7 +8548,7 @@
       "label": "Inputs / Fields",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L260",
+      "source_location": "L262",
       "id": "design_inputs_fields",
       "community": 7,
       "norm_label": "inputs / fields"
@@ -8485,7 +8557,7 @@
       "label": "Navigation (Sticky Navbar)",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L269",
+      "source_location": "L271",
       "id": "design_navigation_sticky_navbar",
       "community": 7,
       "norm_label": "navigation (sticky navbar)"
@@ -8494,7 +8566,7 @@
       "label": "Course Cards (Signature Component)",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L279",
+      "source_location": "L281",
       "id": "design_course_cards_signature_component",
       "community": 7,
       "norm_label": "course cards (signature component)"
@@ -8503,7 +8575,7 @@
       "label": "Progress Bars",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L289",
+      "source_location": "L291",
       "id": "design_progress_bars",
       "community": 7,
       "norm_label": "progress bars"
@@ -8512,7 +8584,7 @@
       "label": "6. Do's and Don'ts",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L295",
+      "source_location": "L297",
       "id": "design_6_do_s_and_don_ts",
       "community": 7,
       "norm_label": "6. do's and don'ts"
@@ -8521,7 +8593,7 @@
       "label": "Do:",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L297",
+      "source_location": "L299",
       "id": "design_do",
       "community": 7,
       "norm_label": "do:"
@@ -8530,217 +8602,10 @@
       "label": "Don't:",
       "file_type": "document",
       "source_file": "DESIGN.md",
-      "source_location": "L309",
+      "source_location": "L311",
       "id": "design_don_t",
       "community": 7,
       "norm_label": "don't:"
-    },
-    {
-      "label": "PAGE_UI_SPEC.md",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L1",
-      "id": "page_ui_spec",
-      "community": 47,
-      "norm_label": "page_ui_spec.md"
-    },
-    {
-      "label": "My Courses Page \u2014 UI Layout Specification",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L1",
-      "id": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "community": 47,
-      "norm_label": "my courses page \u2014 ui layout specification"
-    },
-    {
-      "label": "0. Scope & Assumptions",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L3",
-      "id": "page_ui_spec_0_scope_assumptions",
-      "community": 47,
-      "norm_label": "0. scope & assumptions"
-    },
-    {
-      "label": "1. Layout & Structure",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L14",
-      "id": "page_ui_spec_1_layout_structure",
-      "community": 47,
-      "norm_label": "1. layout & structure"
-    },
-    {
-      "label": "Content-column wireframe (lg)",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L26",
-      "id": "page_ui_spec_content_column_wireframe_lg",
-      "community": 47,
-      "norm_label": "content-column wireframe (lg)"
-    },
-    {
-      "label": "Responsive behavior table",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L55",
-      "id": "page_ui_spec_responsive_behavior_table",
-      "community": 47,
-      "norm_label": "responsive behavior table"
-    },
-    {
-      "label": "Vertical rhythm",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L66",
-      "id": "page_ui_spec_vertical_rhythm",
-      "community": 47,
-      "norm_label": "vertical rhythm"
-    },
-    {
-      "label": "2. Token Mapping",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L73",
-      "id": "page_ui_spec_2_token_mapping",
-      "community": 47,
-      "norm_label": "2. token mapping"
-    },
-    {
-      "label": "Page shell & header",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L75",
-      "id": "page_ui_spec_page_shell_header",
-      "community": 47,
-      "norm_label": "page shell & header"
-    },
-    {
-      "label": "Summary strip (optional)",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L83",
-      "id": "page_ui_spec_summary_strip_optional",
-      "community": 47,
-      "norm_label": "summary strip (optional)"
-    },
-    {
-      "label": "Filter tab group",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L91",
-      "id": "page_ui_spec_filter_tab_group",
-      "community": 47,
-      "norm_label": "filter tab group"
-    },
-    {
-      "label": "Section heading",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L99",
-      "id": "page_ui_spec_section_heading",
-      "community": 47,
-      "norm_label": "section heading"
-    },
-    {
-      "label": "Progress bar (shared)",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L105",
-      "id": "page_ui_spec_progress_bar_shared",
-      "community": 47,
-      "norm_label": "progress bar (shared)"
-    },
-    {
-      "label": "Course card \u2014 In progress",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L113",
-      "id": "page_ui_spec_course_card_in_progress",
-      "community": 47,
-      "norm_label": "course card \u2014 in progress"
-    },
-    {
-      "label": "Course card \u2014 Completed",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L124",
-      "id": "page_ui_spec_course_card_completed",
-      "community": 47,
-      "norm_label": "course card \u2014 completed"
-    },
-    {
-      "label": "Course card \u2014 Not started",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L133",
-      "id": "page_ui_spec_course_card_not_started",
-      "community": 47,
-      "norm_label": "course card \u2014 not started"
-    },
-    {
-      "label": "Featured \"Next up\" row (optional)",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L143",
-      "id": "page_ui_spec_featured_next_up_row_optional",
-      "community": 47,
-      "norm_label": "featured \"next up\" row (optional)"
-    },
-    {
-      "label": "Empty state",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L155",
-      "id": "page_ui_spec_empty_state",
-      "community": 47,
-      "norm_label": "empty state"
-    },
-    {
-      "label": "3. Component Reusability",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L161",
-      "id": "page_ui_spec_3_component_reusability",
-      "community": 47,
-      "norm_label": "3. component reusability"
-    },
-    {
-      "label": "Extract & reuse (currently local to `LearnerDashboard.tsx`)",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L165",
-      "id": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx",
-      "community": 47,
-      "norm_label": "extract & reuse (currently local to `learnerdashboard.tsx`)"
-    },
-    {
-      "label": "Existing UI primitives that fit",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L174",
-      "id": "page_ui_spec_existing_ui_primitives_that_fit",
-      "community": 47,
-      "norm_label": "existing ui primitives that fit"
-    },
-    {
-      "label": "Does NOT fit",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L183",
-      "id": "page_ui_spec_does_not_fit",
-      "community": 47,
-      "norm_label": "does not fit"
-    },
-    {
-      "label": "4. Design-Rule Compliance Notes",
-      "file_type": "document",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L190",
-      "id": "page_ui_spec_4_design_rule_compliance_notes",
-      "community": 47,
-      "norm_label": "4. design-rule compliance notes"
     },
     {
       "label": "PRODUCT.md",
@@ -8761,19 +8626,10 @@
       "norm_label": "product"
     },
     {
-      "label": "Register",
-      "file_type": "document",
-      "source_file": "PRODUCT.md",
-      "source_location": "L3",
-      "id": "product_register",
-      "community": 50,
-      "norm_label": "register"
-    },
-    {
       "label": "Users",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L13",
+      "source_location": "L9",
       "id": "product_users",
       "community": 50,
       "norm_label": "users"
@@ -8782,7 +8638,7 @@
       "label": "Product Purpose",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L21",
+      "source_location": "L17",
       "id": "product_product_purpose",
       "community": 50,
       "norm_label": "product purpose"
@@ -8791,7 +8647,7 @@
       "label": "Brand Personality",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L27",
+      "source_location": "L23",
       "id": "product_brand_personality",
       "community": 50,
       "norm_label": "brand personality"
@@ -8800,7 +8656,7 @@
       "label": "Anti-references",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L35",
+      "source_location": "L31",
       "id": "product_anti_references",
       "community": 50,
       "norm_label": "anti-references"
@@ -8809,7 +8665,7 @@
       "label": "Design Principles",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L43",
+      "source_location": "L39",
       "id": "product_design_principles",
       "community": 50,
       "norm_label": "design principles"
@@ -8818,7 +8674,7 @@
       "label": "Accessibility & Inclusion",
       "file_type": "document",
       "source_file": "PRODUCT.md",
-      "source_location": "L55",
+      "source_location": "L51",
       "id": "product_accessibility_inclusion",
       "community": 50,
       "norm_label": "accessibility & inclusion"
@@ -10012,6 +9868,150 @@
       "norm_label": "future scalability"
     },
     {
+      "label": "PROJECT_STATE_OLD.md",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L1",
+      "id": "archive_project_state_old",
+      "community": 35,
+      "norm_label": "project_state_old.md"
+    },
+    {
+      "label": "Project State",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L1",
+      "id": "archive_project_state_old_project_state",
+      "community": 35,
+      "norm_label": "project state"
+    },
+    {
+      "label": "Project Name",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L7",
+      "id": "archive_project_state_old_project_name",
+      "community": 35,
+      "norm_label": "project name"
+    },
+    {
+      "label": "Project Type",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L11",
+      "id": "archive_project_state_old_project_type",
+      "community": 35,
+      "norm_label": "project type"
+    },
+    {
+      "label": "Main Objective",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L15",
+      "id": "archive_project_state_old_main_objective",
+      "community": 35,
+      "norm_label": "main objective"
+    },
+    {
+      "label": "Current Milestone",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L21",
+      "id": "archive_project_state_old_current_milestone",
+      "community": 35,
+      "norm_label": "current milestone"
+    },
+    {
+      "label": "Current Status",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L25",
+      "id": "archive_project_state_old_current_status",
+      "community": 35,
+      "norm_label": "current status"
+    },
+    {
+      "label": "Confirmed Architecture",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L30",
+      "id": "archive_project_state_old_confirmed_architecture",
+      "community": 35,
+      "norm_label": "confirmed architecture"
+    },
+    {
+      "label": "Backend:",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L38",
+      "id": "archive_project_state_old_backend",
+      "community": 35,
+      "norm_label": "backend:"
+    },
+    {
+      "label": "Frontend:",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L48",
+      "id": "archive_project_state_old_frontend",
+      "community": 35,
+      "norm_label": "frontend:"
+    },
+    {
+      "label": "Live sessions:",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L56",
+      "id": "archive_project_state_old_live_sessions",
+      "community": 35,
+      "norm_label": "live sessions:"
+    },
+    {
+      "label": "Confirmed Core Features",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L60",
+      "id": "archive_project_state_old_confirmed_core_features",
+      "community": 35,
+      "norm_label": "confirmed core features"
+    },
+    {
+      "label": "Key Domain Rule",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L82",
+      "id": "archive_project_state_old_key_domain_rule",
+      "community": 35,
+      "norm_label": "key domain rule"
+    },
+    {
+      "label": "Next Tasks",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L94",
+      "id": "archive_project_state_old_next_tasks",
+      "community": 35,
+      "norm_label": "next tasks"
+    },
+    {
+      "label": "First Implementation Priority",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L107",
+      "id": "archive_project_state_old_first_implementation_priority",
+      "community": 35,
+      "norm_label": "first implementation priority"
+    },
+    {
+      "label": "Notes",
+      "file_type": "document",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L119",
+      "id": "archive_project_state_old_notes",
+      "community": 35,
+      "norm_label": "notes"
+    },
+    {
       "label": "0001-use-modular-monolith.md",
       "file_type": "document",
       "source_file": "docs/decisions/0001-use-modular-monolith.md",
@@ -10402,7 +10402,7 @@
       "label": "Brand Direction",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L3",
+      "source_location": "L5",
       "id": "branding_brand_guidelines_brand_direction",
       "community": 28,
       "norm_label": "brand direction"
@@ -10411,7 +10411,7 @@
       "label": "Visual Style",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L29",
+      "source_location": "L31",
       "id": "branding_brand_guidelines_visual_style",
       "community": 28,
       "norm_label": "visual style"
@@ -10420,7 +10420,7 @@
       "label": "UI Principles",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L41",
+      "source_location": "L43",
       "id": "branding_brand_guidelines_ui_principles",
       "community": 28,
       "norm_label": "ui principles"
@@ -10429,7 +10429,7 @@
       "label": "Layout",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L43",
+      "source_location": "L45",
       "id": "branding_brand_guidelines_layout",
       "community": 28,
       "norm_label": "layout"
@@ -10438,7 +10438,7 @@
       "label": "Components",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L50",
+      "source_location": "L52",
       "id": "branding_brand_guidelines_components",
       "community": 28,
       "norm_label": "components"
@@ -10447,7 +10447,7 @@
       "label": "Cards",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L57",
+      "source_location": "L59",
       "id": "branding_brand_guidelines_cards",
       "community": 28,
       "norm_label": "cards"
@@ -10456,7 +10456,7 @@
       "label": "Dashboard Direction",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L65",
+      "source_location": "L67",
       "id": "branding_brand_guidelines_dashboard_direction",
       "community": 28,
       "norm_label": "dashboard direction"
@@ -10465,7 +10465,7 @@
       "label": "Branding Rules",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L76",
+      "source_location": "L78",
       "id": "branding_brand_guidelines_branding_rules",
       "community": 28,
       "norm_label": "branding rules"
@@ -10474,7 +10474,7 @@
       "label": "Logo",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L78",
+      "source_location": "L80",
       "id": "branding_brand_guidelines_logo",
       "community": 28,
       "norm_label": "logo"
@@ -10483,7 +10483,7 @@
       "label": "Colors",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L83",
+      "source_location": "L85",
       "id": "branding_brand_guidelines_colors",
       "community": 28,
       "norm_label": "colors"
@@ -10492,7 +10492,7 @@
       "label": "Typography",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L89",
+      "source_location": "L91",
       "id": "branding_brand_guidelines_typography",
       "community": 28,
       "norm_label": "typography"
@@ -10501,7 +10501,7 @@
       "label": "Motion & Interaction",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L96",
+      "source_location": "L98",
       "id": "branding_brand_guidelines_motion_interaction",
       "community": 28,
       "norm_label": "motion & interaction"
@@ -10510,7 +10510,7 @@
       "label": "Tone of Voice",
       "file_type": "document",
       "source_file": "docs/design/branding/brand-guidelines.md",
-      "source_location": "L113",
+      "source_location": "L115",
       "id": "branding_brand_guidelines_tone_of_voice",
       "community": 28,
       "norm_label": "tone of voice"
@@ -10741,91 +10741,37 @@
       "norm_label": "learnova wordmark"
     },
     {
-      "label": "Heading Scale",
+      "label": "Token Names (canonical, from DESIGN.md)",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
       "source_location": "L32",
-      "id": "branding_typography_heading_scale",
+      "id": "branding_typography_token_names_canonical_from_design_md",
       "community": 17,
-      "norm_label": "heading scale"
+      "norm_label": "token names (canonical, from design.md)"
     },
     {
-      "label": "H1",
+      "label": "Heading Scale Reference",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
-      "source_location": "L34",
-      "id": "branding_typography_h1",
+      "source_location": "L50",
+      "id": "branding_typography_heading_scale_reference",
       "community": 17,
-      "norm_label": "h1"
+      "norm_label": "heading scale reference"
     },
     {
-      "label": "H2",
+      "label": "Body Text Reference",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
-      "source_location": "L41",
-      "id": "branding_typography_h2",
+      "source_location": "L63",
+      "id": "branding_typography_body_text_reference",
       "community": 17,
-      "norm_label": "h2"
-    },
-    {
-      "label": "H3",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L47",
-      "id": "branding_typography_h3",
-      "community": 17,
-      "norm_label": "h3"
-    },
-    {
-      "label": "H4",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L53",
-      "id": "branding_typography_h4",
-      "community": 17,
-      "norm_label": "h4"
-    },
-    {
-      "label": "Body Text",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L60",
-      "id": "branding_typography_body_text",
-      "community": 17,
-      "norm_label": "body text"
-    },
-    {
-      "label": "Large Body",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L62",
-      "id": "branding_typography_large_body",
-      "community": 17,
-      "norm_label": "large body"
-    },
-    {
-      "label": "Default Body",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L67",
-      "id": "branding_typography_default_body",
-      "community": 17,
-      "norm_label": "default body"
-    },
-    {
-      "label": "Small Text",
-      "file_type": "document",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L72",
-      "id": "branding_typography_small_text",
-      "community": 17,
-      "norm_label": "small text"
+      "norm_label": "body text reference"
     },
     {
       "label": "Button Typography",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
-      "source_location": "L79",
+      "source_location": "L74",
       "id": "branding_typography_button_typography",
       "community": 17,
       "norm_label": "button typography"
@@ -10834,7 +10780,7 @@
       "label": "Primary Buttons",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
-      "source_location": "L81",
+      "source_location": "L76",
       "id": "branding_typography_primary_buttons",
       "community": 17,
       "norm_label": "primary buttons"
@@ -10843,7 +10789,7 @@
       "label": "Design Rules",
       "file_type": "document",
       "source_file": "docs/design/branding/typography.md",
-      "source_location": "L88",
+      "source_location": "L84",
       "id": "branding_typography_design_rules",
       "community": 17,
       "norm_label": "design rules"
@@ -11308,6 +11254,213 @@
       "norm_label": "8. footer"
     },
     {
+      "label": "my-courses-page.md",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L1",
+      "id": "page_specs_my_courses_page",
+      "community": 26,
+      "norm_label": "my-courses-page.md"
+    },
+    {
+      "label": "My Courses Page \u2014 UI Layout Specification",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L1",
+      "id": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "community": 26,
+      "norm_label": "my courses page \u2014 ui layout specification"
+    },
+    {
+      "label": "0. Scope & Assumptions",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L3",
+      "id": "page_specs_my_courses_page_0_scope_assumptions",
+      "community": 26,
+      "norm_label": "0. scope & assumptions"
+    },
+    {
+      "label": "1. Layout & Structure",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L14",
+      "id": "page_specs_my_courses_page_1_layout_structure",
+      "community": 26,
+      "norm_label": "1. layout & structure"
+    },
+    {
+      "label": "Content-column wireframe (lg)",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L26",
+      "id": "page_specs_my_courses_page_content_column_wireframe_lg",
+      "community": 26,
+      "norm_label": "content-column wireframe (lg)"
+    },
+    {
+      "label": "Responsive behavior table",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L55",
+      "id": "page_specs_my_courses_page_responsive_behavior_table",
+      "community": 26,
+      "norm_label": "responsive behavior table"
+    },
+    {
+      "label": "Vertical rhythm",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L66",
+      "id": "page_specs_my_courses_page_vertical_rhythm",
+      "community": 26,
+      "norm_label": "vertical rhythm"
+    },
+    {
+      "label": "2. Token Mapping",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L73",
+      "id": "page_specs_my_courses_page_2_token_mapping",
+      "community": 26,
+      "norm_label": "2. token mapping"
+    },
+    {
+      "label": "Page shell & header",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L75",
+      "id": "page_specs_my_courses_page_page_shell_header",
+      "community": 26,
+      "norm_label": "page shell & header"
+    },
+    {
+      "label": "Summary strip (optional)",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L83",
+      "id": "page_specs_my_courses_page_summary_strip_optional",
+      "community": 26,
+      "norm_label": "summary strip (optional)"
+    },
+    {
+      "label": "Filter tab group",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L91",
+      "id": "page_specs_my_courses_page_filter_tab_group",
+      "community": 26,
+      "norm_label": "filter tab group"
+    },
+    {
+      "label": "Section heading",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L99",
+      "id": "page_specs_my_courses_page_section_heading",
+      "community": 26,
+      "norm_label": "section heading"
+    },
+    {
+      "label": "Progress bar (shared)",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L105",
+      "id": "page_specs_my_courses_page_progress_bar_shared",
+      "community": 26,
+      "norm_label": "progress bar (shared)"
+    },
+    {
+      "label": "Course card \u2014 In progress",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L113",
+      "id": "page_specs_my_courses_page_course_card_in_progress",
+      "community": 26,
+      "norm_label": "course card \u2014 in progress"
+    },
+    {
+      "label": "Course card \u2014 Completed",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L124",
+      "id": "page_specs_my_courses_page_course_card_completed",
+      "community": 26,
+      "norm_label": "course card \u2014 completed"
+    },
+    {
+      "label": "Course card \u2014 Not started",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L133",
+      "id": "page_specs_my_courses_page_course_card_not_started",
+      "community": 26,
+      "norm_label": "course card \u2014 not started"
+    },
+    {
+      "label": "Featured \"Next up\" row (optional)",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L143",
+      "id": "page_specs_my_courses_page_featured_next_up_row_optional",
+      "community": 26,
+      "norm_label": "featured \"next up\" row (optional)"
+    },
+    {
+      "label": "Empty state",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L155",
+      "id": "page_specs_my_courses_page_empty_state",
+      "community": 26,
+      "norm_label": "empty state"
+    },
+    {
+      "label": "3. Component Reusability",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L161",
+      "id": "page_specs_my_courses_page_3_component_reusability",
+      "community": 26,
+      "norm_label": "3. component reusability"
+    },
+    {
+      "label": "Extract & reuse (currently local to `LearnerDashboard.tsx`)",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L165",
+      "id": "page_specs_my_courses_page_extract_reuse_currently_local_to_learnerdashboard_tsx",
+      "community": 26,
+      "norm_label": "extract & reuse (currently local to `learnerdashboard.tsx`)"
+    },
+    {
+      "label": "Existing UI primitives that fit",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L174",
+      "id": "page_specs_my_courses_page_existing_ui_primitives_that_fit",
+      "community": 26,
+      "norm_label": "existing ui primitives that fit"
+    },
+    {
+      "label": "Does NOT fit",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L183",
+      "id": "page_specs_my_courses_page_does_not_fit",
+      "community": 26,
+      "norm_label": "does not fit"
+    },
+    {
+      "label": "4. Design-Rule Compliance Notes",
+      "file_type": "document",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L190",
+      "id": "page_specs_my_courses_page_4_design_rule_compliance_notes",
+      "community": 26,
+      "norm_label": "4. design-rule compliance notes"
+    },
+    {
       "label": "system-context.md",
       "file_type": "document",
       "source_file": "docs/diagrams/system-context.md",
@@ -11468,6 +11621,321 @@
       "id": "frontend_readme_expanding_the_eslint_configuration",
       "community": 89,
       "norm_label": "expanding the eslint configuration"
+    },
+    {
+      "label": "Heading Scale",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L32",
+      "community": 17,
+      "norm_label": "heading scale",
+      "id": "branding_typography_heading_scale"
+    },
+    {
+      "label": "H1",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L34",
+      "community": 17,
+      "norm_label": "h1",
+      "id": "branding_typography_h1"
+    },
+    {
+      "label": "H2",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L41",
+      "community": 17,
+      "norm_label": "h2",
+      "id": "branding_typography_h2"
+    },
+    {
+      "label": "H3",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L47",
+      "community": 17,
+      "norm_label": "h3",
+      "id": "branding_typography_h3"
+    },
+    {
+      "label": "H4",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L53",
+      "community": 17,
+      "norm_label": "h4",
+      "id": "branding_typography_h4"
+    },
+    {
+      "label": "Body Text",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L60",
+      "community": 17,
+      "norm_label": "body text",
+      "id": "branding_typography_body_text"
+    },
+    {
+      "label": "Large Body",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L62",
+      "community": 17,
+      "norm_label": "large body",
+      "id": "branding_typography_large_body"
+    },
+    {
+      "label": "Default Body",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L67",
+      "community": 17,
+      "norm_label": "default body",
+      "id": "branding_typography_default_body"
+    },
+    {
+      "label": "Small Text",
+      "file_type": "document",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L72",
+      "community": 17,
+      "norm_label": "small text",
+      "id": "branding_typography_small_text"
+    },
+    {
+      "label": "Register",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "L3",
+      "community": 50,
+      "norm_label": "register",
+      "id": "product_register"
+    },
+    {
+      "label": "Named Rules",
+      "file_type": "document",
+      "source_file": "DESIGN.md",
+      "source_location": "L212",
+      "community": 7,
+      "norm_label": "named rules",
+      "id": "design_named_rules_212"
+    },
+    {
+      "label": "Named Rules",
+      "file_type": "document",
+      "source_file": "DESIGN.md",
+      "source_location": "L230",
+      "community": 7,
+      "norm_label": "named rules",
+      "id": "design_named_rules_230"
+    },
+    {
+      "label": "PAGE_UI_SPEC.md",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L1",
+      "community": 47,
+      "norm_label": "page_ui_spec.md",
+      "id": "page_ui_spec"
+    },
+    {
+      "label": "My Courses Page \u2014 UI Layout Specification",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L1",
+      "community": 47,
+      "norm_label": "my courses page \u2014 ui layout specification",
+      "id": "page_ui_spec_my_courses_page_ui_layout_specification"
+    },
+    {
+      "label": "0. Scope & Assumptions",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L3",
+      "community": 47,
+      "norm_label": "0. scope & assumptions",
+      "id": "page_ui_spec_0_scope_assumptions"
+    },
+    {
+      "label": "1. Layout & Structure",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L14",
+      "community": 47,
+      "norm_label": "1. layout & structure",
+      "id": "page_ui_spec_1_layout_structure"
+    },
+    {
+      "label": "Content-column wireframe (lg)",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L26",
+      "community": 47,
+      "norm_label": "content-column wireframe (lg)",
+      "id": "page_ui_spec_content_column_wireframe_lg"
+    },
+    {
+      "label": "Responsive behavior table",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L55",
+      "community": 47,
+      "norm_label": "responsive behavior table",
+      "id": "page_ui_spec_responsive_behavior_table"
+    },
+    {
+      "label": "Vertical rhythm",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L66",
+      "community": 47,
+      "norm_label": "vertical rhythm",
+      "id": "page_ui_spec_vertical_rhythm"
+    },
+    {
+      "label": "2. Token Mapping",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L73",
+      "community": 47,
+      "norm_label": "2. token mapping",
+      "id": "page_ui_spec_2_token_mapping"
+    },
+    {
+      "label": "Page shell & header",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L75",
+      "community": 47,
+      "norm_label": "page shell & header",
+      "id": "page_ui_spec_page_shell_header"
+    },
+    {
+      "label": "Summary strip (optional)",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L83",
+      "community": 47,
+      "norm_label": "summary strip (optional)",
+      "id": "page_ui_spec_summary_strip_optional"
+    },
+    {
+      "label": "Filter tab group",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L91",
+      "community": 47,
+      "norm_label": "filter tab group",
+      "id": "page_ui_spec_filter_tab_group"
+    },
+    {
+      "label": "Section heading",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L99",
+      "community": 47,
+      "norm_label": "section heading",
+      "id": "page_ui_spec_section_heading"
+    },
+    {
+      "label": "Progress bar (shared)",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L105",
+      "community": 47,
+      "norm_label": "progress bar (shared)",
+      "id": "page_ui_spec_progress_bar_shared"
+    },
+    {
+      "label": "Course card \u2014 In progress",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L113",
+      "community": 47,
+      "norm_label": "course card \u2014 in progress",
+      "id": "page_ui_spec_course_card_in_progress"
+    },
+    {
+      "label": "Course card \u2014 Completed",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L124",
+      "community": 47,
+      "norm_label": "course card \u2014 completed",
+      "id": "page_ui_spec_course_card_completed"
+    },
+    {
+      "label": "Course card \u2014 Not started",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L133",
+      "community": 47,
+      "norm_label": "course card \u2014 not started",
+      "id": "page_ui_spec_course_card_not_started"
+    },
+    {
+      "label": "Featured \"Next up\" row (optional)",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L143",
+      "community": 47,
+      "norm_label": "featured \"next up\" row (optional)",
+      "id": "page_ui_spec_featured_next_up_row_optional"
+    },
+    {
+      "label": "Empty state",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L155",
+      "community": 47,
+      "norm_label": "empty state",
+      "id": "page_ui_spec_empty_state"
+    },
+    {
+      "label": "3. Component Reusability",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L161",
+      "community": 47,
+      "norm_label": "3. component reusability",
+      "id": "page_ui_spec_3_component_reusability"
+    },
+    {
+      "label": "Extract & reuse (currently local to `LearnerDashboard.tsx`)",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L165",
+      "community": 47,
+      "norm_label": "extract & reuse (currently local to `learnerdashboard.tsx`)",
+      "id": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx"
+    },
+    {
+      "label": "Existing UI primitives that fit",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L174",
+      "community": 47,
+      "norm_label": "existing ui primitives that fit",
+      "id": "page_ui_spec_existing_ui_primitives_that_fit"
+    },
+    {
+      "label": "Does NOT fit",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L183",
+      "community": 47,
+      "norm_label": "does not fit",
+      "id": "page_ui_spec_does_not_fit"
+    },
+    {
+      "label": "4. Design-Rule Compliance Notes",
+      "file_type": "document",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L190",
+      "community": 47,
+      "norm_label": "4. design-rule compliance notes",
+      "id": "page_ui_spec_4_design_rule_compliance_notes"
     },
     {
       "label": "FeaturedCourseRow()",
@@ -25727,6 +26195,76 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state",
+      "target": "current_state_current_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_backend_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_current_milestone"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_current_priority"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_frontend_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_project_name"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "CURRENT_STATE.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "current_state_current_state",
+      "target": "current_state_what_not_to_do"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "DESIGN.md",
       "source_location": "L135",
       "weight": 1.0,
@@ -25878,11 +26416,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "DESIGN.md",
+      "source_location": "L214",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "design_3_typography",
+      "target": "design_named_rules_214"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "DESIGN.md",
       "source_location": "L230",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "design_4_elevation",
       "target": "design_named_rules_230"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "DESIGN.md",
+      "source_location": "L232",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "design_4_elevation",
+      "target": "design_named_rules_232"
     },
     {
       "relation": "contains",
@@ -25973,366 +26531,6 @@
       "confidence_score": 1.0,
       "source": "design_6_do_s_and_don_ts",
       "target": "design_don_t"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec",
-      "target": "page_ui_spec_courses_page_ui_layout_specification"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec",
-      "target": "page_ui_spec_my_courses_page_ui_layout_specification"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_0_scope_assumptions"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_1_layout_structure"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L73",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_2_token_mapping"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L161",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_3_component_reusability"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L190",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_4_design_rule_compliance_notes"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_0_scope_assumptions"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L26",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_content_column_wireframe_lg"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L17",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_desktop_wireframe_xl"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L55",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_responsive_behavior_table"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L47",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_responsive_behavior_table_course_card_grid_band"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L59",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_1_layout_structure",
-      "target": "page_ui_spec_vertical_rhythm"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_1_layout_structure"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L93",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L124",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_completed"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L113",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_in_progress"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L133",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_course_card_not_started"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L108",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_empty_state"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L143",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_featured_next_up_row_optional"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L84",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_filter_bar"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L91",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_filter_tab_group"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L75",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_header_hero"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L68",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_page_shell"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L75",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_page_shell_header"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L105",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_progress_bar_shared"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L99",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_section_heading"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L83",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_2_token_mapping",
-      "target": "page_ui_spec_summary_strip_optional"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L66",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_2_token_mapping"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L131",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_does_not_fit"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L174",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_existing_ui_primitives_that_fit"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L165",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L119",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_fit_reuse_as_is"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L136",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_3_component_reusability",
-      "target": "page_ui_spec_new_component_coursecard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L117",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_3_component_reusability"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "PAGE_UI_SPEC.md",
-      "source_location": "L140",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "page_ui_spec_courses_page_ui_layout_specification",
-      "target": "page_ui_spec_4_design_rule_compliance_notes"
     },
     {
       "relation": "contains",
@@ -27637,6 +27835,156 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old",
+      "target": "archive_project_state_old_project_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_confirmed_architecture"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_confirmed_core_features"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L21",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_current_milestone"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_current_status"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L107",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_first_implementation_priority"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L82",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_key_domain_rule"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L15",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_main_objective"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L94",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_next_tasks"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L119",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_notes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_project_name"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_project_state",
+      "target": "archive_project_state_old_project_type"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_confirmed_architecture",
+      "target": "archive_project_state_old_backend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L48",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_confirmed_architecture",
+      "target": "archive_project_state_old_frontend"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/archive/PROJECT_STATE_OLD.md",
+      "source_location": "L56",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "archive_project_state_old_confirmed_architecture",
+      "target": "archive_project_state_old_live_sessions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/decisions/0001-use-modular-monolith.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -28338,6 +28686,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/design/branding/typography.md",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "branding_typography",
+      "target": "branding_typography_body_text_reference",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
       "source_location": "L79",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -28363,6 +28721,16 @@
       "confidence_score": 1.0,
       "source": "branding_typography",
       "target": "branding_typography_heading_scale"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "branding_typography",
+      "target": "branding_typography_heading_scale_reference",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -28398,6 +28766,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/design/branding/typography.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "branding_typography",
+      "target": "branding_typography_token_names_canonical_from_design_md",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
       "source_location": "L5",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -28413,76 +28791,6 @@
       "confidence_score": 1.0,
       "source": "branding_typography_logo_typography",
       "target": "branding_typography_learnova_wordmark"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_heading_scale",
-      "target": "branding_typography_h1"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L41",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_heading_scale",
-      "target": "branding_typography_h2"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L47",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_heading_scale",
-      "target": "branding_typography_h3"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L53",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_heading_scale",
-      "target": "branding_typography_h4"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L67",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_body_text",
-      "target": "branding_typography_default_body"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L62",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_body_text",
-      "target": "branding_typography_large_body"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/design/branding/typography.md",
-      "source_location": "L72",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "branding_typography_body_text",
-      "target": "branding_typography_small_text"
     },
     {
       "relation": "contains",
@@ -28977,6 +29285,226 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page",
+      "target": "page_specs_my_courses_page_my_courses_page_ui_layout_specification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "target": "page_specs_my_courses_page_0_scope_assumptions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "target": "page_specs_my_courses_page_1_layout_structure"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "target": "page_specs_my_courses_page_2_token_mapping"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L161",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "target": "page_specs_my_courses_page_3_component_reusability"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L190",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_my_courses_page_ui_layout_specification",
+      "target": "page_specs_my_courses_page_4_design_rule_compliance_notes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_1_layout_structure",
+      "target": "page_specs_my_courses_page_content_column_wireframe_lg"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_1_layout_structure",
+      "target": "page_specs_my_courses_page_responsive_behavior_table"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_1_layout_structure",
+      "target": "page_specs_my_courses_page_vertical_rhythm"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L124",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_course_card_completed"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L113",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_course_card_in_progress"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L133",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_course_card_not_started"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L155",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_empty_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L143",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_featured_next_up_row_optional"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_filter_tab_group"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L75",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_page_shell_header"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_progress_bar_shared"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_section_heading"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_2_token_mapping",
+      "target": "page_specs_my_courses_page_summary_strip_optional"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L183",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_3_component_reusability",
+      "target": "page_specs_my_courses_page_does_not_fit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L174",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_3_component_reusability",
+      "target": "page_specs_my_courses_page_existing_ui_primitives_that_fit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/page-specs/my-courses-page.md",
+      "source_location": "L165",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_specs_my_courses_page_3_component_reusability",
+      "target": "page_specs_my_courses_page_extract_reuse_currently_local_to_learnerdashboard_tsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/diagrams/system-context.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -29123,8 +29651,438 @@
       "confidence_score": 1.0,
       "source": "frontend_readme_react_typescript_vite",
       "target": "frontend_readme_react_compiler"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_heading_scale",
+      "target": "branding_typography_h1"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_heading_scale",
+      "target": "branding_typography_h2"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_heading_scale",
+      "target": "branding_typography_h3"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_heading_scale",
+      "target": "branding_typography_h4"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L67",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_body_text",
+      "target": "branding_typography_default_body"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_body_text",
+      "target": "branding_typography_large_body"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/design/branding/typography.md",
+      "source_location": "L72",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "branding_typography_body_text",
+      "target": "branding_typography_small_text"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec",
+      "target": "page_ui_spec_courses_page_ui_layout_specification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec",
+      "target": "page_ui_spec_my_courses_page_ui_layout_specification"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_0_scope_assumptions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_1_layout_structure"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L73",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_2_token_mapping"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L161",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_3_component_reusability"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L190",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_my_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_4_design_rule_compliance_notes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_0_scope_assumptions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_1_layout_structure",
+      "target": "page_ui_spec_content_column_wireframe_lg"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_1_layout_structure",
+      "target": "page_ui_spec_desktop_wireframe_xl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_1_layout_structure",
+      "target": "page_ui_spec_responsive_behavior_table"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_1_layout_structure",
+      "target": "page_ui_spec_responsive_behavior_table_course_card_grid_band"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L59",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_1_layout_structure",
+      "target": "page_ui_spec_vertical_rhythm"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_1_layout_structure"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L93",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_course_card"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L124",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_course_card_completed"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L113",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_course_card_in_progress"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L133",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_course_card_not_started"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L108",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_empty_state"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L143",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_featured_next_up_row_optional"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L84",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_filter_bar"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L91",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_filter_tab_group"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L75",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_header_hero"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_page_shell"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L75",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_page_shell_header"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L105",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_progress_bar_shared"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_section_heading"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_2_token_mapping",
+      "target": "page_ui_spec_summary_strip_optional"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L66",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_2_token_mapping"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L131",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_3_component_reusability",
+      "target": "page_ui_spec_does_not_fit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L174",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_3_component_reusability",
+      "target": "page_ui_spec_existing_ui_primitives_that_fit"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L165",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_3_component_reusability",
+      "target": "page_ui_spec_extract_reuse_currently_local_to_learnerdashboard_tsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L119",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_3_component_reusability",
+      "target": "page_ui_spec_fit_reuse_as_is"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L136",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_3_component_reusability",
+      "target": "page_ui_spec_new_component_coursecard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L117",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_3_component_reusability"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "PAGE_UI_SPEC.md",
+      "source_location": "L140",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "page_ui_spec_courses_page_ui_layout_specification",
+      "target": "page_ui_spec_4_design_rule_compliance_notes"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b3b4e3f6a49d4d257a53cbe780a5073ebeaff306"
+  "built_at_commit": "babad9fb40be5dcf16c737d76e889cdd00de0c80"
 }

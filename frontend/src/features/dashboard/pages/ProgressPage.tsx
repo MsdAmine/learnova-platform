@@ -90,7 +90,7 @@ function WeekStrip({ days }: { days: DayActivity[] }) {
           <div key={i} className="flex flex-col items-center gap-1.5 w-8 sm:w-9">
             <div
               className={`w-7 h-7 rounded-full ${
-                day.active ? 'bg-azure' : 'bg-surface-elevated'
+                day.active ? 'bg-salem' : 'bg-surface-elevated'
               }`}
             />
             <span className="text-caption text-text-secondary">{day.label}</span>
@@ -114,7 +114,7 @@ function InProgressRow({ course }: { course: CourseProgress }) {
         <button
           type="button"
           aria-label={`Continue ${course.title}`}
-          className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm p-1 -m-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm min-h-[44px] px-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Continue <ArrowRight size={11} aria-hidden="true" />
         </button>
@@ -160,7 +160,7 @@ function NotStartedRow({ course }: { course: CourseProgress }) {
       <button
         type="button"
         aria-label={`Start ${course.title}`}
-        className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 p-1 -m-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+        className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm min-h-[44px] px-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
       >
         Start <ArrowRight size={11} aria-hidden="true" />
       </button>
@@ -188,26 +188,23 @@ export default function ProgressPage() {
 
       {/* 2. Summary strip ─────────────────────────────────────────────── */}
       <div
-        className="flex items-center gap-0 mb-8 text-body-sm text-text-secondary"
+        className="flex flex-wrap items-center gap-x-5 gap-y-1.5 mb-8 text-body-sm text-text-secondary"
         aria-label="Learning statistics"
       >
-        <span className="flex items-center">
-          <span className="font-semibold text-text-primary mr-1.5">{HOURS_LEARNED}h</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-semibold text-text-primary">{HOURS_LEARNED}h</span>
           learned
         </span>
-        <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
-        <span className="flex items-center">
-          <span className="font-semibold text-text-primary mr-1.5">{COURSES.length}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-semibold text-text-primary">{COURSES.length}</span>
           enrolled
         </span>
-        <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
-        <span className="flex items-center">
-          <span className="font-semibold text-text-primary mr-1.5">{inProgress.length}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-semibold text-text-primary">{inProgress.length}</span>
           in progress
         </span>
-        <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
-        <span className="flex items-center">
-          <span className="font-semibold text-text-primary mr-1.5">{completed.length}</span>
+        <span className="flex items-center gap-1.5">
+          <span className="font-semibold text-text-primary">{completed.length}</span>
           completed
         </span>
       </div>
@@ -242,7 +239,7 @@ export default function ProgressPage() {
           </ul>
           <button
             type="button"
-            className="flex items-center gap-1 text-body-sm font-medium text-salem mt-3 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+            className="flex items-center gap-1 text-body-sm font-medium text-salem min-h-[44px] rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
           >
             View certificates <ArrowRight size={13} aria-hidden="true" />
           </button>

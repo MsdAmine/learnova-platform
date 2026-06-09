@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/components/DashboardLayout.tsx": {
-    "mtime": 1780877942.2095456,
-    "ast_hash": "db5908dac1a8bb9f3cb6a3065066f202",
+    "mtime": 1780878707.2630346,
+    "ast_hash": "f25b27cebdd86ab9e9ce22c124b6eb6c",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/CertificatesPage.tsx": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/ProgressPage.tsx": {
-    "mtime": 1780877926.486757,
-    "ast_hash": "db03b2404eb125b6143317c8849bac32",
+    "mtime": 1780878625.350584,
+    "ast_hash": "4d912eaae30cbb1c3c61cad40bdf72c7",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/SettingsPage.tsx": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1780611497.7505267,
-    "ast_hash": "ccc55076231159cfcc4e3e741080734f",
+    "mtime": 1781029698.0750537,
+    "ast_hash": "e80b8e19139926a94ee6e16493cf4474",
     "semantic_hash": ""
   },
   "CONTRIBUTING.md": {
@@ -665,13 +665,13 @@
     "semantic_hash": ""
   },
   "DESIGN.md": {
-    "mtime": 1780357044.7302482,
-    "ast_hash": "5a1bdec9a411807a0e51c96e3e6749be",
+    "mtime": 1781029623.0203536,
+    "ast_hash": "9dc7748c7f4db0e328f5192d2edad2e8",
     "semantic_hash": ""
   },
   "PRODUCT.md": {
-    "mtime": 1780357044.7322657,
-    "ast_hash": "e0e19d6af1c1186c556b3449d9991b56",
+    "mtime": 1781029645.3673704,
+    "ast_hash": "e906aa3ba393b6a85951a9ac72ecb71e",
     "semantic_hash": ""
   },
   "PROJECT_STATE.md": {
@@ -755,23 +755,23 @@
     "semantic_hash": ""
   },
   "docs/design/branding/brand-guidelines.md": {
-    "mtime": 1780357044.802616,
-    "ast_hash": "9a585baef15ce7bcfc954e393dbd7988",
+    "mtime": 1781029746.5605805,
+    "ast_hash": "ce9e813b4a5a01107cf6c3d837e3cf1e",
     "semantic_hash": ""
   },
   "docs/design/branding/colors.md": {
-    "mtime": 1780357044.8036172,
-    "ast_hash": "fc447756bca1d4e4c570c6307c12125a",
+    "mtime": 1781029737.7649193,
+    "ast_hash": "b940085ff43a09868d58300e49cfff38",
     "semantic_hash": ""
   },
   "docs/design/branding/typography.md": {
-    "mtime": 1780357044.820143,
-    "ast_hash": "6a400cbed037e48c857ef3e2a0bda64d",
+    "mtime": 1781029775.3945775,
+    "ast_hash": "921b2fcd1e73ac3d2a531e6c0b33b7f0",
     "semantic_hash": ""
   },
   "docs/design/final-specs/design-system.md": {
-    "mtime": 1780357044.8510022,
-    "ast_hash": "460891528b608d0fea923ca60d449f73",
+    "mtime": 1781029661.3784485,
+    "ast_hash": "f3996ec3dbdab18795d13f5fb7f73b59",
     "semantic_hash": ""
   },
   "docs/design/final-specs/landing-page.md": {
@@ -805,13 +805,13 @@
     "semantic_hash": ""
   },
   "docs/design/branding/logo-primary.png": {
-    "mtime": 1780357044.8111448,
-    "ast_hash": "b9d822e7c63dc0a1acf5c4a0e201b88e",
+    "mtime": 1781029622.7341788,
+    "ast_hash": "d901a8b6a05500000518703d58bb6897",
     "semantic_hash": ""
   },
   "docs/design/branding/logo-white.png": {
-    "mtime": 1780357044.8181417,
-    "ast_hash": "dcf82bcf79a2aef3506cff1e9cc4dff0",
+    "mtime": 1781029622.771085,
+    "ast_hash": "ec2238d6bb62e0f7cb2d221aa3ce016d",
     "semantic_hash": ""
   },
   "docs/design/claude-design/leaner-dashboard-1.png": {
@@ -964,19 +964,14 @@
     "ast_hash": "6d5180a782d64c8cf51ba01c2a2184d8",
     "semantic_hash": ""
   },
-  "PAGE_UI_SPEC.md": {
-    "mtime": 1780617095.91719,
-    "ast_hash": "e67c0fc67ee9bf46b451cde2bb75dfc0",
-    "semantic_hash": ""
-  },
   "frontend/src/components/ui/ProgressBar.tsx": {
     "mtime": 1780707802.0320613,
     "ast_hash": "7a67c97f402e16a24449ea6bf6acef79",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/CourseCard.tsx": {
-    "mtime": 1780877854.1627128,
-    "ast_hash": "c99ec9265c35147cfd3f65c2c9ec7569",
+    "mtime": 1780879028.017727,
+    "ast_hash": "2de9f64f69b6b04fcec5e5e3fe26bebe",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/FeaturedCourseRow.tsx": {
@@ -987,6 +982,31 @@
   "frontend/src/components/ui/FilterTabs.tsx": {
     "mtime": 1780876696.0765908,
     "ast_hash": "7e788e4935fe00cf01742f8e94a3aa55",
+    "semantic_hash": ""
+  },
+  "CURRENT_STATE.md": {
+    "mtime": 1781029590.3477623,
+    "ast_hash": "e3918e5168859ce3565dc7588eb02c5c",
+    "semantic_hash": ""
+  },
+  "docs/archive/PROJECT_STATE_OLD.md": {
+    "mtime": 1781029546.4062812,
+    "ast_hash": "bff137fc4cface2957bda5ec96b246cb",
+    "semantic_hash": ""
+  },
+  "docs/design/page-specs/my-courses-page.md": {
+    "mtime": 1781029538.2147808,
+    "ast_hash": "e67c0fc67ee9bf46b451cde2bb75dfc0",
+    "semantic_hash": ""
+  },
+  "docs/archive/logos-original/logo-primary.png": {
+    "mtime": 1781029579.040988,
+    "ast_hash": "b9d822e7c63dc0a1acf5c4a0e201b88e",
+    "semantic_hash": ""
+  },
+  "docs/archive/logos-original/logo-white.png": {
+    "mtime": 1781029579.0887916,
+    "ast_hash": "dcf82bcf79a2aef3506cff1e9cc4dff0",
     "semantic_hash": ""
   }
 }

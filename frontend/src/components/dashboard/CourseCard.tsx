@@ -50,7 +50,7 @@ function NotStartedCourseCard({ course }: { course: Course }) {
         <button
           type="button"
           aria-label={`Start ${course.title}`}
-          className="flex items-center gap-1 text-caption font-medium text-salem p-2 -m-2 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          className="flex items-center gap-1 text-caption font-medium text-salem min-h-[44px] px-1 rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Start <ArrowRight size={11} aria-hidden="true" />
         </button>
@@ -61,7 +61,7 @@ function NotStartedCourseCard({ course }: { course: Course }) {
 
 function InProgressCourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow motion-safe:[will-change:box-shadow] duration-standard hover:shadow-hover-lift">
+    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow duration-standard hover:shadow-hover-lift">
       <div
         className="aspect-video w-full"
         style={{ background: courseGradient(course) }}
