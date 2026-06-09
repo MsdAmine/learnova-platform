@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { cn } from '../../lib/cn';
 import { ProgressBar } from '../ui/ProgressBar';
-import { courseGradient, type Course } from './CourseCard';
+import { courseGradient, type Course } from './courseCardUtils';
 
 export function FeaturedCourseRow({ course }: { course: Course }) {
   return (

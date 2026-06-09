@@ -1,16 +1,16 @@
 # Graph Report - Gestion-Formation-LMS  (2026-06-09)
 
 ## Corpus Check
-- 165 files · ~283,568 words
+- 169 files · ~283,637 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1341 nodes · 1730 edges · 127 communities (118 shown, 9 thin omitted)
+- 1356 nodes · 1764 edges · 123 communities (115 shown, 8 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 30 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `babad9fb`
+- Built from commit: `22d2ae0e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -112,49 +112,45 @@
 - [[_COMMUNITY_Community 95|Community 95]]
 - [[_COMMUNITY_Community 96|Community 96]]
 - [[_COMMUNITY_Community 97|Community 97]]
-- [[_COMMUNITY_Community 100|Community 100]]
-- [[_COMMUNITY_Community 101|Community 101]]
-- [[_COMMUNITY_Community 103|Community 103]]
 - [[_COMMUNITY_Community 104|Community 104]]
-- [[_COMMUNITY_Community 125|Community 125]]
 - [[_COMMUNITY_Community 126|Community 126]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `cn()` - 47 edges
-2. `colorMeta` - 18 edges
-3. `Main Features` - 18 edges
-4. `compilerOptions` - 17 edges
-5. `compilerOptions` - 16 edges
-6. `API Overview` - 16 edges
-7. `Learnova Landing Page — Final Specification` - 16 edges
-8. `2. Token Mapping` - 16 edges
-9. `useAuth()` - 15 edges
-10. `Backend Modules` - 14 edges
+2. `useAuth()` - 23 edges
+3. `colorMeta` - 18 edges
+4. `Main Features` - 18 edges
+5. `compilerOptions` - 17 edges
+6. `compilerOptions` - 16 edges
+7. `API Overview` - 16 edges
+8. `Learnova Landing Page — Final Specification` - 16 edges
+9. `2. Token Mapping` - 16 edges
+10. `Button()` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `User` --references--> `ProfileType`  [EXTRACTED]
-  frontend/src/api/auth.ts → frontend/src/types/profile.ts
 - `NotStartedCourseCard()` --calls--> `cn()`  [EXTRACTED]
   frontend/src/components/dashboard/CourseCard.tsx → frontend/src/lib/cn.ts
-- `RegisterPage()` --calls--> `useAuth()`  [EXTRACTED]
-  frontend/src/features/auth/pages/RegisterPage.tsx → frontend/src/context/AuthContext.tsx
+- `UnauthorizedPage()` --calls--> `useAuth()`  [EXTRACTED]
+  frontend/src/features/errors/pages/UnauthorizedPage.tsx → frontend/src/context/AuthContext.tsx
 - `FeaturedCourseRow()` --calls--> `cn()`  [EXTRACTED]
   frontend/src/features/dashboard/pages/LearnerDashboard.tsx → frontend/src/lib/cn.ts
 - `InProgressCourseCard()` --calls--> `cn()`  [EXTRACTED]
+  frontend/src/features/dashboard/pages/LearnerDashboard.tsx → frontend/src/lib/cn.ts
+- `NotStartedCourseCard()` --calls--> `cn()`  [EXTRACTED]
   frontend/src/features/dashboard/pages/LearnerDashboard.tsx → frontend/src/lib/cn.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (127 total, 9 thin omitted)
+## Communities (123 total, 8 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (28): AuthenticationConfiguration, AuthenticationManager, AuthenticationProvider, Override, String, User, Override, String (+20 more)
+Cohesion: 0.09
+Nodes (20): Override, String, User, Override, String, Transactional, UserDetails, Override (+12 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.06
-Nodes (29): CurrentUserResponse, CustomUserDetails, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, Role, RoleName (+21 more)
+Nodes (31): AuthRegistrationIntegrationTest, AuthenticationConfiguration, AuthenticationManager, AuthenticationProvider, CurrentUserResponse, CustomUserDetails, LoginRequest, LoginResponse (+23 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.05
@@ -173,16 +169,16 @@ Cohesion: 0.06
 Nodes (35): dependencies, axios, clsx, lucide-react, @radix-ui/react-slot, react, react-dom, react-router-dom (+27 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.14
-Nodes (9): NAV_LINKS, Navbar(), Button(), buttonClasses(), ButtonProps, ButtonSize, ButtonVariant, sizeClasses (+1 more)
+Cohesion: 0.13
+Nodes (10): Hero(), NAV_LINKS, Navbar(), Button(), buttonClasses(), ButtonProps, ButtonSize, ButtonVariant (+2 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.07
 Nodes (27): 1. Overview, 2. Colors: The Forest and the Field, 3. Typography, 4. Elevation, 5. Components, 6. Do's and Don'ts, Buttons, Cards / Containers (+19 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.26
-Nodes (11): cn(), twMerge, Card(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardProps (+3 more)
+Cohesion: 0.31
+Nodes (5): LearnerProfile, User, Test, LearnerProfileService, LearnerProfileServiceTest
 
 ### Community 9 - "Community 9"
 Cohesion: 0.17
@@ -193,8 +189,8 @@ Cohesion: 0.16
 Nodes (10): InstructorProfile, List, Long, Optional, InstructorProfileRequest, String, Test, InstructorApprovalStatus (+2 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.13
-Nodes (18): AuthLayout, CertificatesPage, DashboardLayout, LandingPage, LearnerDashboard, LiveSessionsPage, LoginPage, MyCoursesPage (+10 more)
+Cohesion: 0.11
+Nodes (20): AuthLayout, CertificatesPage, DashboardLayout, LandingPage, LearnerDashboard, LiveSessionsPage, LoginPage, MyCoursesPage (+12 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.22
@@ -225,8 +221,8 @@ Cohesion: 0.11
 Nodes (17): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+9 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.19
-Nodes (7): Testimonials(), LANDING_TESTIMONIALS, LandingTestimonial, SectionHeader(), SectionHeaderProps, TestimonialCard(), TestimonialCardProps
+Cohesion: 0.16
+Nodes (9): BrandIntro(), SplitImageCardProps, TopImageCardProps, FinalCta(), Testimonials(), LANDING_TESTIMONIALS, LandingTestimonial, SectionHeader() (+1 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.12
@@ -237,12 +233,12 @@ Cohesion: 0.23
 Nodes (9): String, CategoryRequest, CategoryResponse, List, Long, Transactional, Category, CategoryRepository (+1 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.16
-Nodes (9): AuthRegistrationIntegrationTest, Bean, Test, Long, String, Test, PasswordEncoder, ProfileSwitchIntegrationTest (+1 more)
+Cohesion: 0.14
+Nodes (10): InstructorProfile, LearnerProfile, PrePersist, PreUpdate, Role, Long, String, Test (+2 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.15
-Nodes (13): LoginResult, loginUser(), registerUser(), User, LoginAction, LoginState, RegisterAction, RegisterPage() (+5 more)
+Cohesion: 0.05
+Nodes (40): LoginResult, loginUser(), registerUser(), User, api, ApiInterceptorHandlers, setupApiInterceptors(), AdminRoute() (+32 more)
 
 ### Community 25 - "Community 25"
 Cohesion: 0.12
@@ -317,8 +313,8 @@ Cohesion: 0.31
 Nodes (7): CustomUserDetails, GetMapping, InstructorProfileRequest, InstructorProfileResponse, PostMapping, ResponseStatus, InstructorProfileController
 
 ### Community 43 - "Community 43"
-Cohesion: 0.18
-Nodes (3): Footer(), NAV_COLUMNS, SOCIAL_LINKS
+Cohesion: 0.29
+Nodes (11): cn(), UnauthorizedPage(), Card(), CardContent(), CardDescription(), CardFooter(), CardHeader(), CardProps (+3 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.20
@@ -329,8 +325,8 @@ Cohesion: 0.20
 Nodes (9): 1. Navbar, 2. Hero Section, 3. Feature Highlights, 4. Learning Journey Sections, 5. Statistics Section, 6. Testimonials, 7. Final CTA, 8. Footer (+1 more)
 
 ### Community 46 - "Community 46"
-Cohesion: 0.16
-Nodes (11): StatsGrid(), LANDING_STATS, LandingStat, Container(), ContainerProps, ContainerSize, maxWidthClass, Stat() (+3 more)
+Cohesion: 0.24
+Nodes (7): StatsGrid(), LANDING_STATS, LandingStat, Stat(), StatProps, StatSize, valueClass
 
 ### Community 47 - "Community 47"
 Cohesion: 0.07
@@ -341,8 +337,8 @@ Cohesion: 0.22
 Nodes (8): ADR 0001: Use Modular Monolith Architecture, Consequences, Context, Decision, Future Considerations, Negative, Positive, Status
 
 ### Community 49 - "Community 49"
-Cohesion: 0.21
-Nodes (5): BrandIntro(), SplitImageCardProps, TopImageCardProps, FinalCta(), Hero()
+Cohesion: 0.18
+Nodes (10): Journey(), steps, Cta, JourneyStep(), JourneyStepImage, JourneyStepProps, Container(), ContainerProps (+2 more)
 
 ### Community 50 - "Community 50"
 Cohesion: 0.22
@@ -497,8 +493,8 @@ Cohesion: 0.50
 Nodes (3): Expanding the ESLint configuration, React Compiler, React + TypeScript + Vite
 
 ### Community 90 - "Community 90"
-Cohesion: 0.20
-Nodes (5): AnimState, LOGIN_BENEFITS, REGISTER_STEPS, TransitionAction, TransitionState
+Cohesion: 0.18
+Nodes (3): Footer(), NAV_COLUMNS, SOCIAL_LINKS
 
 ### Community 91 - "Community 91"
 Cohesion: 0.50
@@ -508,41 +504,29 @@ Nodes (3): hooks, PostToolUse, PreToolUse
 Cohesion: 0.50
 Nodes (3): outputStyle, permissions, allow
 
-### Community 100 - "Community 100"
-Cohesion: 0.29
-Nodes (6): Journey(), steps, Cta, JourneyStep(), JourneyStepImage, JourneyStepProps
-
-### Community 101 - "Community 101"
-Cohesion: 0.22
-Nodes (9): GuestRoute(), ProtectedRoute(), DashboardLayout(), getInitials(), NAV_ITEMS, useAuth(), useCurrentUser(), LearnerDashboard() (+1 more)
-
-### Community 103 - "Community 103"
-Cohesion: 0.25
-Nodes (6): AuthContext, AuthContextType, AuthProvider(), User, ProfileSwitchResponse, ProfileType
-
 ### Community 126 - "Community 126"
-Cohesion: 0.32
-Nodes (7): Avatar(), AvatarProps, AvatarSize, getInitials(), PALETTE, paletteFor(), SIZES
+Cohesion: 0.17
+Nodes (10): twMerge, Avatar(), AvatarProps, AvatarSize, getInitials(), PALETTE, paletteFor(), SIZES (+2 more)
 
 ## Knowledge Gaps
-- **662 isolated node(s):** `PostToolUse`, `PreToolUse`, `allow`, `outputStyle`, `schemaVersion` (+657 more)
+- **666 isolated node(s):** `PostToolUse`, `PreToolUse`, `allow`, `outputStyle`, `schemaVersion` (+661 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `InstructorApprovalStatus` connect `Community 10` to `Community 9`, `Community 13`, `Community 14`?**
+- **Why does `cn()` connect `Community 43` to `Community 6`, `Community 12`, `Community 46`, `Community 49`, `Community 20`, `Community 24`, `Community 90`, `Community 29`, `Community 126`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `cn()` connect `Community 8` to `Community 100`, `Community 101`, `Community 6`, `Community 43`, `Community 12`, `Community 46`, `Community 20`, `Community 24`, `Community 29`, `Community 126`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `InstructorApprovalStatus` connect `Community 10` to `Community 9`, `Community 13`, `Community 14`?**
+  _High betweenness centrality (0.011) - this node is a cross-community bridge._
 - **Why does `colorMeta` connect `Community 65` to `Community 2`, `Community 69`, `Community 70`, `Community 71`, `Community 72`, `Community 73`, `Community 74`, `Community 75`, `Community 76`, `Community 77`, `Community 78`, `Community 79`, `Community 80`, `Community 81`, `Community 82`, `Community 83`, `Community 84`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `PostToolUse`, `PreToolUse`, `allow` to the rest of the system?**
-  _662 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _666 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.0693815987933635 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09176788124156546 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.06009783368273934 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06363636363636363 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.045454545454545456 - nodes in this community are weakly interconnected._

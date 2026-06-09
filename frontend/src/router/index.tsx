@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { GuestRoute } from '../components/common/GuestRoute';
@@ -7,11 +8,13 @@ import { AuthLayoutSkeleton } from '../components/common/skeletons/AuthLayoutSke
 import { DashboardLayoutSkeleton } from '../components/common/skeletons/DashboardLayoutSkeleton';
 import { DashboardPageSkeleton } from '../components/common/skeletons/DashboardPageSkeleton';
 
+const RootLayout       = lazy(() => import('../components/common/RootLayout'));
 const LandingPage      = lazy(() => import('../features/landing/pages/LandingPage'));
 const AuthLayout       = lazy(() => import('../features/auth/components/AuthLayout'));
 const LoginPage        = lazy(() => import('../features/auth/pages/LoginPage'));
 const RegisterPage     = lazy(() => import('../features/auth/pages/RegisterPage'));
 const StyleGuide       = lazy(() => import('../features/style-guide/pages/StyleGuide'));
+const UnauthorizedPage = lazy(() => import('../features/errors/pages/UnauthorizedPage'));
 
 const DashboardLayout  = lazy(() => import('../features/dashboard/components/DashboardLayout'));
 const LearnerDashboard = lazy(() => import('../features/dashboard/pages/LearnerDashboard'));
@@ -27,101 +30,120 @@ const devRoutes = import.meta.env.DEV
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    // Pathless root layout — mounts ApiInterceptorSetup once for all routes.
+    // No path segment added; all children resolve at their own paths.
     element: (
-      <Suspense fallback={<LandingPageSkeleton />}>
-        <LandingPage />
+      <Suspense fallback={null}>
+        <RootLayout />
       </Suspense>
     ),
-  },
-  {
-    element: (
-      <GuestRoute>
-        <Suspense fallback={<AuthLayoutSkeleton />}>
-          <AuthLayout />
-        </Suspense>
-      </GuestRoute>
-    ),
     children: [
       {
-        path: '/login',
+        path: '/',
         element: (
-          <Suspense fallback={<AuthLayoutSkeleton />}>
-            <LoginPage />
+          <Suspense fallback={<LandingPageSkeleton />}>
+            <LandingPage />
           </Suspense>
         ),
       },
       {
-        path: '/register',
         element: (
-          <Suspense fallback={<AuthLayoutSkeleton />}>
-            <RegisterPage />
+          <GuestRoute>
+            <Suspense fallback={<AuthLayoutSkeleton />}>
+              <AuthLayout />
+            </Suspense>
+          </GuestRoute>
+        ),
+        children: [
+          {
+            path: '/login',
+            element: (
+              <Suspense fallback={<AuthLayoutSkeleton />}>
+                <LoginPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/register',
+            element: (
+              <Suspense fallback={<AuthLayoutSkeleton />}>
+                <RegisterPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<DashboardLayoutSkeleton />}>
+              <DashboardLayout />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <LearnerDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'courses',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <MyCoursesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'progress',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <ProgressPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'certificates',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <CertificatesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'live-sessions',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <LiveSessionsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'settings',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <SettingsPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: '/unauthorized',
+        element: (
+          <Suspense fallback={null}>
+            <UnauthorizedPage />
           </Suspense>
         ),
       },
+      ...devRoutes,
     ],
   },
-  {
-    path: '/dashboard',
-    element: (
-      <ProtectedRoute>
-        <Suspense fallback={<DashboardLayoutSkeleton />}>
-          <DashboardLayout />
-        </Suspense>
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        index: true,
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <LearnerDashboard />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'courses',
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <MyCoursesPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'progress',
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <ProgressPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'certificates',
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <CertificatesPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'live-sessions',
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <LiveSessionsPage />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'settings',
-        element: (
-          <Suspense fallback={<DashboardPageSkeleton />}>
-            <SettingsPage />
-          </Suspense>
-        ),
-      },
-    ],
-  },
-  ...devRoutes,
 ]);
 
 export default router;

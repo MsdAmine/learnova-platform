@@ -277,7 +277,7 @@ online-training-platform/
 │
 ├── README.md
 ├── CONTRIBUTING.md
-└── PROJECT_STATE.md
+└── CURRENT_STATE.md
 ```
 
 ## Development Roadmap
@@ -350,7 +350,7 @@ online-training-platform/
 
 Project documentation and architecture planning are in progress.
 
-See `PROJECT_STATE.md` for the current milestone and next tasks.
+See `CURRENT_STATE.md` for the current milestone and next tasks.
 
 ## License
 

@@ -1,25 +1,10 @@
 import { Check, ArrowRight } from 'lucide-react';
 import { ProgressBar } from '../ui/ProgressBar';
 import { Badge } from '../ui/Badge';
+import { courseGradient } from './courseCardUtils';
+import type { Course } from './courseCardUtils';
 
-export interface Course {
-  id: number;
-  title: string;
-  instructor: string;
-  progress: number;
-  gradient?: { from: string; to: string };
-}
-
-// Salem-ramp fallback so a course without an explicit gradient still renders a
-// valid thumbnail. Centralizing this guards both the in-progress card (which
-// otherwise crashes on `gradient.from`) and the featured row (which otherwise
-// emits an invalid `linear-gradient(…, undefined, undefined)`).
-const DEFAULT_GRADIENT = { from: 'var(--color-salem)', to: 'var(--color-salem-400)' } as const;
-
-export function courseGradient(course: Course): string {
-  const { from, to } = course.gradient ?? DEFAULT_GRADIENT;
-  return `linear-gradient(140deg, ${from}, ${to})`;
-}
+export type { Course };
 
 function CompletedCourseCard({ course }: { course: Course }) {
   return (
