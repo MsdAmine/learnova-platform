@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-LearnOva is a full-stack online learning platform (4th-year PFA project) with a modular monolith backend and a React frontend. It features a **dual-profile system**: one user account can operate as both a learner and an instructor simultaneously.
+Learnova is a full-stack online learning platform (4th-year PFA project) with a modular monolith backend and a React frontend. It features a **dual-profile system**: one user account can operate as both a learner and an instructor simultaneously.
 
 ## Repository Layout
 
@@ -94,7 +94,12 @@ Each feature is a sub-package following this layout:
 
 ## Frontend Architecture
 
-**Design system:** Before generating UI, read `DESIGN.md` at the project root. For the landing page implementation spec, read `docs/design/final-specs/landing-page.md`.
+**Design system:** `DESIGN.md` at the project root is the canonical design system. Before generating any UI, read these in order:
+1. `PRODUCT.md` — product purpose, user profiles, brand personality, and design principles
+2. `DESIGN.md` — all tokens: colors, typography, spacing, shadows, radii, and component behavior
+3. `docs/design/page-specs/<page>.md` — the page-specific layout spec for the surface being built (e.g., `docs/design/page-specs/my-courses-page.md`)
+
+For the landing page specifically, use `docs/design/final-specs/landing-page.md` as the page spec.
 
 **Auth state** lives in `AuthContext` (`src/context/AuthContext.tsx`). It stores the JWT token, user object, and `activeProfile` in `localStorage`. `useAuth()` is the hook to consume it.
 
@@ -195,12 +200,14 @@ Branch prefixes: `feat/`, `fix/`, `docs/`, `chore/`, `refactor/`, `test/`
 
 Commit format: `type: short description` (e.g., `feat: implement enrollment endpoint`)
 
-**Design specs (required reading before any UI work):**
-- `docs/design/final-specs/design-system.md` — tokens, primitives, components
-- `docs/design/final-specs/landing-page.md` — landing page section specs
-- `docs/design/branding/brand-guidelines.md` — brand voice and direction
+**Design specs (required reading order before any frontend UI work):**
+1. `PRODUCT.md` — product purpose, user profiles, brand personality, and design principles
+2. `DESIGN.md` — canonical design system: all tokens, colors, typography, spacing, shadows, radii, and components. This is the single source of truth.
+3. `docs/design/page-specs/<page>.md` — the page-specific layout and component spec for the surface being built
 
-Always reference tokens by name from design-system.md. Never invent new colors, spacing, or component variants.
+For the landing page, use `docs/design/final-specs/landing-page.md` as the page spec.
+
+Never invent new colors, spacing, or component variants. `docs/design/final-specs/design-system.md` is a pointer index only, not a token source.
 
 ## graphify
 

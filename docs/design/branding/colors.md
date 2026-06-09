@@ -70,9 +70,9 @@ Avoid:
 * Usage:
 
   * Achievement states
-  * Rewards
-  * XP systems
-  * Gamification
+  * Certificates
+  * Completion badges
+  * Earned milestones
 
 ---
 
@@ -119,7 +119,7 @@ Avoid:
 
 # Usage Rules
 
-* Salem should dominate the interface
+* Salem should anchor primary action and progress. It should not dominate product surfaces.
 * Azure should support data-heavy areas
 * Coral should be used sparingly
 * Anzac should reinforce rewards and progression
