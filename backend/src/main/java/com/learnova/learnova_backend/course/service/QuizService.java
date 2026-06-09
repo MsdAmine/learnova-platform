@@ -42,14 +42,16 @@ public class QuizService {
 
         @Transactional
         public QuizResponse createQuiz(CustomUserDetails currentUser, Long courseId, QuizRequest request) {
-
+                // 1. Validation de l'existence du cours cible
                 Course course = courseRepository.findById(courseId)
                                 .orElseThrow(
                                                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                                 "Target course context not found"));
 
+                // 2 & 3. Contrôle de propriété
                 checkTeacherOwnership(course, currentUser);
 
+                // 4. Validation optionnelle de la Section
                 Section section = null;
                 if (request.sectionId() != null) {
                         section = sectionRepository.findById(request.sectionId())
