@@ -435,8 +435,8 @@
     "semantic_hash": ""
   },
   "frontend/src/components/marketing/landing/Navbar.tsx": {
-    "mtime": 1780533423.2516568,
-    "ast_hash": "570e40da33c944cdea4fa5aed3ef59dd",
+    "mtime": 1781032484.8523161,
+    "ast_hash": "999a995f882ec6c6e8bd65a793d0a7ef",
     "semantic_hash": ""
   },
   "frontend/src/components/marketing/landing/StatsGrid.tsx": {
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/CertificatesPage.tsx": {
-    "mtime": 1780447525.2851248,
-    "ast_hash": "e3b21a4777894aaff42bd25d42a96954",
+    "mtime": 1781128397.4608896,
+    "ast_hash": "743e71852b31679e042a5cbdbdfc502d",
     "semantic_hash": ""
   },
   "frontend/src/features/dashboard/pages/LearnerDashboard.tsx": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1781029698.0750537,
-    "ast_hash": "e80b8e19139926a94ee6e16493cf4474",
+    "mtime": 1781129082.827155,
+    "ast_hash": "bed09afd86e0ad74667e07b22c1886a7",
     "semantic_hash": ""
   },
   "CONTRIBUTING.md": {
@@ -965,13 +965,13 @@
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/CourseCard.tsx": {
-    "mtime": 1780879028.017727,
-    "ast_hash": "2de9f64f69b6b04fcec5e5e3fe26bebe",
+    "mtime": 1781032476.0751598,
+    "ast_hash": "c7885376d8eba6b443e0549658881393",
     "semantic_hash": ""
   },
   "frontend/src/components/dashboard/FeaturedCourseRow.tsx": {
-    "mtime": 1780872103.394715,
-    "ast_hash": "1ddc44d00489a3e242d0b2b09c3bc6ab",
+    "mtime": 1781032479.5185962,
+    "ast_hash": "0c0adc2c94b6b270a6a7f45552c739a9",
     "semantic_hash": ""
   },
   "frontend/src/components/ui/FilterTabs.tsx": {
@@ -980,8 +980,8 @@
     "semantic_hash": ""
   },
   "CURRENT_STATE.md": {
-    "mtime": 1781029590.3477623,
-    "ast_hash": "e3918e5168859ce3565dc7588eb02c5c",
+    "mtime": 1781129092.9181237,
+    "ast_hash": "a05524ab0c5e6d59c4937ebeff1377f7",
     "semantic_hash": ""
   },
   "docs/archive/PROJECT_STATE_OLD.md": {
@@ -1027,6 +1027,21 @@
   "frontend/src/components/common/AdminRoute.tsx": {
     "mtime": 1781032144.1373742,
     "ast_hash": "d7ddb9500bec0dbae5e271f22dfed388",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/dashboard/courseCardUtils.ts": {
+    "mtime": 1781032467.5444157,
+    "ast_hash": "d9194e9a039a34b995505d4b2d3230f0",
+    "semantic_hash": ""
+  },
+  "docs/design/page-specs/certificates-page.md": {
+    "mtime": 1781127413.1951013,
+    "ast_hash": "ae05f8a4ab73804d44663cf6261a0538",
+    "semantic_hash": ""
+  },
+  "docs/design/page-specs/settings-page.md": {
+    "mtime": 1781130047.696707,
+    "ast_hash": "73812e0222b9afe91aba6d5c0b3233ce",
     "semantic_hash": ""
   }
 }
