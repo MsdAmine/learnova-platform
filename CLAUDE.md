@@ -133,8 +133,8 @@ Route guards live in `src/components/common/`. Do not duplicate authorization lo
 |-------|------|-----------|
 | `GuestRoute` | `GuestRoute.tsx` | Redirects authenticated users to `/` |
 | `ProtectedRoute` | `ProtectedRoute.tsx` | Redirects unauthenticated users to `/login` |
-| `InstructorRoute` | _not yet implemented_ | Requires authenticated + `'INSTRUCTOR'` in `user.availableProfiles` |
-| `AdminRoute` | _not yet implemented_ | Requires authenticated + `'ROLE_ADMIN'` in `user.roles` |
+| `InstructorRoute` | `InstructorRoute.tsx` | Requires authenticated + `'INSTRUCTOR'` in `user.availableProfiles`; redirects to `/unauthorized` |
+| `AdminRoute` | `AdminRoute.tsx` | Requires authenticated + `'ROLE_ADMIN'` in `user.roles`; redirects to `/unauthorized` |
 
 **Route categories:**
 
@@ -144,37 +144,24 @@ Route guards live in `src/components/common/`. Do not duplicate authorization lo
 - **Instructor** — course management, course editor. Wrap in `InstructorRoute` (checks `user.availableProfiles`).
 - **Admin** — admin panel, instructor approval. Wrap in `AdminRoute` (checks `user.roles`).
 
-Unauthorized access to instructor/admin routes should redirect to `/` (or `/unauthorized` if that page exists), not to `/login`, since the user is already authenticated.
+Unauthorized access to instructor/admin routes should redirect to `/unauthorized`, not to `/login`, since the user is already authenticated.
 
 ### Axios Interceptor Setup
 
 The shared client is `src/api/axios.ts`. Never import axios directly in feature code; always use this instance.
 
-**What is implemented:**
-- Base URL from `VITE_API_BASE_URL` env variable (falls back to `http://localhost:8080`).
-- Request interceptor: reads `token` from `localStorage` and attaches `Authorization: Bearer <token>`. Do not add auth headers manually in API call files.
+**Request interceptor** — reads `token` from `localStorage` and attaches `Authorization: Bearer <token>`. Do not add auth headers manually in API call files.
 
-**What is not yet implemented (intended convention):**
-- Response interceptor for `401 Unauthorized`: clear auth state (`logout()`) and redirect to `/login`. This must be added to `src/api/axios.ts` — not handled per-page.
-- Response interceptor for `403 Forbidden`: treat as an authorization failure (user is authenticated but lacks permission). Show an error or redirect to `/unauthorized`. Do not conflate with `401`.
+**Response interceptor** — fully implemented and wired at runtime:
+- `setupApiInterceptors(handlers)` in `src/api/axios.ts` registers the response interceptor. It ejects any prior registration before adding a new one, preventing duplicates on re-mount.
+- `ApiInterceptorSetup` (`src/components/common/ApiInterceptorSetup.tsx`) is a React component that calls `useAuth()` and `useNavigate()`, then calls `setupApiInterceptors` inside a `useEffect`. This bridges React state (`logout`) and routing (`navigate`) into the plain-module Axios layer.
+- `RootLayout` (`src/components/common/RootLayout.tsx`) renders `<ApiInterceptorSetup />` as the first child of the pathless root route, so it is mounted for every route in the app.
 
-Skeleton for the response interceptor when implementing:
-```ts
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // call logout(), then navigate to /login
-    }
-    if (error.response?.status === 403) {
-      // navigate to /unauthorized or surface an error
-    }
-    return Promise.reject(error);
-  }
-);
-```
+**401 Unauthorized** — calls `logout()` (clears token, user, and activeProfile from localStorage and React state), then redirects to `/login` with `replace: true`. A guard skips the redirect if the current path is already `/login` or `/register` to prevent redirect loops.
 
-Because `AuthContext` is a React context, the interceptor cannot call `useAuth()` directly. Pass `logout` and a navigation callback into the interceptor setup, or use a module-level event bus / ref pattern to bridge React state into the Axios layer.
+**403 Forbidden** — redirects to `/unauthorized` with `replace: true`. Does **not** call `logout()` — the user is authenticated but lacks permission.
+
+**Invariant:** `useAuth()` must never be called directly inside `axios.ts`. `axios.ts` is a plain module outside the React tree. Pass callbacks in via `setupApiInterceptors`.
 
 ## API Surface (current)
 

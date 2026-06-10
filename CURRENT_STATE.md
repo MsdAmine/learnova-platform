@@ -30,16 +30,18 @@ A React + TypeScript + Vite frontend exists and is actively in development.
 What is in place:
 
 - Auth context, JWT handling, localStorage token storage
-- React Router v7 with ProtectedRoute and GuestRoute guards
+- React Router v7 with ProtectedRoute, GuestRoute, InstructorRoute, and AdminRoute guards
+- Axios request interceptor (attaches JWT) and response interceptor (401 → logout + /login, 403 → /unauthorized), wired at runtime via ApiInterceptorSetup in RootLayout
+- UnauthorizedPage at `/unauthorized`
 - DashboardLayout with sidebar and topbar
-- LearnerDashboard page with working course card patterns
-- UI component primitives: Button, Badge, Card, Avatar, Input, and more
+- LearnerDashboard, MyCoursesPage, ProgressPage, CertificatesPage, LiveSessionsPage, SettingsPage
+- UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
 - Design token system in tokens.css aligned with DESIGN.md
 
 What is in progress:
 
-- Dashboard sub-pages: MyCoursesPage, ProgressPage, CertificatesPage
 - UI system standardization across all pages
+- InstructorRoute and AdminRoute exist but are not yet applied to instructor/admin routes (those routes do not yet exist)
 
 ## Current Priority
 
