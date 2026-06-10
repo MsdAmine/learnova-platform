@@ -22,4 +22,43 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// ── Response interceptor setup ────────────────────────────────────────────────
+// Cannot use React hooks here — this is a plain module.
+// Call setupApiInterceptors() from inside the router tree (ApiInterceptorSetup)
+// where useNavigate() and useAuth() are available.
+
+type ApiInterceptorHandlers = {
+    onUnauthorized: () => void;
+    onForbidden: () => void;
+};
+
+let responseInterceptorId: number | null = null;
+
+export function setupApiInterceptors(handlers: ApiInterceptorHandlers): () => void {
+    if (responseInterceptorId !== null) {
+        api.interceptors.response.eject(responseInterceptorId);
+    }
+
+    responseInterceptorId = api.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            if (error.response) {
+                if (error.response.status === 401) {
+                    handlers.onUnauthorized();
+                } else if (error.response.status === 403) {
+                    handlers.onForbidden();
+                }
+            }
+            return Promise.reject(error);
+        },
+    );
+
+    return () => {
+        if (responseInterceptorId !== null) {
+            api.interceptors.response.eject(responseInterceptorId);
+            responseInterceptorId = null;
+        }
+    };
+}
+
 export default api;

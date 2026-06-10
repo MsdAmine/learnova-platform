@@ -365,8 +365,8 @@
     "semantic_hash": ""
   },
   "frontend/src/api/axios.ts": {
-    "mtime": 1780358885.850717,
-    "ast_hash": "b1c21e0c601f6809279086f28ea1ad98",
+    "mtime": 1781031549.710112,
+    "ast_hash": "d48dfc14df1e228ef9ab83cf78a5c236",
     "semantic_hash": ""
   },
   "frontend/src/components/common/GuestRoute.tsx": {
@@ -495,8 +495,8 @@
     "semantic_hash": ""
   },
   "frontend/src/context/AuthContext.tsx": {
-    "mtime": 1780366936.326714,
-    "ast_hash": "1473a2437320e262cb9636789a10be4d",
+    "mtime": 1781032240.4202526,
+    "ast_hash": "72af60c6aa1136a5e36a6334bab5fd76",
     "semantic_hash": ""
   },
   "frontend/src/features/auth/components/AuthLayout.tsx": {
@@ -560,8 +560,8 @@
     "semantic_hash": ""
   },
   "frontend/src/hooks/useCurrentUser.ts": {
-    "mtime": 1780364632.821041,
-    "ast_hash": "e1998b41b301053672959a1d82ab1c46",
+    "mtime": 1781032222.235884,
+    "ast_hash": "215b585706f53e22cbcdeeec4e04e93a",
     "semantic_hash": ""
   },
   "frontend/src/lib/cn.ts": {
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "frontend/src/router/index.tsx": {
-    "mtime": 1780448737.1387384,
-    "ast_hash": "86a35342182c2352465b151331d2afd8",
+    "mtime": 1781032232.8117464,
+    "ast_hash": "84d85cf1dce4021c2f09ca28f37ae93b",
     "semantic_hash": ""
   },
   "frontend/src/types/profile.ts": {
@@ -674,14 +674,9 @@
     "ast_hash": "e906aa3ba393b6a85951a9ac72ecb71e",
     "semantic_hash": ""
   },
-  "PROJECT_STATE.md": {
-    "mtime": 1777577871.0135717,
-    "ast_hash": "bff137fc4cface2957bda5ec96b246cb",
-    "semantic_hash": ""
-  },
   "README.md": {
-    "mtime": 1777462620.1422546,
-    "ast_hash": "812b6fe6802422ff8c8723b7af082014",
+    "mtime": 1781031158.8551538,
+    "ast_hash": "d9bc05fce54c80b7f70cca1a96f4fb45",
     "semantic_hash": ""
   },
   "backend/HELP.md": {
@@ -1007,6 +1002,31 @@
   "docs/archive/logos-original/logo-white.png": {
     "mtime": 1781029579.0887916,
     "ast_hash": "dcf82bcf79a2aef3506cff1e9cc4dff0",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/common/ApiInterceptorSetup.tsx": {
+    "mtime": 1781031750.9931457,
+    "ast_hash": "c43795801497a92583859c269210362f",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/common/RootLayout.tsx": {
+    "mtime": 1781031593.8375554,
+    "ast_hash": "947dfc3d8b73590432d8abdc32ca9e87",
+    "semantic_hash": ""
+  },
+  "frontend/src/features/errors/pages/UnauthorizedPage.tsx": {
+    "mtime": 1781031617.202155,
+    "ast_hash": "98ac40200db1b7ba0dbfe01b6feb9a7f",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/common/InstructorRoute.tsx": {
+    "mtime": 1781032135.0370722,
+    "ast_hash": "0940e7e9e8ffb5b09480f94bf25cbd77",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/common/AdminRoute.tsx": {
+    "mtime": 1781032144.1373742,
+    "ast_hash": "d7ddb9500bec0dbae5e271f22dfed388",
     "semantic_hash": ""
   }
 }

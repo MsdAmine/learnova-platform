@@ -41,3 +41,6 @@ application-secret.yml
 application-secret.properties
 
 .fake
+
+# Graphify
+graphify-out/cache/ast/
