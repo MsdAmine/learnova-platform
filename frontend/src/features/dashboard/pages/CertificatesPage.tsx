@@ -124,9 +124,9 @@ function LatestCertificateRow({ certificate }: { certificate: CertificateItem })
           <span className="text-caption text-text-muted">Latest certificate</span>
           <Badge variant="anzac" className="flex-shrink-0">Issued</Badge>
         </div>
-        <h2 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
+        <p className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
           {certificate.courseTitle}
-        </h2>
+        </p>
         <p className="text-caption text-text-secondary mb-3">
           {certificate.instructor}
           {certificate.issuedAt && (
@@ -168,9 +168,9 @@ function CertificateCard({ certificate }: { certificate: CertificateItem }) {
 
       {/* Header row: title + status badge */}
       <div className="flex items-start justify-between gap-2 mb-1">
-        <h3 className="text-body-sm font-semibold text-text-primary line-clamp-2 flex-1">
+        <p className="text-body-sm font-semibold text-text-primary line-clamp-2 flex-1">
           {certificate.courseTitle}
-        </h3>
+        </p>
         {isIssued && (
           <Badge variant="anzac" className="flex-shrink-0 mt-0.5">Issued</Badge>
         )}
