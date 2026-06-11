@@ -127,10 +127,14 @@ function AccountOverview({ user, activeProfile }: AccountOverviewProps) {
               </Badge>
             </>
           )}
-          {user.roles.map(role => {
-            const { label, variant } = roleDisplay(role);
-            return <Badge key={role} variant={variant}>{label}</Badge>;
-          })}
+          {user.roles
+            .map(role => roleDisplay(role))
+            // The active-profile badge already names this role; repeating it
+            // reads as a duplicate (e.g. "Active: Learner Learner").
+            .filter(({ label }) => activeProfile === null || label !== profileLabel(activeProfile))
+            .map(({ label, variant }) => (
+              <Badge key={label} variant={variant}>{label}</Badge>
+            ))}
           {user.instructorApprovalStatus === 'PENDING' && (
             <Badge variant="default">Pending review</Badge>
           )}

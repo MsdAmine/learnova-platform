@@ -84,7 +84,7 @@ export default function MyCoursesPage() {
 
       {/* 2. Summary strip ─────────────────────────────────────────────── */}
       <div
-        className="flex items-center gap-0 mb-8 text-body-sm text-text-secondary"
+        className="flex flex-wrap items-center gap-0 mb-8 text-body-sm text-text-secondary"
         aria-label="Course statistics"
       >
         <span className="flex items-center">
