@@ -35,7 +35,7 @@ public class InstructorProfileService {
             InstructorProfileRequest request
     ) {
         User user = userRepository.findById(currentUser.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         if (instructorProfileRepository.existsByUserId(user.getId())) {
             throw new ResponseStatusException(

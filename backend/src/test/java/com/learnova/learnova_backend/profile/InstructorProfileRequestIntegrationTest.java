@@ -153,6 +153,21 @@ class InstructorProfileRequestIntegrationTest {
                 .andExpect(jsonPath("$.availableProfiles[0]").value("LEARNER"));
     }
 
+    @Test
+    void shouldReturnNotFoundForAuthenticatedLearnerWithNoProfile() throws Exception {
+        String token = registerAndLogin("no.profile.learner@example.com", "password123");
+
+        mockMvc.perform(get("/api/v1/instructor-profile/me")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedForUnauthenticatedGetMyInstructorProfile() throws Exception {
+        mockMvc.perform(get("/api/v1/instructor-profile/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
     private InstructorProfileRequest validRequest() {
         return new InstructorProfileRequest(
                 "I teach programming and software engineering.",
