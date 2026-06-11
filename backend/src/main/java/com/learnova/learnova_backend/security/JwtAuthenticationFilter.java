@@ -1,5 +1,6 @@
 package com.learnova.learnova_backend.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -47,7 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 if (userDetails instanceof CustomUserDetails customUserDetails
-                        && jwtService.isTokenValid(token, customUserDetails)) {
+                        && jwtService.isTokenValid(token, customUserDetails)
+                        && customUserDetails.isEnabled()
+                        && customUserDetails.isAccountNonLocked()) {
 
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(
@@ -63,7 +67,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-        } catch (RuntimeException ignored) {
+        } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+        } catch (UsernameNotFoundException e) {
             SecurityContextHolder.clearContext();
         }
 
