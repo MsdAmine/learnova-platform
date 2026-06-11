@@ -1,5 +1,7 @@
 package com.learnova.learnova_backend.security;
 
+import com.learnova.learnova_backend.user.entity.AccountStatus;
+import com.learnova.learnova_backend.user.entity.User;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
@@ -14,6 +16,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -107,6 +110,66 @@ class JwtAuthenticationFilterUnitTest {
 
         filter.doFilter(request, response, chain);
 
+        verify(chain).doFilter(request, response);
+    }
+
+    // ── Test 4: Suspended / disabled user with a structurally valid token ────────
+    //
+    // isEnabled()        returns false for DISABLED and SUSPENDED
+    // isAccountNonLocked() returns false for SUSPENDED
+    //
+    // The filter must not set authentication for either state. The security context
+    // stays empty so Spring Security returns 401 when the request hits a protected endpoint.
+
+    @Test
+    void suspendedUser_validToken_doesNotSetAuthentication() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer valid.but.suspended");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+
+        User user = User.builder()
+                .id(2L)
+                .fullName("Suspended User")
+                .email("suspended@example.com")
+                .passwordHash("hash")
+                .accountStatus(AccountStatus.SUSPENDED)
+                .build();
+        CustomUserDetails suspendedDetails = new CustomUserDetails(user);
+
+        when(jwtService.extractUsername("valid.but.suspended")).thenReturn("suspended@example.com");
+        when(userDetailsService.loadUserByUsername("suspended@example.com")).thenReturn(suspendedDetails);
+        when(jwtService.isTokenValid("valid.but.suspended", suspendedDetails)).thenReturn(true);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        verify(chain).doFilter(request, response);
+    }
+
+    @Test
+    void disabledUser_validToken_doesNotSetAuthentication() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer valid.but.disabled");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = mock(FilterChain.class);
+
+        User user = User.builder()
+                .id(3L)
+                .fullName("Disabled User")
+                .email("disabled@example.com")
+                .passwordHash("hash")
+                .accountStatus(AccountStatus.DISABLED)
+                .build();
+        CustomUserDetails disabledDetails = new CustomUserDetails(user);
+
+        when(jwtService.extractUsername("valid.but.disabled")).thenReturn("disabled@example.com");
+        when(userDetailsService.loadUserByUsername("disabled@example.com")).thenReturn(disabledDetails);
+        when(jwtService.isTokenValid("valid.but.disabled", disabledDetails)).thenReturn(true);
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(chain).doFilter(request, response);
     }
 
