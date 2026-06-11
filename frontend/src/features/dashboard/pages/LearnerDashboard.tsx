@@ -147,7 +147,7 @@ export default function LearnerDashboard() {
 
       {/* 2. Summary strip ─────────────────────────────────────────────── */}
       <div
-        className="flex items-center gap-0 mb-8 text-body-sm text-text-secondary"
+        className="flex flex-wrap items-center gap-0 mb-8 text-body-sm text-text-secondary"
         aria-label="Learning statistics"
       >
         {STATS.map(({ label, value }, i) => (
@@ -228,7 +228,7 @@ export default function LearnerDashboard() {
 
       {/* 4. My Courses ────────────────────────────────────────────────── */}
       <section aria-labelledby="courses-heading" className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 mb-4">
           <h2
             id="courses-heading"
             className="text-title-sm font-semibold text-text-primary"

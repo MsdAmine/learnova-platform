@@ -89,7 +89,7 @@ function SummaryStrip({ items }: { items: CertificateItem[] }) {
 
   return (
     <div
-      className="flex items-center gap-0 mb-8 text-body-sm text-text-secondary"
+      className="flex flex-wrap items-center gap-0 mb-8 text-body-sm text-text-secondary"
       aria-label="Certificate statistics"
     >
       <span className="flex items-center">
