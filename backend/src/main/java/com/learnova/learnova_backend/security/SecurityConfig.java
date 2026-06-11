@@ -54,6 +54,12 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        // Allow the internal ERROR dispatch to render. JwtAuthenticationFilter
+                        // extends OncePerRequestFilter, which skips the ERROR dispatch, so the
+                        // SecurityContext is empty when the container forwards a resolved
+                        // ResponseStatusException (404/409/...) to /error. Without this, every
+                        // controller-thrown error status is masked as 401.
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
