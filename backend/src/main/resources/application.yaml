@@ -22,6 +22,12 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+  error:
+    # Never leak Java stack traces in error response bodies (defense in depth).
+    include-stacktrace: never
+    # Surface the ResponseStatusException reason (e.g. "Course not found") so
+    # 404/409 responses stay useful without exposing internals.
+    include-message: always
 
 app:
   security:
