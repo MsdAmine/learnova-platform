@@ -7,15 +7,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record QuizUpdateRequest(
-        @NotBlank(message = "Quiz title is strictly required") 
-        @Size(max = 150, message = "Quiz title must not exceed 150 characters") 
+        @NotBlank(message = "Quiz title is strictly required")
+        @Size(max = 150, message = "Quiz title must not exceed 150 characters")
         String title,
 
         String description,
 
-        @NotNull(message = "Passing score is required") 
-        @Min(value = 1, message = "Passing score must be at least 1%") 
-        @Max(value = 100, message = "Passing score cannot exceed 100%") 
+        @NotNull(message = "Passing score is required")
+        @Min(value = 1, message = "Passing score must be at least 1%")
+        @Max(value = 100, message = "Passing score cannot exceed 100%")
         Integer passingScore,
 
         Long sectionId) {

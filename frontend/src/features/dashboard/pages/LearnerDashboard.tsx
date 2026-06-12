@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Award, Calendar, Download, Play } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { useAuth } from '../../../context/AuthContext';
 import { Button } from '../../../components/ui/Button';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
-import { CourseCard, type Course } from '../../../components/dashboard/CourseCard';
+import { CourseCard } from '../../../components/dashboard/CourseCard';
 import { FeaturedCourseRow } from '../../../components/dashboard/FeaturedCourseRow';
+import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { FilterTabs } from '../../../components/ui/FilterTabs';
+import { Bone } from '../../../components/common/skeletons/Bone';
+import { useEnrollments } from '../../../hooks/useEnrollments';
+import { enrollmentToCourse } from '../../../api/enrollments';
+import { courseGradient } from '../../../components/dashboard/courseCardUtils';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -25,63 +30,10 @@ interface Certificate {
   issuedAt: string;
 }
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-
-// The in-progress course to surface as "next up" in the My Courses list
-const NEXT_UP_ID = 2;
-
-const CONTINUE_COURSE = {
-  title: 'Advanced React Patterns and Architecture',
-  instructor: 'Sarah Chen',
-  section: 'Module 4: Compound Components',
-  progress: 68,
-  gradient: { from: '#032117', to: '#1A3B2E' },
-};
-
-const STATS = [
-  { label: 'Courses Enrolled', value: 5 },
-  { label: 'Lessons Completed', value: 42 },
-  { label: 'Certificates Earned', value: 2 },
-  { label: 'Hours Learned', value: 34 },
-];
-
-const COURSES: Course[] = [
-  {
-    id: 1,
-    title: 'Advanced React Patterns and Architecture',
-    instructor: 'Sarah Chen',
-    progress: 68,
-    gradient: { from: '#032117', to: '#1A3B2E' },
-  },
-  {
-    id: 2,
-    title: 'TypeScript for Production Systems',
-    instructor: 'Marcus Webb',
-    progress: 35,
-    gradient: { from: '#1A3B2E', to: '#5C7B6F' },
-  },
-  {
-    id: 3,
-    title: 'System Design Fundamentals',
-    instructor: 'Priya Mehta',
-    progress: 0,
-    gradient: { from: '#02180F', to: '#032117' },
-  },
-  {
-    id: 4,
-    title: 'Node.js Backend Engineering',
-    instructor: 'James Okafor',
-    progress: 100,
-    gradient: { from: '#5C7B6F', to: '#C9D5D0' },
-  },
-  {
-    id: 5,
-    title: 'PostgreSQL for App Developers',
-    instructor: 'Ana Torres',
-    progress: 18,
-    gradient: { from: '#032117', to: '#98AFA6' },
-  },
-];
+// ── Local placeholder data ──────────────────────────────────────────────────────
+// Live sessions and certificates have no backend endpoint yet, so they remain
+// static local placeholders. Course data below is wired to the real enrollment
+// API; these two sections are the documented next step.
 
 const SESSIONS: Session[] = [
   {
@@ -114,22 +66,34 @@ const CERTIFICATES: Certificate[] = [
 export default function LearnerDashboard() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<FilterValue>('all');
+  const { enrollments, loading, error, reload } = useEnrollments();
 
   const firstName = user?.fullName?.split(' ')[0] ?? 'there';
 
-  const filteredCourses = COURSES.filter(c => {
+  const courses = useMemo(() => enrollments.map(enrollmentToCourse), [enrollments]);
+
+  const inProgressCount = courses.filter(c => c.progress > 0 && c.progress < 100).length;
+  const completedCount = courses.filter(c => c.progress === 100).length;
+
+  // "Continue Learning" surfaces the in-progress course with the highest
+  // progress. Pure derivation — no hardcoded id.
+  const continueCourse = useMemo(
+    () =>
+      courses
+        .filter(c => c.progress > 0 && c.progress < 100)
+        .sort((a, b) => b.progress - a.progress)[0] ?? null,
+    [courses],
+  );
+
+  const filteredCourses = courses.filter(c => {
     if (filter === 'in-progress') return c.progress > 0 && c.progress < 100;
     if (filter === 'completed')   return c.progress === 100;
     return true;
   });
 
-  // Surface the next-up course (NEXT_UP_ID) as a featured row when the filter
-  // includes it, then drop it from the grid. Pure derivation, no mutation —
-  // NEXT_UP_ID is kept here on purpose so it stays distinct from the hardcoded
-  // "Continue Learning" card above (which features the highest-progress course).
-  const nextUpCourse = filteredCourses.find(
-    c => c.id === NEXT_UP_ID && c.progress > 0 && c.progress < 100,
-  );
+  // Feature the first in-progress course as a "Next up" row, then drop it from
+  // the grid (distinct from the Continue Learning card above).
+  const nextUpCourse = filteredCourses.find(c => c.progress > 0 && c.progress < 100);
   const gridCourses = nextUpCourse
     ? filteredCourses.filter(c => c.id !== nextUpCourse.id)
     : filteredCourses;
@@ -145,86 +109,97 @@ export default function LearnerDashboard() {
         </p>
       </div>
 
-      {/* 2. Summary strip ─────────────────────────────────────────────── */}
-      <div
-        className="flex flex-wrap items-center gap-0 mb-8 text-body-sm text-text-secondary"
-        aria-label="Learning statistics"
-      >
-        {STATS.map(({ label, value }, i) => (
-          <span key={label} className="flex items-center">
-            {i > 0 && (
-              <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
-            )}
-            <span className="font-semibold text-text-primary mr-1.5">{value}</span>
-            {label.toLowerCase()}
+      {/* 2. Summary strip — derived counts only ───────────────────────── */}
+      {!loading && !error && courses.length > 0 && (
+        <div
+          className="flex flex-wrap items-center gap-0 mb-8 text-body-sm text-text-secondary"
+          aria-label="Learning statistics"
+        >
+          <span className="flex items-center">
+            <span className="font-semibold text-text-primary mr-1.5">{courses.length}</span>
+            courses enrolled
           </span>
-        ))}
-      </div>
+          <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
+          <span className="flex items-center">
+            <span className="font-semibold text-text-primary mr-1.5">{inProgressCount}</span>
+            in progress
+          </span>
+          <span className="mx-3 text-border-hover select-none" aria-hidden="true">·</span>
+          <span className="flex items-center">
+            <span className="font-semibold text-text-primary mr-1.5">{completedCount}</span>
+            completed
+          </span>
+        </div>
+      )}
 
       {/* 3. Continue Learning ─────────────────────────────────────────── */}
-      <section aria-labelledby="continue-heading" className="mb-8">
-        <h2
-          id="continue-heading"
-          className="text-title-sm font-semibold text-text-primary mb-4"
-        >
-          Continue Learning
-        </h2>
+      {loading ? (
+        <section className="mb-8" aria-hidden="true">
+          <Bone className="h-5 w-40 mb-4" />
+          <Bone className="h-44 w-full rounded-lg" />
+        </section>
+      ) : continueCourse ? (
+        <section aria-labelledby="continue-heading" className="mb-8">
+          <h2
+            id="continue-heading"
+            className="text-title-sm font-semibold text-text-primary mb-4"
+          >
+            Continue Learning
+          </h2>
 
-        <div className="bg-surface border border-border-default rounded-lg overflow-hidden">
-          <div className="flex">
-            {/* Thumbnail */}
-            <div
-              className="w-[280px] flex-shrink-0 hidden sm:flex items-center justify-center"
-              style={{
-                background: `linear-gradient(140deg, ${CONTINUE_COURSE.gradient.from}, ${CONTINUE_COURSE.gradient.to})`,
-                minHeight: '172px',
-              }}
-              aria-hidden="true"
-            >
+          <div className="bg-surface border border-border-default rounded-lg overflow-hidden">
+            <div className="flex">
+              {/* Thumbnail */}
               <div
-                className="w-11 h-11 rounded-full flex items-center justify-center bg-white/[0.12]"
+                className="w-[280px] flex-shrink-0 hidden sm:flex items-center justify-center"
+                style={{
+                  background: courseGradient(continueCourse),
+                  minHeight: '172px',
+                }}
+                aria-hidden="true"
               >
-                <Play
-                  size={18}
-                  className="translate-x-px text-white/75"
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 p-6 flex flex-col justify-between min-h-[172px]">
-              <div>
-                <p className="text-caption text-text-muted mb-1.5">
-                  {CONTINUE_COURSE.section}
-                </p>
-                <h3 className="text-title-sm font-semibold text-text-primary mb-1 max-w-[48ch]">
-                  {CONTINUE_COURSE.title}
-                </h3>
-                <p className="text-body-sm text-text-secondary">
-                  by {CONTINUE_COURSE.instructor}
-                </p>
-              </div>
-
-              <div className="mt-5">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-caption text-text-muted">Progress</span>
-                  <span className="text-caption font-medium text-text-secondary">
-                    {CONTINUE_COURSE.progress}% complete
-                  </span>
+                <div
+                  className="w-11 h-11 rounded-full flex items-center justify-center bg-white/[0.12]"
+                >
+                  <Play
+                    size={18}
+                    className="translate-x-px text-white/75"
+                    aria-hidden="true"
+                  />
                 </div>
-                <ProgressBar
-                  value={CONTINUE_COURSE.progress}
-                  label={`${CONTINUE_COURSE.title} progress`}
-                />
-                <div className="mt-4">
-                  <Button variant="primary" size="md">Continue</Button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 p-6 flex flex-col justify-between min-h-[172px]">
+                <div>
+                  <h3 className="text-title-sm font-semibold text-text-primary mb-1 max-w-[48ch]">
+                    {continueCourse.title}
+                  </h3>
+                  <p className="text-body-sm text-text-secondary">
+                    by {continueCourse.instructor}
+                  </p>
+                </div>
+
+                <div className="mt-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-caption text-text-muted">Progress</span>
+                    <span className="text-caption font-medium text-text-secondary">
+                      {continueCourse.progress}% complete
+                    </span>
+                  </div>
+                  <ProgressBar
+                    value={continueCourse.progress}
+                    label={`${continueCourse.title} progress`}
+                  />
+                  <div className="mt-4">
+                    <Button variant="primary" size="md">Continue</Button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* 4. My Courses ────────────────────────────────────────────────── */}
       <section aria-labelledby="courses-heading" className="mb-8">
@@ -236,19 +211,38 @@ export default function LearnerDashboard() {
             My Courses
           </h2>
 
-          <FilterTabs
-            options={[
-              { value: 'all',         label: 'All'         },
-              { value: 'in-progress', label: 'In Progress' },
-              { value: 'completed',   label: 'Completed'   },
-            ]}
-            value={filter}
-            onChange={(v) => setFilter(v)}
-            aria-label="Filter courses"
-          />
+          {!loading && !error && courses.length > 0 && (
+            <FilterTabs
+              options={[
+                { value: 'all',         label: 'All'         },
+                { value: 'in-progress', label: 'In Progress' },
+                { value: 'completed',   label: 'Completed'   },
+              ]}
+              value={filter}
+              onChange={(v) => setFilter(v)}
+              aria-label="Filter courses"
+            />
+          )}
         </div>
 
-        {filteredCourses.length === 0 ? (
+        {loading ? (
+          <div aria-hidden="true" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="rounded-lg overflow-hidden border border-border-default bg-surface">
+                <Bone className="aspect-video w-full rounded-none" />
+                <div className="p-4 flex flex-col gap-2">
+                  <Bone className="h-4 w-3/4" />
+                  <Bone className="h-3 w-1/2" />
+                  <Bone className="h-1 w-full rounded-full mt-1" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <StatePanel message="We could not load your enrollments." onRetry={reload} />
+        ) : courses.length === 0 ? (
+          <StatePanel message="You are not enrolled in any courses yet." />
+        ) : filteredCourses.length === 0 ? (
           <p className="text-body-sm text-text-muted py-10 text-center">
             No courses match this filter.
           </p>
@@ -267,7 +261,7 @@ export default function LearnerDashboard() {
         )}
       </section>
 
-      {/* 5. Upcoming Live Sessions ────────────────────────────────────── */}
+      {/* 5. Upcoming Live Sessions (local placeholder — no backend yet) ── */}
       <section aria-labelledby="sessions-heading" className="mb-8">
         <h2
           id="sessions-heading"
@@ -303,7 +297,7 @@ export default function LearnerDashboard() {
         </div>
       </section>
 
-      {/* 6. Certificates ──────────────────────────────────────────────── */}
+      {/* 6. Certificates (local placeholder — no backend yet) ─────────── */}
       <section aria-labelledby="certs-heading">
         <h2
           id="certs-heading"

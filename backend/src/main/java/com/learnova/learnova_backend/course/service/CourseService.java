@@ -1,5 +1,6 @@
 package com.learnova.learnova_backend.course.service;
 
+import com.learnova.learnova_backend.course.dto.CourseCatalogResponse;
 import com.learnova.learnova_backend.course.dto.CourseRequest;
 import com.learnova.learnova_backend.course.dto.CourseResponse;
 import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
@@ -29,6 +30,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -168,6 +171,45 @@ public class CourseService {
                 }
 
                 return toResponse(courseRepository.save(course));
+        }
+
+        /**
+         * Public catalog listing: only {@link CourseStatus#PUBLISHED} courses are
+         * visible. Drafts and archived courses are never exposed through this read path.
+         */
+        @Transactional(readOnly = true)
+        public List<CourseCatalogResponse> listPublishedCourses() {
+                return courseRepository.findByStatus(CourseStatus.PUBLISHED)
+                                .stream()
+                                .map(this::toCatalogResponse)
+                                .toList();
+        }
+
+        /**
+         * Public catalog detail. A non-existent course and a non-published course are
+         * indistinguishable to the public: both yield 404, so drafts cannot be probed by
+         * id.
+         */
+        @Transactional(readOnly = true)
+        public CourseCatalogResponse getPublishedCourse(Long courseId) {
+                Course course = courseRepository.findById(courseId)
+                                .filter(c -> c.getStatus() == CourseStatus.PUBLISHED)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Course not found"));
+                return toCatalogResponse(course);
+        }
+
+        private CourseCatalogResponse toCatalogResponse(Course course) {
+                return new CourseCatalogResponse(
+                                course.getId(),
+                                course.getTitle(),
+                                course.getDescription(),
+                                course.getLevel(),
+                                course.getStatus(),
+                                course.getThumbnailUrl(),
+                                course.getCategory().getName(),
+                                course.getInstructorProfile().getUser().getFullName(),
+                                course.getCreatedAt());
         }
 
         // --- LOGIQUE MÉTIER DE L'ISSUE #58 ---
