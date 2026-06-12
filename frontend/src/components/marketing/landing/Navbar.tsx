@@ -28,8 +28,18 @@ function getScrollSnap() {
   return window.scrollY > window.innerHeight * 0.8;
 }
 
-export function Navbar() {
-  const scrolled = useSyncExternalStore(subscribeScroll, getScrollSnap, () => false);
+interface NavbarProps {
+  /**
+   * Pins the navbar to its solid (white background, dark links) state from
+   * scroll position zero. Pages without a Salem hero (e.g. the course catalog)
+   * need this; the transparent-at-top state would put white text on bg-base.
+   */
+  forceSolid?: boolean;
+}
+
+export function Navbar({ forceSolid = false }: NavbarProps) {
+  const pastHero = useSyncExternalStore(subscribeScroll, getScrollSnap, () => false);
+  const scrolled = forceSolid || pastHero;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
 

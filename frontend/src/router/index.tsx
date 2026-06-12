@@ -10,6 +10,7 @@ import { DashboardPageSkeleton } from '../components/common/skeletons/DashboardP
 
 const RootLayout       = lazy(() => import('../components/common/RootLayout'));
 const LandingPage      = lazy(() => import('../features/landing/pages/LandingPage'));
+const CourseCatalogPage = lazy(() => import('../features/catalog/pages/CourseCatalogPage'));
 const AuthLayout       = lazy(() => import('../features/auth/components/AuthLayout'));
 const LoginPage        = lazy(() => import('../features/auth/pages/LoginPage'));
 const RegisterPage     = lazy(() => import('../features/auth/pages/RegisterPage'));
@@ -43,6 +44,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<LandingPageSkeleton />}>
             <LandingPage />
+          </Suspense>
+        ),
+      },
+      {
+        // Public course catalog — guests must be able to browse; no guard.
+        path: '/courses',
+        element: (
+          <Suspense fallback={null}>
+            <CourseCatalogPage />
           </Suspense>
         ),
       },

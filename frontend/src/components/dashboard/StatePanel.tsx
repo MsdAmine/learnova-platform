@@ -4,14 +4,19 @@
  * Pass `onRetry` to render a "Try again" action (used for fetch errors).
  */
 export function StatePanel({
+  title,
   message,
   onRetry,
 }: {
+  title?: string;
   message: string;
   onRetry?: () => void;
 }) {
   return (
     <div className="bg-surface border border-border-default rounded-lg px-6 py-12 text-center">
+      {title && (
+        <p className="text-body-sm font-medium text-text-primary mb-1">{title}</p>
+      )}
       <p className="text-body-sm text-text-secondary">{message}</p>
       {onRetry && (
         <button
