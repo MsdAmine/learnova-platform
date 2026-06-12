@@ -1,6 +1,7 @@
 package com.learnova.learnova_backend.enrollment.service;
 
 import com.learnova.learnova_backend.course.entity.Course;
+import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.repository.CourseRepository;
 import com.learnova.learnova_backend.enrollment.dto.EnrollmentResponse;
 import com.learnova.learnova_backend.enrollment.entity.Enrollment;
@@ -35,6 +36,15 @@ public class EnrollmentService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Course not found"
                 ));
+
+        // A learner may only enroll in a course that is actually available to them.
+        // Draft/archived courses are not part of the public catalog, so from the
+        // learner's perspective they do not exist: return 404, not 403/409.
+        if (course.getStatus() != CourseStatus.PUBLISHED) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Course not found"
+            );
+        }
 
         if (enrollmentRepository.existsByLearnerProfileIdAndCourseId(learnerProfile.getId(), courseId)) {
             throw new ResponseStatusException(

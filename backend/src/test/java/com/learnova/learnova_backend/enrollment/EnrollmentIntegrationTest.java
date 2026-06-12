@@ -170,6 +170,20 @@ class EnrollmentIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
+    // ─── Test 9 ───────────────────────────────────────────────────────────────
+
+    @Test
+    void enrollingInDraftCourseReturns404() throws Exception {
+        Long courseId = setupCourse("inst.t9@enroll.test", CourseStatus.DRAFT);
+        String token = registerAndLogin("learner.t9@enroll.test", "password123");
+
+        // A draft course is not part of the public catalog, so to the learner it does
+        // not exist: enrollment must fail with 404, not silently succeed.
+        mockMvc.perform(post("/api/v1/courses/" + courseId + "/enroll")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNotFound());
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     /**
@@ -180,6 +194,14 @@ class EnrollmentIntegrationTest {
      * All data lives in the same test transaction and is rolled back after each test.
      */
     private Long setupCourse(String instructorEmail) throws Exception {
+        return setupCourse(instructorEmail, CourseStatus.PUBLISHED);
+    }
+
+    /**
+     * Same as {@link #setupCourse(String)} but lets a test choose the course status,
+     * so visibility/enrollment guards can be exercised against DRAFT courses.
+     */
+    private Long setupCourse(String instructorEmail, CourseStatus status) throws Exception {
         RegisterRequest req = new RegisterRequest("Course Instructor", instructorEmail, "password123");
         mockMvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -209,7 +231,7 @@ class EnrollmentIntegrationTest {
                         .instructorProfile(instructorProfile)
                         .category(category)
                         .level(CourseLevel.BEGINNER)
-                        .status(CourseStatus.PUBLISHED)
+                        .status(status)
                         .build()
         );
 

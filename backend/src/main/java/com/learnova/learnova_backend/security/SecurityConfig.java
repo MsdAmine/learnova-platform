@@ -50,6 +50,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
+                        // Public, read-only course catalog. Scoped to GET and a single path
+                        // segment so the authenticated POST /api/v1/courses/{id}/enroll is
+                        // NOT matched here and still requires a token.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/courses").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/courses/*").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
