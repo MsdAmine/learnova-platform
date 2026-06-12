@@ -328,6 +328,16 @@ public class CourseService {
                                 isFullyCompleted);
         }
 
+        @Transactional(readOnly = true)
+        public List<CourseResponse> listMyCourses(CustomUserDetails currentUser) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                return courseRepository
+                                .findByInstructorProfileIdOrderByUpdatedAtDesc(instructorProfile.getId())
+                                .stream()
+                                .map(this::toResponse)
+                                .toList();
+        }
+
         @Transactional
         public CourseResponse publishCourse(CustomUserDetails currentUser, Long courseId) {
                 InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
