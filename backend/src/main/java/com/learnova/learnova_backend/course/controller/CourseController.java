@@ -38,4 +38,22 @@ public class CourseController {
     ) {
         return courseService.updateCourse(currentUser, courseId, request);
     }
+
+    @PostMapping("/{courseId}/publish")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse publishCourse(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long courseId
+    ) {
+        return courseService.publishCourse(currentUser, courseId);
+    }
+
+    @PostMapping("/{courseId}/archive")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse archiveCourse(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long courseId
+    ) {
+        return courseService.archiveCourse(currentUser, courseId);
+    }
 }

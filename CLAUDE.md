@@ -181,6 +181,8 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/admin/instructor-profiles/{id}/reject` | ADMIN |
 | POST | `/api/v1/instructor/courses` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/{id}` | INSTRUCTOR |
+| POST | `/api/v1/instructor/courses/{id}/publish` | INSTRUCTOR |
+| POST | `/api/v1/instructor/courses/{id}/archive` | INSTRUCTOR |
 | POST | `/api/v1/instructor/courses/{courseId}/quizzes` | INSTRUCTOR |
 | PUT | `/api/v1/instructor/courses/quizzes/{quizId}` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/publish` | INSTRUCTOR |

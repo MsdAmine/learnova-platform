@@ -20,7 +20,7 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Profile switching: learner profile created on registration; `POST /api/v1/profile/switch`
 - Instructor approval workflow: request, pending, approved, rejected states; admin approve/reject endpoints
 - Categories: public listing and detail, ADMIN creation
-- Instructor course CRUD: create and patch courses
+- Instructor course CRUD: create, patch, publish, and archive courses (DRAFT→PUBLISHED, DRAFT/PUBLISHED→ARCHIVED)
 - Public course catalog: `GET /api/v1/courses` and `GET /api/v1/courses/{courseId}` (published courses only)
 - Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
 - Lesson progress: patch per-lesson progress, get per-course progress

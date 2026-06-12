@@ -329,6 +329,64 @@ public class CourseService {
         }
 
         @Transactional
+        public CourseResponse publishCourse(CustomUserDetails currentUser, Long courseId) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                Course course = resolveOwnedCourse(instructorProfile, courseId);
+
+                if (course.getStatus() == CourseStatus.PUBLISHED) {
+                        return toResponse(course);
+                }
+
+                if (course.getStatus() == CourseStatus.ARCHIVED) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                                        "Archived courses cannot be published. Create a new course instead.");
+                }
+
+                course.setStatus(CourseStatus.PUBLISHED);
+                return toResponse(courseRepository.save(course));
+        }
+
+        @Transactional
+        public CourseResponse archiveCourse(CustomUserDetails currentUser, Long courseId) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                Course course = resolveOwnedCourse(instructorProfile, courseId);
+
+                if (course.getStatus() == CourseStatus.ARCHIVED) {
+                        return toResponse(course);
+                }
+
+                course.setStatus(CourseStatus.ARCHIVED);
+                return toResponse(courseRepository.save(course));
+        }
+
+        private InstructorProfile resolveApprovedInstructorProfile(CustomUserDetails currentUser) {
+                InstructorProfile instructorProfile = instructorProfileRepository
+                                .findByUserId(currentUser.getId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.FORBIDDEN, "Instructor profile not found"));
+
+                if (instructorProfile.getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN, "Your instructor profile is not approved yet");
+                }
+
+                return instructorProfile;
+        }
+
+        private Course resolveOwnedCourse(InstructorProfile instructorProfile, Long courseId) {
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Course not found"));
+
+                if (!course.getInstructorProfile().getId().equals(instructorProfile.getId())) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN, "You are not the owner of this course");
+                }
+
+                return course;
+        }
+
+        @Transactional
         public void addCourseToWishlist(Long courseId, String username) {
                 // 1. Validation de l'existence du cours
                 Course course = courseRepository.findById(courseId)
