@@ -69,8 +69,9 @@ Each feature is a sub-package following this layout:
 - `auth` — registration, login, `/api/v1/auth/me`
 - `user` — `User` entity, `Role`/`RoleName`, `AccountStatus`, `RoleSeeder`
 - `profile` — `LearnerProfile`, `InstructorProfile`, profile switching, admin approval
-- `course` — `Course`, `Category`, course CRUD for instructors
-- `security` — JWT filter, `CustomUserDetails`, `SecurityConfig`, `JwtService`
+- `course` — `Course`, `Category`, instructor course CRUD, public course catalog, lesson progress, quiz authoring (quizzes/questions/answer options), wishlist
+- `enrollment` — learner enrollment in published courses, enrollment listing/lookup
+- `security` — JWT filter, `CustomUserDetails`, `SecurityConfig`, `JwtService`, account-status checks, security error dispatch
 
 **Security model:**
 - Stateless JWT — `JwtAuthenticationFilter` validates the token before every request
@@ -171,6 +172,8 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/auth/login` | Public |
 | GET | `/api/v1/auth/me` | Authenticated |
 | GET/POST | `/api/v1/categories` | GET public, POST ADMIN |
+| GET | `/api/v1/categories/{id}` | Public |
+| POST | `/api/v1/profile/switch` | Authenticated |
 | POST | `/api/v1/instructor-profile/request` | Authenticated |
 | GET | `/api/v1/instructor-profile/me` | Authenticated |
 | GET | `/api/v1/admin/instructor-profiles/pending` | ADMIN |
@@ -178,6 +181,26 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/admin/instructor-profiles/{id}/reject` | ADMIN |
 | POST | `/api/v1/instructor/courses` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/{id}` | INSTRUCTOR |
+| POST | `/api/v1/instructor/courses/{courseId}/quizzes` | INSTRUCTOR |
+| PUT | `/api/v1/instructor/courses/quizzes/{quizId}` | INSTRUCTOR |
+| PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/publish` | INSTRUCTOR |
+| PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/archive` | INSTRUCTOR |
+| POST | `/api/v1/instructor/courses/quizzes/{quizId}/questions` | INSTRUCTOR |
+| PUT | `/api/v1/instructor/courses/questions/{questionId}` | INSTRUCTOR |
+| DELETE | `/api/v1/instructor/courses/questions/{questionId}` | INSTRUCTOR |
+| POST | `/api/v1/instructor/courses/questions/{questionId}/options` | INSTRUCTOR |
+| PUT | `/api/v1/instructor/courses/options/{optionId}` | INSTRUCTOR |
+| DELETE | `/api/v1/instructor/courses/options/{optionId}` | INSTRUCTOR |
+| GET | `/api/v1/courses` | Public (catalog, published courses) |
+| GET | `/api/v1/courses/{courseId}` | Public (catalog detail) |
+| POST | `/api/v1/courses/{courseId}/enroll` | Authenticated (learner; drafts blocked) |
+| GET | `/api/v1/learner/enrollments` | Authenticated |
+| GET | `/api/v1/learner/enrollments/{courseId}` | Authenticated |
+| PATCH | `/api/v1/lessons/{lessonId}/progress` | Authenticated |
+| GET | `/api/v1/lessons/course/{courseId}/progress` | Authenticated |
+| GET | `/api/v1/wishlist` | Authenticated |
+| POST | `/api/v1/wishlist/course/{courseId}` | Authenticated |
+| DELETE | `/api/v1/wishlist/course/{courseId}` | Authenticated |
 
 Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
@@ -205,3 +228,4 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- `graphify-out/` is a generated local artifact and is git-ignored. Do not commit it.

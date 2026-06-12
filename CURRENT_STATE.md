@@ -9,17 +9,24 @@ Learnova
 
 ## Current Milestone
 
-Frontend UI refinement and dashboard/page implementation.
+Frontend integration: wiring real backend APIs (catalog, enrollment, progress, quizzes, wishlist) into the dashboard and public pages.
 
 ## Backend Status
 
 The backend is feature-complete for the current phase. These modules exist and are working:
 
-- Authentication: registration, login, JWT token issuance
-- Roles and role seeding: ROLE_LEARNER, ROLE_INSTRUCTOR, ROLE_ADMIN
-- Profile switching: learner profile created on registration; instructor profile requires admin approval
-- Instructor approval workflow: request, pending, approved, rejected states
-- Course base: course entity, category, instructor course CRUD
+- Authentication: registration, login, JWT token issuance, `/api/v1/auth/me`
+- Users, roles, and account status: ROLE_LEARNER, ROLE_INSTRUCTOR, ROLE_ADMIN; role seeding; `AccountStatus`
+- Profile switching: learner profile created on registration; `POST /api/v1/profile/switch`
+- Instructor approval workflow: request, pending, approved, rejected states; admin approve/reject endpoints
+- Categories: public listing and detail, ADMIN creation
+- Instructor course CRUD: create and patch courses
+- Public course catalog: `GET /api/v1/courses` and `GET /api/v1/courses/{courseId}` (published courses only)
+- Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
+- Lesson progress: patch per-lesson progress, get per-course progress
+- Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
+- Wishlist: list, add course, remove course
+- Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
 Do not recreate or re-implement any of the above. The backend foundation is done.
 
@@ -35,17 +42,30 @@ What is in place:
 - UnauthorizedPage at `/unauthorized`
 - DashboardLayout with sidebar and topbar
 - LearnerDashboard, MyCoursesPage, ProgressPage, CertificatesPage, LiveSessionsPage, SettingsPage
+- Public course catalog page (`/courses`) with enrollment CTA
+- API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog), `src/api/enrollments.ts`
+- Hooks: `useCurrentUser`, `useEnrollments`
+- Learner dashboard and My Courses wired to real enrollment data
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
 - Design token system in tokens.css aligned with DESIGN.md
 
-What is in progress:
+Still mocked or placeholder:
 
-- UI system standardization across all pages
+- CertificatesPage and LiveSessionsPage (no backend exists for these features)
+- Weekly activity chart and some dashboard placeholder sections
+
+## Known Gaps
+
+- No frontend API clients yet for: lesson progress, wishlist, quizzes, categories, admin instructor approval, profile switch
+- No course-detail page yet (backend `GET /api/v1/courses/{courseId}` exists, unused)
+- No certificates backend
+- No live sessions backend
+- Browser QA for `/courses` has not been performed
 - InstructorRoute and AdminRoute exist but are not yet applied to instructor/admin routes (those routes do not yet exist)
 
 ## Current Priority
 
-Build professional, consistent frontend interfaces using the Learnova design system.
+Build professional, consistent frontend interfaces using the Learnova design system, and integrate the remaining backend endpoints.
 
 All new UI work must follow the reading order:
 
@@ -60,3 +80,4 @@ All new UI work must follow the reading order:
 - Do not redefine design tokens. All tokens live in `DESIGN.md` and `tokens.css`.
 - Do not introduce gamification patterns, XP systems, or leaderboard UI.
 - Do not use the hero-metric template (big number, gradient accent) inside the product dashboard.
+- Do not import raw Axios in feature code — always use the shared instance in `src/api/axios.ts`.
