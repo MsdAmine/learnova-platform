@@ -103,6 +103,15 @@ function InstructorCoursesLoadingSkeleton() {
 
 // ── Course form modal ──────────────────────────────────────────────────────────
 
+const FOCUSABLE_SELECTOR = [
+  'button:not([disabled])',
+  '[href]',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
 const INPUT_CLASS = cn(
   'w-full bg-surface text-text-primary text-body',
   'border border-border-default rounded-md',
@@ -123,6 +132,7 @@ interface CourseFormModalProps {
 function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
   const isEdit = course !== null;
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const [title, setTitle] = useState(course?.title ?? '');
   const [description, setDescription] = useState(course?.description ?? '');
@@ -138,8 +148,12 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
   const [catsLoading, setCatsLoading] = useState(true);
   const [catsError, setCatsError] = useState(false);
 
-  // Focus first input on open
-  useEffect(() => { titleInputRef.current?.focus(); }, []);
+  // Focus first input on open; return focus to the opener (Create/Edit button) on close
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    titleInputRef.current?.focus();
+    return () => { opener?.focus(); };
+  }, []);
 
   // Load categories once on open
   useEffect(() => {
@@ -154,10 +168,33 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
     return () => { cancelled = true; };
   }, []);
 
-  // Escape closes modal
+  // Escape closes modal; Tab is trapped inside the dialog (aria-modal="true")
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && !submitting) onClose();
+      if (e.key === 'Escape') {
+        if (!submitting) onClose();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(
+        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter(el => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      const inside = active instanceof HTMLElement && dialog.contains(active);
+      if (e.shiftKey) {
+        if (!inside || active === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (!inside || active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -232,6 +269,7 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
 
   return (
     <div
+      ref={dialogRef}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
