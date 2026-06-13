@@ -200,8 +200,8 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | GET | `/api/v1/learner/enrollments` | Authenticated |
 | GET | `/api/v1/learner/enrollments/{courseId}` | Authenticated |
 | GET | `/api/v1/learner/courses/{courseId}/content` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled → 404) |
-| PATCH | `/api/v1/lessons/{lessonId}/progress` | Authenticated (also atomically updates enrollment.progressPercentage; sets status=COMPLETED+completedAt when all lessons done) |
-| GET | `/api/v1/lessons/course/{courseId}/progress` | Authenticated |
+| PATCH | `/api/v1/lessons/{lessonId}/progress` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled or CANCELLED → 404; also atomically updates enrollment.progressPercentage; sets status=COMPLETED+completedAt when all lessons done) |
+| GET | `/api/v1/lessons/course/{courseId}/progress` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled or CANCELLED → 404) |
 | GET | `/api/v1/wishlist` | Authenticated |
 | POST | `/api/v1/wishlist/course/{courseId}` | Authenticated |
 | DELETE | `/api/v1/wishlist/course/{courseId}` | Authenticated |

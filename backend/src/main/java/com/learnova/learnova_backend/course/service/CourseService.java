@@ -246,8 +246,8 @@ public class CourseService {
                 // 4. Contrôle de l'inscription au cours via le CourseAccessService
                 boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
                 if (!hasAccess) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                        "Access denied. You must be enrolled in this course to log progress details.");
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                        "Course not found");
                 }
 
                 // 5. Stratégie d'Upsert sécurisée pour la progression
@@ -333,8 +333,8 @@ public class CourseService {
                 // 3. Contrôle des droits d'accès
                 boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
                 if (!hasAccess) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                        "Access denied. You must be actively enrolled to view progress records.");
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                        "Course not found");
                 }
 
                 // 4. Extraction du volume total de leçons du cours
