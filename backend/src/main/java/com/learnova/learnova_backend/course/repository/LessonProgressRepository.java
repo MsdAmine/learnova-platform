@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,6 +19,12 @@ public interface LessonProgressRepository extends JpaRepository<LessonProgress, 
 
     // Vérifier si un enregistrement de progression existe déjà
     boolean existsByLearnerProfileAndLesson(LearnerProfile learnerProfile, Lesson lesson);
+
+    // Récupère toutes les progressions d'un apprenant pour un cours en un seul aller-retour (évite N+1)
+    @Query("SELECT lp FROM LessonProgress lp WHERE lp.learnerProfile.id = :learnerProfileId AND lp.lesson.section.course.id = :courseId")
+    List<LessonProgress> findAllByLearnerProfileIdAndCourseId(
+            @Param("learnerProfileId") Long learnerProfileId,
+            @Param("courseId") Long courseId);
 
     // Compte le nombre de leçons validées par un apprenant pour un cours spécifique
     @Query("SELECT COUNT(lp) FROM LessonProgress lp " +

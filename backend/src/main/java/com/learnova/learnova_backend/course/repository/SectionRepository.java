@@ -12,4 +12,6 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
     // Permet de récupérer toutes les sections ordonnées d'un cours spécifique si
     // besoin
     List<Section> findByCourseId(Long courseId);
+
+    List<Section> findByCourseIdOrderByIdAsc(Long courseId);
 }

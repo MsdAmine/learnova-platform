@@ -23,7 +23,8 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Instructor course CRUD: create, patch, publish, and archive courses (DRAFT→PUBLISHED, DRAFT/PUBLISHED→ARCHIVED); list own courses across all statuses via `GET /api/v1/instructor/courses` (not yet consumed by frontend)
 - Public course catalog: `GET /api/v1/courses` and `GET /api/v1/courses/{courseId}` (published courses only)
 - Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
-- Lesson progress: patch per-lesson progress, get per-course progress
+- Lesson progress: patch per-lesson progress, get per-course progress; `PATCH /api/v1/lessons/{lessonId}/progress` now atomically syncs `enrollment.progressPercentage` in the same transaction — dashboard enrollment data reflects lesson completion immediately; enrollment status transitions to `COMPLETED` with `completedAt` when all lessons are done
+- Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields for enrolled learners (not yet consumed by frontend; course-player UI is now unblocked)
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
 - Wishlist: list, add course, remove course
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
@@ -56,7 +57,8 @@ Still mocked or placeholder:
 
 ## Known Gaps
 
-- No frontend API clients yet for: lesson progress, wishlist, quizzes, categories, admin instructor approval, profile switch
+- No frontend API clients yet for: lesson progress, learner course content, wishlist, quizzes, categories, admin instructor approval, profile switch
+- No course-player page yet (backend `GET /api/v1/learner/courses/{courseId}/content` now exists; frontend not yet wired)
 - No course-detail page yet (backend `GET /api/v1/courses/{courseId}` exists, unused)
 - No certificates backend
 - No live sessions backend
