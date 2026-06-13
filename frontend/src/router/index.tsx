@@ -26,6 +26,8 @@ const CertificatesPage = lazy(() => import('../features/dashboard/pages/Certific
 const LiveSessionsPage = lazy(() => import('../features/dashboard/pages/LiveSessionsPage'));
 const SettingsPage     = lazy(() => import('../features/dashboard/pages/SettingsPage'));
 
+const CoursePlayerPage = lazy(() => import('../features/dashboard/pages/CoursePlayerPage'));
+
 const InstructorLayout      = lazy(() => import('../features/instructor/components/InstructorLayout'));
 const InstructorCoursesPage = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
 
@@ -110,6 +112,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <MyCoursesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'courses/:courseId',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <CoursePlayerPage />
               </Suspense>
             ),
           },

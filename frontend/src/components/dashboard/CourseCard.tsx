@@ -1,4 +1,5 @@
 import { Check, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ProgressBar } from '../ui/ProgressBar';
 import { Badge } from '../ui/Badge';
 import { courseGradient } from './courseCardUtils';
@@ -32,13 +33,13 @@ function NotStartedCourseCard({ course }: { course: Course }) {
       <p className="text-caption text-text-secondary mb-3">{course.instructor}</p>
       <div className="flex items-center justify-between">
         <span className="text-caption text-text-secondary">Not started</span>
-        <button
-          type="button"
+        <Link
+          to={`/dashboard/courses/${course.id}`}
           aria-label={`Start ${course.title}`}
           className="flex items-center gap-1 text-caption font-medium text-salem min-h-[44px] px-1 rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Start <ArrowRight size={11} aria-hidden="true" />
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -46,7 +47,11 @@ function NotStartedCourseCard({ course }: { course: Course }) {
 
 function InProgressCourseCard({ course }: { course: Course }) {
   return (
-    <div className="bg-surface border border-border-default rounded-lg overflow-hidden cursor-pointer motion-safe:transition-shadow duration-standard hover:shadow-hover-lift">
+    <Link
+      to={`/dashboard/courses/${course.id}`}
+      aria-label={`Continue ${course.title}`}
+      className="block bg-surface border border-border-default rounded-lg overflow-hidden motion-safe:transition-shadow duration-standard hover:shadow-hover-lift focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+    >
       <div
         className="aspect-video w-full"
         style={{ background: courseGradient(course) }}
@@ -60,7 +65,7 @@ function InProgressCourseCard({ course }: { course: Course }) {
         <ProgressBar value={course.progress} label={`${course.title} progress`} />
         <p className="text-caption text-text-secondary mt-1.5">{course.progress}% complete</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
