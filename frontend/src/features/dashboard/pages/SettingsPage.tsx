@@ -285,6 +285,32 @@ function InstructorApplicationPanel() {
   return null;
 }
 
+// ─── AdminAccessPanel ─────────────────────────────────────────────────────────
+
+function AdminAccessPanel() {
+  const { user } = useAuth();
+  if (!user?.roles.includes('ROLE_ADMIN')) return null;
+
+  return (
+    <SettingsSection
+      id="admin-access-heading"
+      heading="Admin area"
+      description="Platform administration tools."
+    >
+      <div className="mt-4 flex flex-col gap-3">
+        <p className="text-body-sm text-text-secondary">
+          Review instructor applications and manage administrative workflows.
+        </p>
+        <div>
+          <Button asChild variant="secondary" size="sm">
+            <Link to="/admin/instructor-approvals">Go to admin area</Link>
+          </Button>
+        </div>
+      </div>
+    </SettingsSection>
+  );
+}
+
 // ─── AccountActionsPanel ──────────────────────────────────────────────────────
 
 function AccountActionsPanel() {
@@ -458,6 +484,8 @@ export default function SettingsPage() {
           </SettingsSection>
 
           <InstructorApplicationPanel />
+
+          <AdminAccessPanel />
 
           <AccountActionsPanel />
 
