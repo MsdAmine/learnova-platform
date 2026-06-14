@@ -483,7 +483,9 @@ export default function SettingsPage() {
             </dl>
           </SettingsSection>
 
-          <InstructorApplicationPanel />
+          {(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
+            <InstructorApplicationPanel />
+          )}
 
           <AdminAccessPanel />
 
