@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: wiring real backend APIs (catalog, enrollment, progress, quizzes, wishlist) into the dashboard and public pages.
+Frontend integration: learner course player, instructor content builder, and admin instructor-approvals page are all wired to real backend APIs. Remaining gaps are wishlist, quiz-taking flow, and course-detail page.
 
 ## Backend Status
 
@@ -20,11 +20,11 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Profile switching: learner profile created on registration; `POST /api/v1/profile/switch`
 - Instructor approval workflow: request, pending, approved, rejected states; admin approve/reject endpoints
 - Categories: public listing and detail, ADMIN creation
-- Instructor course CRUD: create, patch, publish, and archive courses (DRAFT→PUBLISHED, DRAFT/PUBLISHED→ARCHIVED); list own courses across all statuses via `GET /api/v1/instructor/courses` (not yet consumed by frontend)
+- Instructor course CRUD: create, patch, publish, and archive courses (DRAFT→PUBLISHED, DRAFT/PUBLISHED→ARCHIVED); list own courses across all statuses via `GET /api/v1/instructor/courses`
 - Public course catalog: `GET /api/v1/courses` and `GET /api/v1/courses/{courseId}` (published courses only)
 - Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
 - Lesson progress: patch per-lesson progress, get per-course progress; `PATCH /api/v1/lessons/{lessonId}/progress` now atomically syncs `enrollment.progressPercentage` in the same transaction — dashboard enrollment data reflects lesson completion immediately; enrollment status transitions to `COMPLETED` with `completedAt` when all lessons are done. Access to both lesson-progress endpoints is enrollment-gated: only learners with an ACTIVE or COMPLETED enrollment may call them; non-enrolled or CANCELLED-enrollment requests receive 404 (content enumeration protection, consistent with the learner course content endpoint). `CourseAccessService.canUserAccessCourseContent()` is no longer a stub — it performs a real enrollment status check.
-- Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields for enrolled learners (not yet consumed by frontend; course-player UI is now unblocked)
+- Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields for enrolled learners; wired to `CoursePlayerPage` via `src/api/courseContent.ts`
 - Instructor course content management: CRUD for sections and lessons within own courses
   - `GET  /api/v1/instructor/courses/{courseId}/content` — lists sections and lessons for own course
   - `POST /api/v1/instructor/courses/{courseId}/sections` — creates a section
@@ -34,8 +34,7 @@ The backend is feature-complete for the current phase. These modules exist and a
   - `PATCH /api/v1/instructor/courses/lessons/{lessonId}` — updates lesson title
   - `DELETE /api/v1/instructor/courses/lessons/{lessonId}` — deletes a lesson
   - Security: requires INSTRUCTOR role + approved profile + course ownership; mutations on ARCHIVED courses return 409
-  - Frontend not yet wired; QA no longer needs to seed sections/lessons via SQL — use the instructor API
-  - CoursePlayerPage can now display content created through the API without a DB seed
+  - Wired to `InstructorCourseContentPage` via `src/api/instructorCourseContent.ts`; inline edit/delete with confirm and optimistic state are all implemented
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
 - Wishlist: list, add course, remove course
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
@@ -60,21 +59,32 @@ What is in place:
 - Learner dashboard and My Courses wired to real enrollment data
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
 - Design token system in tokens.css aligned with DESIGN.md
+- `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error
+- Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`) — all wired to real backend; guarded by `InstructorRoute`
+- Admin area: `AdminLayout`, `AdminInstructorApprovalsPage` (`/admin/instructor-approvals`) — wired to real backend; guarded by `AdminRoute`
+- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form)
+- `SettingsPage` instructor application panel: bio (required, max 1000 chars), expertise (required, max 500 chars), experience (optional), motivation (optional); on success re-fetches `/api/v1/auth/me` and refreshes `AuthContext`; surfaces null/pending/approved/rejected states; rejected state lazily fetches `/api/v1/instructor-profile/me` for `rejectionReason` and displays it inline; hidden for admin-only users (users with `ROLE_ADMIN` but without `INSTRUCTOR` in `availableProfiles`)
+- `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
+- `DashboardLayout` sidebar instructor CTA: hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
 
 Still mocked or placeholder:
 
-- CertificatesPage and LiveSessionsPage (no backend exists for these features)
-- Weekly activity chart and some dashboard placeholder sections
+- `CertificatesPage` and `LiveSessionsPage` — frontend placeholder pages; no backend exists for either feature
+- Weekly activity chart and some dashboard sections are placeholder/mock
+- `ProgressPage` shows enrollment-level progress only; no per-lesson breakdown display
+- Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
 
 ## Known Gaps
 
-- No frontend API clients yet for: lesson progress, learner course content, wishlist, quizzes, categories, admin instructor approval, profile switch
-- No course-player page yet (backend `GET /api/v1/learner/courses/{courseId}/content` now exists; frontend not yet wired)
-- No course-detail page yet (backend `GET /api/v1/courses/{courseId}` exists, unused)
-- No certificates backend
-- No live sessions backend
-- Browser QA for `/courses` has not been performed
-- InstructorRoute and AdminRoute exist but are not yet applied to instructor/admin routes (those routes do not yet exist)
+- No course-detail page at `/courses/:courseId` (backend `GET /api/v1/courses/{courseId}` exists; no frontend route)
+- No certificates backend or frontend certificate UI
+- No live sessions backend or frontend live session UI
+- No wishlist frontend (backend `GET/POST/DELETE /api/v1/wishlist/...` endpoints exist)
+- No quiz-taking learner UI (backend quiz authoring API exists; no learner quiz attempt flow)
+- No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
+- No admin user management beyond instructor approvals
+- No media upload; `thumbnailUrl` accepts a plain URL string only
+- Profile editing not available in Settings; name and email are displayed read-only
 
 ## Current Priority
 
