@@ -48,3 +48,7 @@ graphify-out/
 # Local tooling artifacts
 .claude/scheduled_tasks.lock
 .impeccable/critique/
+
+.playwright-mcp/
+qa-*.png
+verify-*.png
