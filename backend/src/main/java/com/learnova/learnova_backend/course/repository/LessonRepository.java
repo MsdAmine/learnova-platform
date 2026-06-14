@@ -15,4 +15,11 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     int countTotalLessonsByCourseId(@Param("courseId") Long courseId);
 
     List<Lesson> findBySectionIdOrderByIdAsc(Long sectionId);
+
+    // Bulk JPQL delete: call only after LessonProgress records are removed.
+    // No clearAutomatically — the session retains stale entries but subsequent
+    // collection queries still hit DB and return correct post-delete results.
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM Lesson l WHERE l.section.id = :sectionId")
+    void deleteBySectionId(@org.springframework.data.repository.query.Param("sectionId") Long sectionId);
 }

@@ -25,6 +25,17 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
 - Lesson progress: patch per-lesson progress, get per-course progress; `PATCH /api/v1/lessons/{lessonId}/progress` now atomically syncs `enrollment.progressPercentage` in the same transaction — dashboard enrollment data reflects lesson completion immediately; enrollment status transitions to `COMPLETED` with `completedAt` when all lessons are done. Access to both lesson-progress endpoints is enrollment-gated: only learners with an ACTIVE or COMPLETED enrollment may call them; non-enrolled or CANCELLED-enrollment requests receive 404 (content enumeration protection, consistent with the learner course content endpoint). `CourseAccessService.canUserAccessCourseContent()` is no longer a stub — it performs a real enrollment status check.
 - Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields for enrolled learners (not yet consumed by frontend; course-player UI is now unblocked)
+- Instructor course content management: CRUD for sections and lessons within own courses
+  - `GET  /api/v1/instructor/courses/{courseId}/content` — lists sections and lessons for own course
+  - `POST /api/v1/instructor/courses/{courseId}/sections` — creates a section
+  - `PATCH /api/v1/instructor/courses/sections/{sectionId}` — updates section title
+  - `DELETE /api/v1/instructor/courses/sections/{sectionId}` — deletes section and its lessons
+  - `POST /api/v1/instructor/courses/sections/{sectionId}/lessons` — creates a lesson
+  - `PATCH /api/v1/instructor/courses/lessons/{lessonId}` — updates lesson title
+  - `DELETE /api/v1/instructor/courses/lessons/{lessonId}` — deletes a lesson
+  - Security: requires INSTRUCTOR role + approved profile + course ownership; mutations on ARCHIVED courses return 409
+  - Frontend not yet wired; QA no longer needs to seed sections/lessons via SQL — use the instructor API
+  - CoursePlayerPage can now display content created through the API without a DB seed
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
 - Wishlist: list, add course, remove course
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)

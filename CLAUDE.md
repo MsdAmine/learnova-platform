@@ -184,6 +184,13 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | PATCH | `/api/v1/instructor/courses/{id}` | INSTRUCTOR |
 | POST | `/api/v1/instructor/courses/{id}/publish` | INSTRUCTOR |
 | POST | `/api/v1/instructor/courses/{id}/archive` | INSTRUCTOR |
+| GET | `/api/v1/instructor/courses/{courseId}/content` | INSTRUCTOR (own course; sections + lessons; no progress fields) |
+| POST | `/api/v1/instructor/courses/{courseId}/sections` | INSTRUCTOR (own course; ARCHIVED → 409) |
+| PATCH | `/api/v1/instructor/courses/sections/{sectionId}` | INSTRUCTOR (own course; ARCHIVED → 409) |
+| DELETE | `/api/v1/instructor/courses/sections/{sectionId}` | INSTRUCTOR (own course; cascades lessons; ARCHIVED → 409) |
+| POST | `/api/v1/instructor/courses/sections/{sectionId}/lessons` | INSTRUCTOR (own course; ARCHIVED → 409) |
+| PATCH | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR (own course; ARCHIVED → 409) |
+| DELETE | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR (own course; ARCHIVED → 409) |
 | POST | `/api/v1/instructor/courses/{courseId}/quizzes` | INSTRUCTOR |
 | PUT | `/api/v1/instructor/courses/quizzes/{quizId}` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/publish` | INSTRUCTOR |
