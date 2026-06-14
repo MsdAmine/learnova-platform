@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from 'react';
+import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import api from '../../../api/axios';
 import { Button } from '../../../components/ui/Button';
 import { Badge, type BadgeVariant } from '../../../components/ui/Badge';
+import { FormField, Input } from '../../../components/ui/Input';
 import type { ProfileType } from '../../../types/profile';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -150,23 +151,87 @@ function AccountOverview({ user, activeProfile }: AccountOverviewProps) {
 
 // ─── InstructorApplicationPanel ───────────────────────────────────────────────
 
+interface ApplicationFormErrors {
+  bio?: string;
+  expertise?: string;
+  experience?: string;
+  motivation?: string;
+}
+
+function textareaInputClass(hasError = false): string {
+  return [
+    'w-full bg-surface text-text-primary text-body',
+    'border rounded-md py-3 px-4',
+    'placeholder:text-text-muted',
+    'transition-colors duration-fast ease-out',
+    'focus:outline-none resize-none',
+    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1',
+    hasError
+      ? 'border-error focus:border-error focus-visible:outline-error'
+      : 'border-border-default focus:border-salem focus-visible:outline-salem',
+  ].join(' ');
+}
+
 function InstructorApplicationPanel() {
   const { user, refreshUser } = useAuth();
   const [isApplying, setIsApplying] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
+  const [bio, setBio] = useState('');
+  const [expertise, setExpertise] = useState('');
+  const [experience, setExperience] = useState('');
+  const [motivation, setMotivation] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<ApplicationFormErrors>({});
 
   const status            = user?.instructorApprovalStatus ?? null;
   const availableProfiles = user?.availableProfiles ?? [];
 
-  async function handleApply() {
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status !== 'REJECTED') return;
+    let cancelled = false;
+    api.get<{ rejectionReason: string | null }>('/api/v1/instructor-profile/me')
+      .then(({ data }) => {
+        if (!cancelled) setRejectionReason(data.rejectionReason ?? null);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [status]);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const trimmedBio        = bio.trim();
+    const trimmedExpertise  = expertise.trim();
+    const trimmedExperience = experience.trim();
+    const trimmedMotivation = motivation.trim();
+
+    const errors: ApplicationFormErrors = {};
+    if (!trimmedBio)                    errors.bio       = 'Bio is required.';
+    else if (trimmedBio.length > 1000)  errors.bio       = 'Bio must not exceed 1000 characters.';
+
+    if (!trimmedExpertise)                      errors.expertise = 'Expertise is required.';
+    else if (trimmedExpertise.length > 500)     errors.expertise = 'Expertise must not exceed 500 characters.';
+
+    if (trimmedExperience.length > 1000) errors.experience = 'Experience must not exceed 1000 characters.';
+    if (trimmedMotivation.length > 1000) errors.motivation = 'Motivation must not exceed 1000 characters.';
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setIsApplying(true);
     setApplyError(null);
     try {
-      await api.post('/api/v1/instructor-profile/request');
+      await api.post('/api/v1/instructor-profile/request', {
+        bio: trimmedBio,
+        expertise: trimmedExpertise,
+        experience: trimmedExperience || null,
+        motivation: trimmedMotivation || null,
+      });
       const { data } = await api.get<SettingsUser>('/api/v1/auth/me');
       refreshUser(data);
     } catch {
-      setApplyError('Something went wrong. Please try again.');
+      setApplyError('We could not submit your instructor application. Please try again.');
     } finally {
       setIsApplying(false);
     }
@@ -179,25 +244,96 @@ function InstructorApplicationPanel() {
         heading="Instructor application"
         description="Share your expertise with learners on Learnova."
       >
-        <div className="mt-4 flex flex-col gap-3">
+        <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
           <p className="text-body-sm text-text-secondary">
-            Apply to become an instructor. Your application will be reviewed by the Learnova team.
+            Tell us about your background. Fields marked with * are required.
           </p>
+
+          <FormField
+            label="Bio *"
+            htmlFor="instructor-bio"
+            error={fieldErrors.bio}
+            hint="Max 1000 characters."
+          >
+            <textarea
+              id="instructor-bio"
+              value={bio}
+              onChange={e => setBio(e.target.value)}
+              maxLength={1000}
+              rows={3}
+              placeholder="Share your teaching background and what you specialize in."
+              aria-invalid={fieldErrors.bio ? true : undefined}
+              className={textareaInputClass(!!fieldErrors.bio)}
+            />
+          </FormField>
+
+          <FormField
+            label="Expertise *"
+            htmlFor="instructor-expertise"
+            error={fieldErrors.expertise}
+            hint="Max 500 characters."
+          >
+            <Input
+              id="instructor-expertise"
+              value={expertise}
+              onChange={e => setExpertise(e.target.value)}
+              maxLength={500}
+              hasError={!!fieldErrors.expertise}
+              placeholder="e.g. JavaScript, React, Web Development"
+            />
+          </FormField>
+
+          <FormField
+            label="Experience"
+            htmlFor="instructor-experience"
+            error={fieldErrors.experience}
+            hint="Optional. Max 1000 characters."
+          >
+            <textarea
+              id="instructor-experience"
+              value={experience}
+              onChange={e => setExperience(e.target.value)}
+              maxLength={1000}
+              rows={3}
+              placeholder="Describe your teaching or professional experience."
+              aria-invalid={fieldErrors.experience ? true : undefined}
+              className={textareaInputClass(!!fieldErrors.experience)}
+            />
+          </FormField>
+
+          <FormField
+            label="Motivation"
+            htmlFor="instructor-motivation"
+            error={fieldErrors.motivation}
+            hint="Optional. Max 1000 characters."
+          >
+            <textarea
+              id="instructor-motivation"
+              value={motivation}
+              onChange={e => setMotivation(e.target.value)}
+              maxLength={1000}
+              rows={3}
+              placeholder="Why do you want to teach on Learnova?"
+              aria-invalid={fieldErrors.motivation ? true : undefined}
+              className={textareaInputClass(!!fieldErrors.motivation)}
+            />
+          </FormField>
+
           <div>
             <Button
+              type="submit"
               variant="secondary"
               size="sm"
               loading={isApplying}
-              aria-label="Apply to become an instructor"
-              onClick={handleApply}
+              aria-label="Submit instructor application"
             >
-              Apply to become an instructor
+              Submit instructor application
             </Button>
             {applyError && (
               <p className="text-caption text-error mt-1" role="alert">{applyError}</p>
             )}
           </div>
-        </div>
+        </form>
       </SettingsSection>
     );
   }
@@ -274,6 +410,12 @@ function InstructorApplicationPanel() {
               Your application was not approved at this time.
             </p>
           </div>
+          {rejectionReason && (
+            <div className="mt-3 rounded-md border border-border-default bg-surface-elevated p-3">
+              <p className="text-caption font-medium text-text-muted">Reason</p>
+              <p className="text-body-sm text-text-secondary mt-1">{rejectionReason}</p>
+            </div>
+          )}
           <p className="text-caption text-text-muted mt-3">
             Contact support if you have questions about your application status.
           </p>
