@@ -28,8 +28,9 @@ const SettingsPage     = lazy(() => import('../features/dashboard/pages/Settings
 
 const CoursePlayerPage = lazy(() => import('../features/dashboard/pages/CoursePlayerPage'));
 
-const InstructorLayout      = lazy(() => import('../features/instructor/components/InstructorLayout'));
-const InstructorCoursesPage = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
+const InstructorLayout             = lazy(() => import('../features/instructor/components/InstructorLayout'));
+const InstructorCoursesPage        = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
+const InstructorCourseContentPage  = lazy(() => import('../features/instructor/pages/InstructorCourseContentPage'));
 
 const devRoutes = import.meta.env.DEV
   ? [{ path: '/style-guide', element: <Suspense fallback={null}><StyleGuide /></Suspense> }]
@@ -174,6 +175,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <InstructorCoursesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'courses/:courseId/content',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <InstructorCourseContentPage />
               </Suspense>
             ),
           },
