@@ -139,7 +139,7 @@ Route guards live in `src/components/common/`. Do not duplicate authorization lo
 
 **Route categories:**
 
-- **Public** — landing page, course catalog, course detail pages. No guard.
+- **Public** — landing page, course catalog (`/courses`). No guard. (No `/courses/:courseId` frontend route exists yet; backend `GET /api/v1/courses/{courseId}` exists but is unused.)
 - **Guest-only** — `/login`, `/register`. Wrapped in `GuestRoute`.
 - **Protected** — dashboard, settings, learner pages. Wrapped in `ProtectedRoute`.
 - **Instructor** — course management, course editor. Wrap in `InstructorRoute` (checks `user.availableProfiles`).
@@ -179,7 +179,7 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | GET | `/api/v1/admin/instructor-profiles/pending` | ADMIN |
 | POST | `/api/v1/admin/instructor-profiles/{id}/approve` | ADMIN |
 | POST | `/api/v1/admin/instructor-profiles/{id}/reject` | ADMIN |
-| GET | `/api/v1/instructor/courses` | INSTRUCTOR (own courses, all statuses; not yet consumed by frontend) |
+| GET | `/api/v1/instructor/courses` | INSTRUCTOR (own courses, all statuses) |
 | POST | `/api/v1/instructor/courses` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/{id}` | INSTRUCTOR |
 | POST | `/api/v1/instructor/courses/{id}/publish` | INSTRUCTOR |

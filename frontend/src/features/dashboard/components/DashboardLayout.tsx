@@ -42,8 +42,12 @@ export default function DashboardLayout() {
   const initials     = user?.fullName ? getInitials(user.fullName) : '?';
   const profileLabel = activeProfile === 'INSTRUCTOR' ? 'Instructor' : 'Learner';
 
-  const showInstructorCta = user?.instructorApprovalStatus === null;
-  const showPendingNote   = user?.instructorApprovalStatus === 'PENDING';
+  const isAdminOnly =
+    (user?.roles ?? []).includes('ROLE_ADMIN') &&
+    !(user?.availableProfiles ?? []).includes('INSTRUCTOR');
+
+  const showInstructorCta = !isAdminOnly && user?.instructorApprovalStatus === null;
+  const showPendingNote   = !isAdminOnly && user?.instructorApprovalStatus === 'PENDING';
   const showSidebarCta    = showInstructorCta || showPendingNote;
 
   const closeSidebar = () => setSidebarOpen(false);
