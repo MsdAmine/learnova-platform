@@ -4,6 +4,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { GuestRoute } from '../components/common/GuestRoute';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
 import { InstructorRoute } from '../components/common/InstructorRoute';
+import { AdminRoute } from '../components/common/AdminRoute';
 import { LandingPageSkeleton } from '../components/common/skeletons/LandingPageSkeleton';
 import { AuthLayoutSkeleton } from '../components/common/skeletons/AuthLayoutSkeleton';
 import { DashboardLayoutSkeleton } from '../components/common/skeletons/DashboardLayoutSkeleton';
@@ -31,6 +32,9 @@ const CoursePlayerPage = lazy(() => import('../features/dashboard/pages/CoursePl
 const InstructorLayout             = lazy(() => import('../features/instructor/components/InstructorLayout'));
 const InstructorCoursesPage        = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
 const InstructorCourseContentPage  = lazy(() => import('../features/instructor/pages/InstructorCourseContentPage'));
+
+const AdminLayout                    = lazy(() => import('../features/admin/components/AdminLayout'));
+const AdminInstructorApprovalsPage   = lazy(() => import('../features/admin/pages/AdminInstructorApprovalsPage'));
 
 const devRoutes = import.meta.env.DEV
   ? [{ path: '/style-guide', element: <Suspense fallback={null}><StyleGuide /></Suspense> }]
@@ -183,6 +187,28 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <InstructorCourseContentPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        // Admin area — separate shell, not nested under learner or instructor layouts.
+        // AdminRoute checks isAuthenticated + user.roles includes ROLE_ADMIN.
+        path: '/admin',
+        element: (
+          <AdminRoute>
+            <Suspense fallback={<DashboardLayoutSkeleton />}>
+              <AdminLayout />
+            </Suspense>
+          </AdminRoute>
+        ),
+        children: [
+          {
+            path: 'instructor-approvals',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <AdminInstructorApprovalsPage />
               </Suspense>
             ),
           },
