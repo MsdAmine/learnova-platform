@@ -52,3 +52,7 @@ graphify-out/
 .playwright-mcp/
 qa-*.png
 verify-*.png
+
+# Local QA screenshots
+/*.png
+.playwright-mcp/
