@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import api from '../../../api/axios';
@@ -224,20 +225,36 @@ function InstructorApplicationPanel() {
   }
 
   if (status === 'APPROVED') {
+    const hasInstructorAccess = availableProfiles.includes('INSTRUCTOR');
     return (
       <SettingsSection
         id="instructor-application-heading"
         heading="Instructor application"
         description="Your instructor application has been approved."
       >
-        <div className="mt-4 flex items-start gap-2.5">
-          <Badge variant="salem">Approved</Badge>
-          <p className="text-body-sm text-text-secondary">
-            You have access to instructor mode.
-            {availableProfiles.includes('INSTRUCTOR') &&
-              ' Switch profiles from the sidebar when you are ready.'
-            }
-          </p>
+        <div className="mt-4">
+          <div className="flex items-start gap-2.5">
+            <Badge variant="salem">Approved</Badge>
+            <p className="text-body-sm text-text-secondary">
+              You have access to instructor mode.
+            </p>
+          </div>
+          {hasInstructorAccess ? (
+            <div className="mt-4 flex flex-col gap-3">
+              <p className="text-body-sm text-text-secondary">
+                Manage your courses, content, and publishing from the instructor workspace.
+              </p>
+              <div>
+                <Button asChild variant="secondary" size="sm">
+                  <Link to="/instructor/courses">Go to teaching area</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-caption text-text-muted mt-3">
+              Instructor access is being set up. Refresh your account data if this persists.
+            </p>
+          )}
         </div>
       </SettingsSection>
     );
