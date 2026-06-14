@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import {
   type CourseLevel,
   type CourseStatus,
@@ -579,6 +580,14 @@ function InstructorCourseRow({ course, onPublish, onArchive, onEdit }: Instructo
                     Publish
                   </Button>
                 )}
+                <Button asChild variant="ghost" size="sm" disabled={action !== null}>
+                  <Link
+                    to={`/instructor/courses/${course.id}/content`}
+                    aria-label={`Manage content for ${course.title}`}
+                  >
+                    Manage content
+                  </Link>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"

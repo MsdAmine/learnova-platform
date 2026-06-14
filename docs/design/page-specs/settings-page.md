@@ -4,18 +4,14 @@
 
 This is a no-implementation visual layout plan for the **learner-dashboard `SettingsPage`** (`frontend/src/features/dashboard/pages/SettingsPage.tsx`). The page renders inside `DashboardLayout`'s `<main>` `<Outlet />`. This spec covers **only the content column**: the topbar, sidebar, and scroll container are owned by `DashboardLayout` and are out of scope.
 
-**Current state.** `SettingsPage.tsx` is a stub containing a page shell and an H1 header block. The existing shell reads `className="px-8 py-8 pb-14 max-w-container"`, missing `mx-auto`. The stub subtitle reads "Manage your profile, notifications, and instructor status." Both must be corrected when implementing.
-
-**Design cleanup notes on the existing stub.**
-- Shell missing `mx-auto`. Canonical form: `className="px-8 py-8 pb-14 max-w-container mx-auto"`.
-- Update stub subtitle to the canonical form in §2.2.
+**Current state.** `SettingsPage.tsx` is fully implemented. Shell class is `className="px-8 py-8 pb-14 max-w-container mx-auto"`. Subtitle is "Manage your account, profile, and learning preferences." Both match the canonical form in §2.2. No stub cleanup required.
 
 **What is already in place.**
 - Auth context, JWT token, and user state: `AuthContext.tsx` exposes `user`, `activeProfile`, `logout`, `refreshUser`, and `setActiveProfile` via `useAuth()`.
 - `useCurrentUser` (`src/hooks/useCurrentUser.ts`) calls `GET /api/v1/auth/me` on mount and calls `refreshUser()` with the fresh response. It fires automatically when a token is present. It does not return loading state or an error signal; errors are handled by the Axios response interceptor.
 - `DashboardLayout` already surfaces the "Become an instructor" CTA (when `instructorApprovalStatus === null`) and a "pending review" note (when `instructorApprovalStatus === 'PENDING'`) with a link to `/dashboard/settings`. The settings page is the **authoritative destination** for full instructor application management.
-- The backend supports `POST /api/v1/instructor-profile/request` (authenticated). No request body is required: the endpoint is a bare POST.
-- The backend supports `GET /api/v1/auth/me` (authenticated).
+- The backend endpoint `POST /api/v1/instructor-profile/request` (authenticated) requires a JSON request body. Fields: `bio` (`@NotBlank`, max 1000 chars, required), `expertise` (`@NotBlank`, max 500 chars, required), `experience` (max 1000 chars, optional), `motivation` (max 1000 chars, optional). Returns `InstructorProfileResponse` (not the user DTO). See §5.4 for the form specification.
+- The backend supports `GET /api/v1/auth/me` (authenticated). Must be called after a successful `POST /api/v1/instructor-profile/request` to refresh `instructorApprovalStatus` in `AuthContext` and drive the PENDING state transition.
 
 **What does not exist.**
 - No user profile update endpoint. Name and email changes are not possible in v1.
@@ -48,25 +44,34 @@ type SettingsUser = {
   instructorApprovalStatus: InstructorApprovalStatus;
 };
 
-// Local UI state managed inside SettingsPage
-type SettingsPageLocalState = {
+// Local UI state — split across components, not in SettingsPage itself
+// AccountActionsPanel owns:
+type AccountActionsPanelLocalState = {
   isRefreshing: boolean;      // true while manual refresh API call is in flight
   refreshError: string | null;
+};
+// InstructorApplicationPanel owns:
+type InstructorApplicationPanelLocalState = {
   isApplying: boolean;        // true while POST /instructor-profile/request is in flight
   applyError: string | null;
+  bio: string;
+  expertise: string;
+  experience: string;
+  motivation: string;
+  fieldErrors: { bio?: string; expertise?: string; experience?: string; motivation?: string };
 };
 ```
 
 **Sources of truth.**
 - `user`, `activeProfile`, `logout`, `refreshUser`: from `useAuth()`.
 - Fresh user data on mount: call `useCurrentUser()` at the top of `SettingsPage`. This fires `GET /api/v1/auth/me` and hydrates `AuthContext` automatically.
-- `isRefreshing`, `refreshError`, `isApplying`, `applyError`: local `useState` in `SettingsPage` or in the local panel components (§6.2).
+- `isRefreshing`, `refreshError`: local `useState` in `AccountActionsPanel`. `isApplying`, `applyError`, field values, and `fieldErrors`: local `useState` in `InstructorApplicationPanel`. Neither set lives in the top-level `SettingsPage` component.
 
 **Instructor approval status semantics.**
 
 | `instructorApprovalStatus` | Meaning | Settings page behavior |
 |---|---|---|
-| `null` | No application submitted | Show "Become an instructor" CTA with explanation and apply button |
+| `null` | No application submitted | Show inline application form with bio, expertise (required), experience, motivation (optional); client-validates before POST |
 | `'PENDING'` | Application submitted, awaiting review | Show pending badge and message; no resubmit action |
 | `'APPROVED'` | Application approved; instructor role granted | Show approved badge and message |
 | `'REJECTED'` | Application rejected | Show rejected badge and message; resubmission is an open decision (§10.3) |
@@ -259,7 +264,7 @@ The `Badge` component applies `text-transform: uppercase` via the `uppercase` CS
 
 | Action | Variant | Size | Notes |
 |---|---|---|---|
-| "Apply to become an instructor" | `secondary` | `sm` | `loading` prop while POST is in flight |
+| "Submit instructor application" | `secondary` | `sm` | Inside `<form onSubmit>` in the null state panel; `loading` prop while POST is in flight |
 | "Refresh account data" | `secondary` | `sm` | `loading` prop while GET is in flight |
 | "Sign out" | `ghost` | `sm` | Must be a `<button>`, not an `<a>` |
 
@@ -372,31 +377,83 @@ This section renders different content based on `user.instructorApprovalStatus`.
 
 **Description:** "Share your expertise with learners on Learnova."
 
-Content after the heading zone:
+**Admin visibility guard.** This panel is conditionally rendered in `SettingsPage`:
 ```tsx
-<div className="mt-4 flex flex-col gap-3">
+{(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
+  <InstructorApplicationPanel />
+)}
+```
+A pure admin account (admin role but no `'INSTRUCTOR'` in `availableProfiles`) does **not** see this panel. An admin who has also been approved as an instructor does see it (in the APPROVED state). A learner or pending/rejected user always sees it.
+
+Content after the heading zone — an inline `<form onSubmit noValidate>`:
+
+```tsx
+<form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
   <p className="text-body-sm text-text-secondary">
-    Apply to become an instructor. Your application will be reviewed by the Learnova team.
+    Tell us about your background. Fields marked with * are required.
   </p>
+
+  {/* Bio — required */}
+  <FormField label="Bio *" htmlFor="instructor-bio" error={fieldErrors.bio} hint="Max 1000 characters.">
+    <textarea id="instructor-bio" rows={3} maxLength={1000}
+      placeholder="Share your teaching background and what you specialize in."
+      aria-invalid={fieldErrors.bio ? true : undefined} />
+  </FormField>
+
+  {/* Expertise — required */}
+  <FormField label="Expertise *" htmlFor="instructor-expertise" error={fieldErrors.expertise} hint="Max 500 characters.">
+    <Input id="instructor-expertise" maxLength={500} hasError={!!fieldErrors.expertise}
+      placeholder="e.g. JavaScript, React, Web Development" />
+  </FormField>
+
+  {/* Experience — optional */}
+  <FormField label="Experience" htmlFor="instructor-experience" error={fieldErrors.experience} hint="Optional. Max 1000 characters.">
+    <textarea id="instructor-experience" rows={3} maxLength={1000}
+      placeholder="Describe your teaching or professional experience."
+      aria-invalid={fieldErrors.experience ? true : undefined} />
+  </FormField>
+
+  {/* Motivation — optional */}
+  <FormField label="Motivation" htmlFor="instructor-motivation" error={fieldErrors.motivation} hint="Optional. Max 1000 characters.">
+    <textarea id="instructor-motivation" rows={3} maxLength={1000}
+      placeholder="Why do you want to teach on Learnova?"
+      aria-invalid={fieldErrors.motivation ? true : undefined} />
+  </FormField>
+
   <div>
-    <Button
-      variant="secondary"
-      size="sm"
-      loading={isApplying}
-      aria-label="Apply to become an instructor"
-    >
-      Apply to become an instructor
+    <Button type="submit" variant="secondary" size="sm"
+      loading={isApplying} aria-label="Submit instructor application">
+      Submit instructor application
     </Button>
     {applyError && (
       <p className="text-caption text-error mt-1" role="alert">{applyError}</p>
     )}
   </div>
-</div>
+</form>
 ```
 
-**Action behavior:** On click, POST to `/api/v1/instructor-profile/request` (no request body). On success, call `api.get('/api/v1/auth/me')` then `refreshUser(data)` to update `instructorApprovalStatus` to `'PENDING'`. The sidebar CTA will disappear on re-render as `DashboardLayout` re-reads the refreshed `user`. Use the `loading` prop while the request is in flight.
+**Backend contract.** `POST /api/v1/instructor-profile/request` requires a JSON body:
+```json
+{
+  "bio": "<trimmed, required, max 1000 chars>",
+  "expertise": "<trimmed, required, max 500 chars>",
+  "experience": "<trimmed string or null>",
+  "motivation": "<trimmed string or null>"
+}
+```
+Returns `InstructorProfileResponse` (contains `approvalStatus`, not user data). The frontend discards this response.
 
-Do not render an application form. The endpoint requires no fields.
+**Client validation (runs before network call).** Both required fields are `.trim()`-checked; whitespace-only input is treated as empty and rejected. Optional fields are length-checked only. On validation failure: `setFieldErrors` populates errors, `return` short-circuits the handler — no network call is made. Each field error renders as a `role="alert"` paragraph via `FormField`.
+
+**Submit flow on success:**
+1. `POST /api/v1/instructor-profile/request` → 201
+2. `GET /api/v1/auth/me` → 200
+3. `refreshUser(data)` updates `AuthContext` with `instructorApprovalStatus: 'PENDING'`
+4. `InstructorApplicationPanel` re-renders into the PENDING state
+5. `DashboardLayout` sidebar CTA disappears (same `user` reference)
+6. No page reload, no logout, no redirect
+
+**Submit flow on error (non-401/403).** Sets `applyError`; inline message appears below the submit button. Values remain in form fields. The Axios response interceptor owns 401 (logout + redirect to `/login`) and 403 (redirect to `/unauthorized`); the panel does not handle these cases.
 
 #### State: `'PENDING'` — Under review
 
@@ -439,6 +496,8 @@ If `user.availableProfiles` includes `'INSTRUCTOR'`, optionally add a "Switch to
 
 **Description:** "Your instructor application was not approved."
 
+**Rejection reason fetch.** When `instructorApprovalStatus === 'REJECTED'`, `InstructorApplicationPanel` lazily fetches `GET /api/v1/instructor-profile/me` via `useEffect` to retrieve `rejectionReason`. The field is on `InstructorProfileResponse` but absent from `CurrentUserResponse` (auth/me). The effect is guarded by a cancellation flag to prevent stale updates on unmount. On network error the effect is silently ignored and `rejectionReason` stays `null`.
+
 Content after the heading zone:
 ```tsx
 <div className="mt-4">
@@ -448,11 +507,20 @@ Content after the heading zone:
       Your application was not approved at this time.
     </p>
   </div>
+  {/* Only rendered when rejectionReason is truthy */}
+  {rejectionReason && (
+    <div className="mt-3 rounded-md border border-border-default bg-surface-elevated p-3">
+      <p className="text-caption font-medium text-text-muted">Reason</p>
+      <p className="text-body-sm text-text-secondary mt-1">{rejectionReason}</p>
+    </div>
+  )}
   <p className="text-caption text-text-muted mt-3">
     Contact support if you have questions about your application status.
   </p>
 </div>
 ```
+
+**Token notes.** The reason block uses `bg-surface-elevated` (third depth tier) inside the `bg-surface` section card. No new tokens. Label uses `text-caption font-medium text-text-muted`; body uses `text-body-sm text-text-secondary`.
 
 Whether to offer resubmission is §10.3.
 
@@ -631,15 +699,15 @@ If the response is 401, the Axios interceptor calls `logout()` and redirects to 
 
 ### 7.4 Instructor application action error
 
-If `POST /api/v1/instructor-profile/request` fails:
+If `POST /api/v1/instructor-profile/request` fails (non-401, non-403):
 
 ```
-Inline, below the apply button:
+Inline, below the submit button:
 text-caption text-error mt-1 role="alert"
-"Something went wrong. Please try again."
+"We could not submit your instructor application. Please try again."
 ```
 
-Clear on successful retry. No modal, no full-section takeover for a single action failure.
+Field values are preserved. The form remains visible. Clear `applyError` on the next successful submit. No modal, no full-section takeover for a single action failure. 401 and 403 are handled by the Axios response interceptor, not by this component.
 
 ---
 
