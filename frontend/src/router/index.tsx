@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { GuestRoute } from '../components/common/GuestRoute';
 import { ProtectedRoute } from '../components/common/ProtectedRoute';
+import { InstructorRoute } from '../components/common/InstructorRoute';
 import { LandingPageSkeleton } from '../components/common/skeletons/LandingPageSkeleton';
 import { AuthLayoutSkeleton } from '../components/common/skeletons/AuthLayoutSkeleton';
 import { DashboardLayoutSkeleton } from '../components/common/skeletons/DashboardLayoutSkeleton';
@@ -24,6 +25,11 @@ const ProgressPage     = lazy(() => import('../features/dashboard/pages/Progress
 const CertificatesPage = lazy(() => import('../features/dashboard/pages/CertificatesPage'));
 const LiveSessionsPage = lazy(() => import('../features/dashboard/pages/LiveSessionsPage'));
 const SettingsPage     = lazy(() => import('../features/dashboard/pages/SettingsPage'));
+
+const CoursePlayerPage = lazy(() => import('../features/dashboard/pages/CoursePlayerPage'));
+
+const InstructorLayout      = lazy(() => import('../features/instructor/components/InstructorLayout'));
+const InstructorCoursesPage = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
 
 const devRoutes = import.meta.env.DEV
   ? [{ path: '/style-guide', element: <Suspense fallback={null}><StyleGuide /></Suspense> }]
@@ -110,6 +116,14 @@ const router = createBrowserRouter([
             ),
           },
           {
+            path: 'courses/:courseId',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <CoursePlayerPage />
+              </Suspense>
+            ),
+          },
+          {
             path: 'progress',
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
@@ -138,6 +152,28 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <SettingsPage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        // Instructor area — separate shell, not nested under learner DashboardLayout.
+        // InstructorRoute checks isAuthenticated + availableProfiles includes INSTRUCTOR.
+        path: '/instructor',
+        element: (
+          <InstructorRoute>
+            <Suspense fallback={<DashboardLayoutSkeleton />}>
+              <InstructorLayout />
+            </Suspense>
+          </InstructorRoute>
+        ),
+        children: [
+          {
+            path: 'courses',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <InstructorCoursesPage />
               </Suspense>
             ),
           },

@@ -3,6 +3,7 @@ package com.learnova.learnova_backend.course.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
+import jakarta.persistence.OrderBy;
 
 @Entity
 @Table(name = "sections")
@@ -25,5 +26,6 @@ public class Section {
     private Course course;
 
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     private List<Lesson> lessons;
 }

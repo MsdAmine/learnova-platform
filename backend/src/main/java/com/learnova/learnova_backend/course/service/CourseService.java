@@ -17,6 +17,9 @@ import com.learnova.learnova_backend.course.repository.CourseRepository;
 import com.learnova.learnova_backend.course.repository.LessonRepository;
 import com.learnova.learnova_backend.course.repository.WishlistItemRepository;
 import com.learnova.learnova_backend.course.repository.LessonProgressRepository;
+import com.learnova.learnova_backend.enrollment.entity.Enrollment;
+import com.learnova.learnova_backend.enrollment.entity.EnrollmentStatus;
+import com.learnova.learnova_backend.enrollment.repository.EnrollmentRepository;
 import com.learnova.learnova_backend.profile.entity.InstructorApprovalStatus;
 import com.learnova.learnova_backend.profile.entity.InstructorProfile;
 import com.learnova.learnova_backend.profile.entity.LearnerProfile;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -48,6 +52,7 @@ public class CourseService {
         private final LearnerProfileRepository learnerProfileRepository;
         private final LessonProgressRepository lessonProgressRepository;
         private final CourseAccessService courseAccessService;
+        private final EnrollmentRepository enrollmentRepository;
 
         @Transactional
         public CourseResponse createCourse(CustomUserDetails currentUser, CourseRequest request) {
@@ -241,8 +246,8 @@ public class CourseService {
                 // 4. Contrôle de l'inscription au cours via le CourseAccessService
                 boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
                 if (!hasAccess) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                        "Access denied. You must be enrolled in this course to log progress details.");
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                        "Course not found");
                 }
 
                 // 5. Stratégie d'Upsert sécurisée pour la progression
@@ -264,6 +269,9 @@ public class CourseService {
 
                 LessonProgress savedProgress = lessonProgressRepository.save(progress);
 
+                // 7. Sync enrollment progress — runs in the same transaction
+                syncEnrollmentProgress(learnerProfile, course);
+
                 return new LessonProgressResponse(
                                 savedProgress.getId(),
                                 savedProgress.getLearnerProfile().getId(),
@@ -272,6 +280,36 @@ public class CourseService {
                                 savedProgress.getLastPositionSeconds(),
                                 savedProgress.getTimeSpentSeconds(),
                                 savedProgress.getUpdatedAt());
+        }
+
+        private void syncEnrollmentProgress(LearnerProfile learnerProfile, Course course) {
+                Enrollment enrollment = enrollmentRepository
+                                .findByLearnerProfileIdAndCourseId(learnerProfile.getId(), course.getId())
+                                .orElse(null);
+                if (enrollment == null) {
+                        return;
+                }
+
+                int totalLessons = lessonRepository.countTotalLessonsByCourseId(course.getId());
+                int newPercentage;
+                if (totalLessons == 0) {
+                        newPercentage = 0;
+                } else {
+                        int completedLessons = lessonProgressRepository
+                                        .countCompletedLessonsByLearnerAndCourse(learnerProfile, course.getId());
+                        newPercentage = Math.min(100, Math.max(0, (completedLessons * 100) / totalLessons));
+                }
+
+                enrollment.setProgressPercentage(newPercentage);
+
+                if (newPercentage == 100 && enrollment.getStatus() != EnrollmentStatus.COMPLETED) {
+                        enrollment.setStatus(EnrollmentStatus.COMPLETED);
+                        if (enrollment.getCompletedAt() == null) {
+                                enrollment.setCompletedAt(Instant.now());
+                        }
+                }
+
+                enrollmentRepository.save(enrollment);
         }
 
         // --- LOGIQUE MÉTIER DE L'ISSUE #59 ---
@@ -295,8 +333,8 @@ public class CourseService {
                 // 3. Contrôle des droits d'accès
                 boolean hasAccess = courseAccessService.canUserAccessCourseContent(username, course);
                 if (!hasAccess) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                                        "Access denied. You must be actively enrolled to view progress records.");
+                        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                        "Course not found");
                 }
 
                 // 4. Extraction du volume total de leçons du cours
@@ -326,6 +364,74 @@ public class CourseService {
                                 completedLessons,
                                 progressPercentage,
                                 isFullyCompleted);
+        }
+
+        @Transactional(readOnly = true)
+        public List<CourseResponse> listMyCourses(CustomUserDetails currentUser) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                return courseRepository
+                                .findByInstructorProfileIdOrderByUpdatedAtDesc(instructorProfile.getId())
+                                .stream()
+                                .map(this::toResponse)
+                                .toList();
+        }
+
+        @Transactional
+        public CourseResponse publishCourse(CustomUserDetails currentUser, Long courseId) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                Course course = resolveOwnedCourse(instructorProfile, courseId);
+
+                if (course.getStatus() == CourseStatus.PUBLISHED) {
+                        return toResponse(course);
+                }
+
+                if (course.getStatus() == CourseStatus.ARCHIVED) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                                        "Archived courses cannot be published. Create a new course instead.");
+                }
+
+                course.setStatus(CourseStatus.PUBLISHED);
+                return toResponse(courseRepository.save(course));
+        }
+
+        @Transactional
+        public CourseResponse archiveCourse(CustomUserDetails currentUser, Long courseId) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                Course course = resolveOwnedCourse(instructorProfile, courseId);
+
+                if (course.getStatus() == CourseStatus.ARCHIVED) {
+                        return toResponse(course);
+                }
+
+                course.setStatus(CourseStatus.ARCHIVED);
+                return toResponse(courseRepository.save(course));
+        }
+
+        private InstructorProfile resolveApprovedInstructorProfile(CustomUserDetails currentUser) {
+                InstructorProfile instructorProfile = instructorProfileRepository
+                                .findByUserId(currentUser.getId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.FORBIDDEN, "Instructor profile not found"));
+
+                if (instructorProfile.getApprovalStatus() != InstructorApprovalStatus.APPROVED) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN, "Your instructor profile is not approved yet");
+                }
+
+                return instructorProfile;
+        }
+
+        private Course resolveOwnedCourse(InstructorProfile instructorProfile, Long courseId) {
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Course not found"));
+
+                if (!course.getInstructorProfile().getId().equals(instructorProfile.getId())) {
+                        throw new ResponseStatusException(
+                                        HttpStatus.FORBIDDEN, "You are not the owner of this course");
+                }
+
+                return course;
         }
 
         @Transactional

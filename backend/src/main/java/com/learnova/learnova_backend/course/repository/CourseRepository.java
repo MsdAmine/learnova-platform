@@ -10,6 +10,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     List<Course> findByInstructorProfileId(Long instructorProfileId);
 
+    List<Course> findByInstructorProfileIdOrderByUpdatedAtDesc(Long instructorProfileId);
+
     List<Course> findByStatus(CourseStatus status);
 
     List<Course> findByCategoryId(Long categoryId);

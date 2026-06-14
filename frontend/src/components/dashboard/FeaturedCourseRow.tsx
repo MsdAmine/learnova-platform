@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '../../lib/cn';
 import { ProgressBar } from '../ui/ProgressBar';
 import { courseGradient, type Course } from './courseCardUtils';
@@ -21,8 +22,8 @@ export function FeaturedCourseRow({ course }: { course: Course }) {
               </h3>
               <p className="text-caption text-text-secondary">{course.instructor}</p>
             </div>
-            <button
-              type="button"
+            <Link
+              to={`/dashboard/courses/${course.id}`}
               aria-label={`Continue ${course.title}`}
               className={cn(
                 'flex items-center gap-1 text-body-sm font-medium text-salem flex-shrink-0',
@@ -32,7 +33,7 @@ export function FeaturedCourseRow({ course }: { course: Course }) {
               )}
             >
               Continue <ArrowRight size={13} aria-hidden="true" />
-            </button>
+            </Link>
           </div>
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1.5">

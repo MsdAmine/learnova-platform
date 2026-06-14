@@ -2,6 +2,7 @@ package com.learnova.learnova_backend.course.controller;
 
 import com.learnova.learnova_backend.course.dto.CourseRequest;
 import com.learnova.learnova_backend.course.dto.CourseResponse;
+import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 import com.learnova.learnova_backend.course.service.CourseService;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -10,7 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/instructor/courses")
@@ -18,6 +20,14 @@ import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 public class CourseController {
 
     private final CourseService courseService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public List<CourseResponse> listMyCourses(
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        return courseService.listMyCourses(currentUser);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -37,5 +47,23 @@ public class CourseController {
             @Valid @RequestBody CourseUpdateRequest request
     ) {
         return courseService.updateCourse(currentUser, courseId, request);
+    }
+
+    @PostMapping("/{courseId}/publish")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse publishCourse(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long courseId
+    ) {
+        return courseService.publishCourse(currentUser, courseId);
+    }
+
+    @PostMapping("/{courseId}/archive")
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    public CourseResponse archiveCourse(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long courseId
+    ) {
+        return courseService.archiveCourse(currentUser, courseId);
     }
 }

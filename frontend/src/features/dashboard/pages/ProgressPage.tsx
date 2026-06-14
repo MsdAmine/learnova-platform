@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { Badge } from '../../../components/ui/Badge';
@@ -65,13 +66,13 @@ function InProgressRow({ course }: { course: Course }) {
           </h3>
           <p className="text-caption text-text-secondary">{course.instructor}</p>
         </div>
-        <button
-          type="button"
+        <Link
+          to={`/dashboard/courses/${course.id}`}
           aria-label={`Continue ${course.title}`}
           className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm min-h-[44px] px-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
         >
           Continue <ArrowRight size={11} aria-hidden="true" />
-        </button>
+        </Link>
       </div>
       <div className="flex items-center gap-3">
         <div className="flex-1">
@@ -108,13 +109,13 @@ function NotStartedRow({ course }: { course: Course }) {
         </h3>
         <p className="text-caption text-text-secondary">{course.instructor}</p>
       </div>
-      <button
-        type="button"
+      <Link
+        to={`/dashboard/courses/${course.id}`}
         aria-label={`Start ${course.title}`}
         className="flex items-center gap-1 text-caption font-medium text-salem flex-shrink-0 rounded-sm min-h-[44px] px-1 hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
       >
         Start <ArrowRight size={11} aria-hidden="true" />
-      </button>
+      </Link>
     </li>
   );
 }

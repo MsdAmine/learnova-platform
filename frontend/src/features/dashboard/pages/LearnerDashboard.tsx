@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Award, Calendar, Download, Play } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { useAuth } from '../../../context/AuthContext';
@@ -192,7 +193,9 @@ export default function LearnerDashboard() {
                     label={`${continueCourse.title} progress`}
                   />
                   <div className="mt-4">
-                    <Button variant="primary" size="md">Continue</Button>
+                    <Button variant="primary" size="md" asChild>
+                      <Link to={`/dashboard/courses/${continueCourse.id}`}>Continue</Link>
+                    </Button>
                   </div>
                 </div>
               </div>
