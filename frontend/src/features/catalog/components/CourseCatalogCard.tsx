@@ -35,8 +35,8 @@ interface CourseCatalogCardProps {
 /**
  * Decision-driven catalog card consuming CourseCatalogItem. Distinct from the
  * dashboard CourseCard (enrollment-state-driven); they share tokens, not code.
- * Not a clickable surface in v1: it contains interactive children and there is
- * no detail route yet, so hover is border intensification only (Flat-At-Rest).
+ * Not a fully clickable surface: the title links to the detail page; hover
+ * applies border intensification only (Flat-At-Rest).
  */
 export function CourseCatalogCard({
   course,
@@ -106,7 +106,12 @@ export function CourseCatalogCard({
         </div>
 
         <h3 className="text-body-sm font-semibold text-text-primary line-clamp-2 mb-1">
-          {course.title}
+          <Link
+            to={`/courses/${course.id}`}
+            className="hover:text-salem motion-safe:transition-colors duration-fast rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          >
+            {course.title}
+          </Link>
         </h3>
         <p className="text-caption text-text-secondary line-clamp-2 mb-2">
           {course.description}
