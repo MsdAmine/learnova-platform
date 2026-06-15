@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player, instructor content builder, and admin instructor-approvals page are all wired to real backend APIs. Remaining gaps are wishlist, quiz-taking flow, and course-detail page.
+Frontend integration: learner course player, instructor content builder, admin instructor-approvals page, and public course detail page are all wired to real backend APIs. Remaining gaps are wishlist and quiz-taking flow.
 
 ## Backend Status
 
@@ -53,8 +53,9 @@ What is in place:
 - UnauthorizedPage at `/unauthorized`
 - DashboardLayout with sidebar and topbar
 - LearnerDashboard, MyCoursesPage, ProgressPage, CertificatesPage, LiveSessionsPage, SettingsPage
-- Public course catalog page (`/courses`) with enrollment CTA
-- API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog), `src/api/enrollments.ts`
+- Public course catalog page (`/courses`) with enrollment CTA; catalog card titles link to `/courses/:courseId`; enrolled card "Continue" links directly to `/dashboard/courses/:courseId`
+- Public course detail page (`CourseDetailPage`) at `/courses/:courseId` — no route guard; uses `GET /api/v1/courses/{courseId}`; marketing chrome (`<Navbar forceSolid />` + `<Footer />`); handles guest (sign-in CTA), authenticated-not-enrolled (enroll CTA), enrolled (continue-learning CTA), 404 (not-found panel), and generic-error (retry panel) states; does not expose public lessons, section previews, price, rating, duration, lesson count, instructor bio, or certificate claims; public course content still requires enrollment and `/dashboard/courses/:courseId`
+- API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog + detail), `src/api/enrollments.ts`
 - Hooks: `useCurrentUser`, `useEnrollments`
 - Learner dashboard and My Courses wired to real enrollment data
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
@@ -76,7 +77,7 @@ Still mocked or placeholder:
 
 ## Known Gaps
 
-- No course-detail page at `/courses/:courseId` (backend `GET /api/v1/courses/{courseId}` exists; no frontend route)
+- No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
 - No certificates backend or frontend certificate UI
 - No live sessions backend or frontend live session UI
 - No wishlist frontend (backend `GET/POST/DELETE /api/v1/wishlist/...` endpoints exist)
