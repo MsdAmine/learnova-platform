@@ -139,7 +139,7 @@ Route guards live in `src/components/common/`. Do not duplicate authorization lo
 
 **Route categories:**
 
-- **Public** — landing page, course catalog (`/courses`). No guard. (No `/courses/:courseId` frontend route exists yet; backend `GET /api/v1/courses/{courseId}` exists but is unused.)
+- **Public** — landing page, course catalog (`/courses`), course detail (`/courses/:courseId`). No guard.
 - **Guest-only** — `/login`, `/register`. Wrapped in `GuestRoute`.
 - **Protected** — dashboard, settings, learner pages. Wrapped in `ProtectedRoute`.
 - **Instructor** — course management, course editor. Wrap in `InstructorRoute` (checks `user.availableProfiles`).
