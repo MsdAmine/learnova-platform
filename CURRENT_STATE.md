@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player, instructor content builder, admin instructor-approvals page, and public course detail page are all wired to real backend APIs. Remaining gaps are wishlist and quiz-taking flow.
+Frontend integration: learner course player, instructor content builder, admin instructor-approvals page, and public course detail page are all wired to real backend APIs. The wishlist save-for-later action is integrated on the public course detail page. Remaining gaps are quiz-taking flow and the saved-courses dashboard page.
 
 ## Backend Status
 
@@ -54,8 +54,8 @@ What is in place:
 - DashboardLayout with sidebar and topbar
 - LearnerDashboard, MyCoursesPage, ProgressPage, CertificatesPage, LiveSessionsPage, SettingsPage
 - Public course catalog page (`/courses`) with enrollment CTA; catalog card titles link to `/courses/:courseId`; enrolled card "Continue" links directly to `/dashboard/courses/:courseId`
-- Public course detail page (`CourseDetailPage`) at `/courses/:courseId` — no route guard; uses `GET /api/v1/courses/{courseId}`; marketing chrome (`<Navbar forceSolid />` + `<Footer />`); handles guest (sign-in CTA), authenticated-not-enrolled (enroll CTA), enrolled (continue-learning CTA), 404 (not-found panel), and generic-error (retry panel) states; does not expose public lessons, section previews, price, rating, duration, lesson count, instructor bio, or certificate claims; public course content still requires enrollment and `/dashboard/courses/:courseId`
-- API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog + detail), `src/api/enrollments.ts`
+- Public course detail page (`CourseDetailPage`) at `/courses/:courseId` — no route guard; uses `GET /api/v1/courses/{courseId}`; marketing chrome (`<Navbar forceSolid />` + `<Footer />`); handles guest (sign-in CTA), authenticated-not-enrolled (enroll CTA), enrolled (continue-learning CTA), 404 (not-found panel), and generic-error (retry panel) states; does not expose public lessons, section previews, price, rating, duration, lesson count, instructor bio, or certificate claims; public course content still requires enrollment and `/dashboard/courses/:courseId`; wishlist save-for-later action integrated in the side action panel — learner-only (eligibility gate: `isAuthenticated && user.roles.includes('ROLE_LEARNER')`); guests see a "Sign in to save this course" link; saved state is derived non-blocking from `GET /api/v1/wishlist?size=200`; 409 on add and 404 on remove are treated as stale-state reconciliation (no error surfaced); wishlist does not unlock course content and does not replace enrollment
+- API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog + detail), `src/api/enrollments.ts`, `src/api/wishlist.ts` (wishlist list/add/remove; exports `WishlistCourse`, `Page<T>`, `getMyWishlist(size?)`, `addToWishlist`, `removeFromWishlist`)
 - Hooks: `useCurrentUser`, `useEnrollments`
 - Learner dashboard and My Courses wired to real enrollment data
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
@@ -80,7 +80,10 @@ Still mocked or placeholder:
 - No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
 - No certificates backend or frontend certificate UI
 - No live sessions backend or frontend live session UI
-- No wishlist frontend (backend `GET/POST/DELETE /api/v1/wishlist/...` endpoints exist)
+- No saved-courses dashboard page (`/dashboard/saved-courses`); wishlist save-for-later action exists on the course detail page only
+- No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
+- No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
+- No auto-remove from wishlist after enrollment; wishlist and enrollment are independent at both the backend and frontend layers
 - No quiz-taking learner UI (backend quiz authoring API exists; no learner quiz attempt flow)
 - No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
 - No admin user management beyond instructor approvals

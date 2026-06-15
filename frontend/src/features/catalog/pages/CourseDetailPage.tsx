@@ -10,6 +10,7 @@ import { gradientForId } from '../../../components/dashboard/courseCardUtils';
 import { useAuth } from '../../../context/AuthContext';
 import { getPublishedCourse, type CourseCatalogItem, type CourseLevel } from '../../../api/courses';
 import { enrollInCourse, getMyEnrollments } from '../../../api/enrollments';
+import { getMyWishlist, addToWishlist, removeFromWishlist } from '../../../api/wishlist';
 
 const LEVEL_LABELS: Record<CourseLevel, string> = {
   BEGINNER: 'Beginner',
@@ -19,7 +20,7 @@ const LEVEL_LABELS: Record<CourseLevel, string> = {
 };
 
 // Mirrors the helper in CourseCatalogCard — 401/403 are interceptor-owned;
-// only enrollment-specific statuses (409 stale, 404 unavailable) are handled here.
+// only enrollment/wishlist-specific statuses are handled here.
 function getHttpStatus(error: unknown): number | undefined {
   if (typeof error === 'object' && error !== null && 'response' in error) {
     return (error as { response?: { status?: number } }).response?.status;
@@ -68,6 +69,7 @@ function DetailSkeleton() {
         </div>
         <div className="border border-border-default rounded-lg p-6">
           <Bone className="h-11 w-full rounded-md" />
+          <Bone className="h-11 w-full rounded-md mt-3" />
         </div>
       </div>
     </div>
@@ -87,34 +89,140 @@ function BackLink() {
   );
 }
 
+// ── Wishlist action (secondary, below enroll CTA) ─────────────────────────────
+
+type WishlistActionProps = {
+  course: CourseCatalogItem;
+  isSaved: boolean;
+  wishlistLoading: boolean;
+  wishlistMutating: boolean;
+  wishlistUnavailable: boolean;
+  wishlistRowError: string | null;
+  onSave: () => void;
+  onRemove: () => void;
+};
+
+function WishlistAction({
+  course,
+  isSaved,
+  wishlistLoading,
+  wishlistMutating,
+  wishlistUnavailable,
+  wishlistRowError,
+  onSave,
+  onRemove,
+}: WishlistActionProps) {
+  if (wishlistLoading) {
+    return (
+      <div className="mt-3">
+        <Button variant="secondary" size="md" disabled className="w-full justify-center">
+          Save for later
+        </Button>
+      </div>
+    );
+  }
+
+  if (isSaved) {
+    return (
+      <div className="mt-3" aria-live="polite">
+        <div className="flex items-center justify-between">
+          <span className="text-body-sm font-medium text-text-primary">Saved for later</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            loading={wishlistMutating}
+            aria-label={`Remove ${course.title} from saved courses`}
+            onClick={onRemove}
+          >
+            Remove
+          </Button>
+        </div>
+        {wishlistRowError && (
+          <p role="alert" className="text-body-sm text-text-secondary mt-2">
+            {wishlistRowError}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3" aria-live="polite">
+      <Button
+        variant="secondary"
+        size="md"
+        loading={wishlistMutating}
+        disabled={wishlistUnavailable}
+        aria-label={`Save ${course.title} for later`}
+        className="w-full justify-center"
+        onClick={onSave}
+      >
+        Save for later
+      </Button>
+      {wishlistRowError && (
+        <p role="alert" className="text-body-sm text-text-secondary mt-2">
+          {wishlistRowError}
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ── Side action panel ─────────────────────────────────────────────────────────
 
 type SideActionProps = {
   course: CourseCatalogItem;
   isAuthenticated: boolean;
+  isLearner: boolean;
   isEnrolled: boolean;
   enrollState: EnrollState;
   onEnroll: () => void;
+  isSaved: boolean;
+  wishlistLoading: boolean;
+  wishlistMutating: boolean;
+  wishlistUnavailable: boolean;
+  wishlistRowError: string | null;
+  onSave: () => void;
+  onRemove: () => void;
 };
 
-function SideActionPanel({ course, isAuthenticated, isEnrolled, enrollState, onEnroll }: SideActionProps) {
+function SideActionPanel({
+  course,
+  isAuthenticated,
+  isLearner,
+  isEnrolled,
+  enrollState,
+  onEnroll,
+  isSaved,
+  wishlistLoading,
+  wishlistMutating,
+  wishlistUnavailable,
+  wishlistRowError,
+  onSave,
+  onRemove,
+}: SideActionProps) {
+  const wishlistProps = { course, isSaved, wishlistLoading, wishlistMutating, wishlistUnavailable, wishlistRowError, onSave, onRemove };
+
   if (isEnrolled) {
     return (
-      <div className="flex flex-col gap-3">
-        <Badge variant="salem" className="self-start">Enrolled</Badge>
-        <Button
-          variant="primary"
-          size="md"
-          asChild
-          className="w-full justify-center"
-        >
-          <Link
-            to={`/dashboard/courses/${course.id}`}
-            aria-label={`Continue learning ${course.title}`}
+      <div>
+        <div className="flex flex-col gap-3">
+          <Badge variant="salem" className="self-start">Enrolled</Badge>
+          <Button
+            variant="primary"
+            size="md"
+            asChild
+            className="w-full justify-center"
           >
-            Continue learning
-          </Link>
-        </Button>
+            <Link
+              to={`/dashboard/courses/${course.id}`}
+              aria-label={`Continue learning ${course.title}`}
+            >
+              Continue learning
+            </Link>
+          </Button>
+        </div>
+        {isLearner && <WishlistAction {...wishlistProps} />}
       </div>
     );
   }
@@ -139,33 +247,45 @@ function SideActionPanel({ course, isAuthenticated, isEnrolled, enrollState, onE
           </Link>{' '}
           or sign in to enroll in this course.
         </p>
+        <p className="text-body-sm text-text-secondary mt-2">
+          <Link
+            to="/login"
+            aria-label={`Sign in to save ${course.title}`}
+            className="text-salem hover:text-salem-400 motion-safe:transition-colors duration-fast rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+          >
+            Sign in to save this course
+          </Link>
+        </p>
       </div>
     );
   }
 
   return (
-    <div aria-live="polite">
-      <Button
-        variant="primary"
-        size="md"
-        loading={enrollState === 'enrolling'}
-        disabled={enrollState === 'unavailable'}
-        aria-label={`Enroll in ${course.title}`}
-        className="w-full justify-center"
-        onClick={onEnroll}
-      >
-        Enroll in course
-      </Button>
-      {enrollState === 'unavailable' && (
-        <p role="alert" className="text-body-sm text-text-secondary mt-3">
-          This course is no longer available.
-        </p>
-      )}
-      {enrollState === 'failed' && (
-        <p role="alert" className="text-body-sm text-text-secondary mt-3">
-          Enrollment failed. Try again.
-        </p>
-      )}
+    <div>
+      <div aria-live="polite">
+        <Button
+          variant="primary"
+          size="md"
+          loading={enrollState === 'enrolling'}
+          disabled={enrollState === 'unavailable'}
+          aria-label={`Enroll in ${course.title}`}
+          className="w-full justify-center"
+          onClick={onEnroll}
+        >
+          Enroll in course
+        </Button>
+        {enrollState === 'unavailable' && (
+          <p role="alert" className="text-body-sm text-text-secondary mt-3">
+            This course is no longer available.
+          </p>
+        )}
+        {enrollState === 'failed' && (
+          <p role="alert" className="text-body-sm text-text-secondary mt-3">
+            Enrollment failed. Try again.
+          </p>
+        )}
+      </div>
+      {isLearner && <WishlistAction {...wishlistProps} />}
     </div>
   );
 }
@@ -175,21 +295,37 @@ function SideActionPanel({ course, isAuthenticated, isEnrolled, enrollState, onE
 type CourseDetailProps = {
   course: CourseCatalogItem;
   isAuthenticated: boolean;
+  isLearner: boolean;
   isEnrolled: boolean;
   enrollState: EnrollState;
   thumbnailError: boolean;
   onThumbnailError: () => void;
   onEnroll: () => void;
+  isSaved: boolean;
+  wishlistLoading: boolean;
+  wishlistMutating: boolean;
+  wishlistUnavailable: boolean;
+  wishlistRowError: string | null;
+  onSave: () => void;
+  onRemove: () => void;
 };
 
 function CourseDetail({
   course,
   isAuthenticated,
+  isLearner,
   isEnrolled,
   enrollState,
   thumbnailError,
   onThumbnailError,
   onEnroll,
+  isSaved,
+  wishlistLoading,
+  wishlistMutating,
+  wishlistUnavailable,
+  wishlistRowError,
+  onSave,
+  onRemove,
 }: CourseDetailProps) {
   const gradient = gradientForId(course.id);
   const showThumbnail = !!course.thumbnailUrl && !thumbnailError;
@@ -302,15 +438,23 @@ function CourseDetail({
         {/* Side panel — order-first on mobile so the action is above body copy;
             lg:order-none restores DOM order within the two-column grid */}
         <aside
-          aria-label="Course enrollment"
+          aria-label="Course actions"
           className="bg-surface border border-border-default rounded-lg p-6 order-first lg:order-none"
         >
           <SideActionPanel
             course={course}
             isAuthenticated={isAuthenticated}
+            isLearner={isLearner}
             isEnrolled={isEnrolled}
             enrollState={enrollState}
             onEnroll={onEnroll}
+            isSaved={isSaved}
+            wishlistLoading={wishlistLoading}
+            wishlistMutating={wishlistMutating}
+            wishlistUnavailable={wishlistUnavailable}
+            wishlistRowError={wishlistRowError}
+            onSave={onSave}
+            onRemove={onRemove}
           />
         </aside>
       </div>
@@ -322,10 +466,14 @@ function CourseDetail({
 
 export default function CourseDetailPage() {
   const { courseId: courseIdParam } = useParams<{ courseId: string }>();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   const courseId = courseIdParam ? parseInt(courseIdParam, 10) : NaN;
   const isValidId = Number.isInteger(courseId) && courseId > 0;
+
+  // WishlistController is @PreAuthorize("hasRole('LEARNER')") — only show the
+  // save action when the user actually holds ROLE_LEARNER to avoid a 403.
+  const isLearner = isAuthenticated && (user?.roles.includes('ROLE_LEARNER') ?? false);
 
   const [course, setCourse] = useState<CourseCatalogItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -334,6 +482,12 @@ export default function CourseDetailPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollState, setEnrollState] = useState<EnrollState>('idle');
   const [thumbnailError, setThumbnailError] = useState(false);
+
+  const [isSaved, setIsSaved] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistMutating, setWishlistMutating] = useState(false);
+  const [wishlistUnavailable, setWishlistUnavailable] = useState(false);
+  const [wishlistRowError, setWishlistRowError] = useState<string | null>(null);
 
   // All setState calls are inside async callbacks (.then/.catch/.finally or
   // Promise.resolve().then) — never synchronously in the function body.
@@ -379,6 +533,10 @@ export default function CourseDetailPage() {
         setIsEnrolled(false);
         setEnrollState('idle');
         setThumbnailError(false);
+        setIsSaved(false);
+        setWishlistMutating(false);
+        setWishlistUnavailable(false);
+        setWishlistRowError(null);
       }
     });
     fetchCourse(token);
@@ -397,6 +555,23 @@ export default function CourseDetailPage() {
       })
       .catch(() => {});
   }, [isAuthenticated, courseId, isValidId]);
+
+  // Fetch wishlist to derive saved state. Only runs for authenticated learners;
+  // degrades gracefully on failure (resting "Save for later" is safe — the 409
+  // stale path reconciles if the course was actually saved).
+  // setWishlistLoading(true) is deferred into .then() to satisfy the
+  // react-hooks/set-state-in-effect rule (no synchronous setState in body).
+  useEffect(() => {
+    if (!isLearner || !isValidId) return;
+    Promise.resolve()
+      .then(() => setWishlistLoading(true))
+      .then(() => getMyWishlist())
+      .then((page) => {
+        setIsSaved(page.content.some((item) => item.id === courseId));
+      })
+      .catch(() => {})
+      .finally(() => setWishlistLoading(false));
+  }, [isLearner, courseId, isValidId]);
 
   const reload = useCallback(() => {
     setLoading(true);
@@ -426,6 +601,53 @@ export default function CourseDetailPage() {
       } else {
         setEnrollState('failed');
       }
+    }
+  }
+
+  async function handleSave() {
+    if (!course) return;
+    setWishlistMutating(true);
+    setWishlistRowError(null);
+    try {
+      await addToWishlist(course.id);
+      setIsSaved(true);
+    } catch (err: unknown) {
+      const status = getHttpStatus(err);
+      if (status === 409) {
+        // Already saved elsewhere: treat as stale state, flip to saved.
+        setIsSaved(true);
+      } else if (status === 404) {
+        setWishlistUnavailable(true);
+        setWishlistRowError('This course is no longer available.');
+      } else if (status === 401 || status === 403) {
+        // Interceptor-owned; reset quietly.
+      } else {
+        setWishlistRowError('We could not save this course.');
+      }
+    } finally {
+      setWishlistMutating(false);
+    }
+  }
+
+  async function handleRemove() {
+    if (!course) return;
+    setWishlistMutating(true);
+    setWishlistRowError(null);
+    try {
+      await removeFromWishlist(course.id);
+      setIsSaved(false);
+    } catch (err: unknown) {
+      const status = getHttpStatus(err);
+      if (status === 404) {
+        // Course gone or not in wishlist: intent satisfied, flip to unsaved.
+        setIsSaved(false);
+      } else if (status === 401 || status === 403) {
+        // Interceptor-owned; reset quietly.
+      } else {
+        setWishlistRowError('We could not remove this course from saved courses.');
+      }
+    } finally {
+      setWishlistMutating(false);
     }
   }
 
@@ -473,11 +695,19 @@ export default function CourseDetailPage() {
             <CourseDetail
               course={course}
               isAuthenticated={isAuthenticated}
+              isLearner={isLearner}
               isEnrolled={isEnrolled}
               enrollState={enrollState}
               thumbnailError={thumbnailError}
               onThumbnailError={() => setThumbnailError(true)}
               onEnroll={handleEnroll}
+              isSaved={isSaved}
+              wishlistLoading={wishlistLoading}
+              wishlistMutating={wishlistMutating}
+              wishlistUnavailable={wishlistUnavailable}
+              wishlistRowError={wishlistRowError}
+              onSave={handleSave}
+              onRemove={handleRemove}
             />
           ) : null}
         </div>
