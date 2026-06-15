@@ -133,8 +133,8 @@ export function CourseCatalogCard({
             <div className="flex items-center justify-between gap-2">
               <Badge variant="salem">Enrolled</Badge>
               <Link
-                to="/dashboard/courses"
-                aria-label={`Continue ${course.title}`}
+                to={`/dashboard/courses/${course.id}`}
+                aria-label={`Continue learning ${course.title}`}
                 className="inline-flex items-center gap-1 min-h-[44px] text-caption font-medium text-salem hover:text-salem-400 motion-safe:transition-colors duration-fast rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
               >
                 Continue <span aria-hidden="true">→</span>
