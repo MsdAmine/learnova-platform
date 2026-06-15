@@ -12,7 +12,8 @@ import { DashboardPageSkeleton } from '../components/common/skeletons/DashboardP
 
 const RootLayout       = lazy(() => import('../components/common/RootLayout'));
 const LandingPage      = lazy(() => import('../features/landing/pages/LandingPage'));
-const CourseCatalogPage = lazy(() => import('../features/catalog/pages/CourseCatalogPage'));
+const CourseCatalogPage  = lazy(() => import('../features/catalog/pages/CourseCatalogPage'));
+const CourseDetailPage   = lazy(() => import('../features/catalog/pages/CourseDetailPage'));
 const AuthLayout       = lazy(() => import('../features/auth/components/AuthLayout'));
 const LoginPage        = lazy(() => import('../features/auth/pages/LoginPage'));
 const RegisterPage     = lazy(() => import('../features/auth/pages/RegisterPage'));
@@ -64,6 +65,15 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={null}>
             <CourseCatalogPage />
+          </Suspense>
+        ),
+      },
+      {
+        // Public course detail — sibling of /courses, no guard.
+        path: '/courses/:courseId',
+        element: (
+          <Suspense fallback={null}>
+            <CourseDetailPage />
           </Suspense>
         ),
       },
