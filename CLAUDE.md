@@ -164,6 +164,24 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 
 **Invariant:** `useAuth()` must never be called directly inside `axios.ts`. `axios.ts` is a plain module outside the React tree. Pass callbacks in via `setupApiInterceptors`.
 
+### Wishlist Integration
+
+**API client:** `src/api/wishlist.ts` — exports `getMyWishlist(size?)`, `addToWishlist(courseId)`, `removeFromWishlist(courseId)`. Uses the shared Axios instance. Types: `WishlistCourse` (mirrors the richer backend `CourseResponse`, not `CourseCatalogItem`) and `Page<T>` (minimal Spring page shape, reads `.content`).
+
+**Eligibility gate:** The wishlist UI is shown only when `isAuthenticated && user?.roles.includes('ROLE_LEARNER')`. `WishlistController` is `@PreAuthorize("hasRole('LEARNER')")` — rendering the action to a non-learner would produce a 403 → `/unauthorized` redirect on click. Guests see a "Sign in to save this course" link instead; no wishlist endpoint is ever called for guests or non-learners.
+
+**Derived-set pattern:** No per-course saved-status endpoint exists. Saved state is derived by calling `GET /api/v1/wishlist?size=200` (one large page, v1 cap) and building a `Set<courseId>` from `page.content[].id`. Membership in the set = "Saved". This mirrors the `enrolledIds` pattern on `CourseCatalogPage`.
+
+**Non-blocking fetch:** The wishlist fetch runs in its own `useEffect` independently of the course and enrollment fetches. A failed wishlist fetch degrades gracefully — the resting "Save for later" state renders; a 409 on the next add mutation reconciles stale state silently.
+
+**Error reconciliation:** 409 on add = already saved (treat as saved, no error). 404 on remove = course gone from wishlist (treat as unsaved, no error). Both are stale-state paths, not user errors.
+
+**Scope (current):**
+- Wishlist UI is implemented only on `/courses/:courseId` (`CourseDetailPage`).
+- Catalog cards (`CourseCatalogCard`) intentionally do not show wishlist controls yet.
+- No `/dashboard/saved-courses` page exists.
+- Wishlist does not enroll the learner, does not unlock course content, and does not replace the enrollment CTA.
+
 ## API Surface (current)
 
 | Method | Path | Auth |
