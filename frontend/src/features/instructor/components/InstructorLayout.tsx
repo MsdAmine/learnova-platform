@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Bell, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
@@ -14,7 +14,8 @@ function getInitials(name: string): string {
 }
 
 export default function InstructorLayout() {
-  const { user } = useAuth();
+  const { user, setActiveProfile } = useAuth();
+  const navigate = useNavigate();
   const displayName = user?.fullName ?? 'User';
   const initials = user?.fullName ? getInitials(user.fullName) : '?';
 
@@ -33,8 +34,12 @@ export default function InstructorLayout() {
 
         {/* Left: back link + logo + teaching label */}
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <Link
-            to="/dashboard"
+          <button
+            type="button"
+            onClick={() => {
+              setActiveProfile('LEARNER');
+              navigate('/dashboard');
+            }}
             className={cn(
               'flex items-center gap-1.5 text-body-sm text-text-secondary flex-shrink-0',
               'hover:text-text-primary transition-colors duration-fast',
@@ -44,7 +49,7 @@ export default function InstructorLayout() {
           >
             <ArrowLeft size={14} aria-hidden="true" />
             <span className="hidden sm:inline">Dashboard</span>
-          </Link>
+          </button>
 
           <span className="text-border-default select-none flex-shrink-0" aria-hidden="true">/</span>
 
