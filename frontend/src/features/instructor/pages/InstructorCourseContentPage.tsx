@@ -884,18 +884,32 @@ export default function InstructorCourseContentPage() {
   return (
     <div className="px-8 py-8 pb-14 max-w-container mx-auto">
 
-      {/* Back link */}
-      <Link
-        to="/instructor/courses"
-        className={cn(
-          'inline-flex items-center gap-1 text-body-sm text-text-secondary font-medium mb-4',
-          'hover:text-text-primary motion-safe:transition-colors duration-fast',
-          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
+      {/* Back link + sibling nav */}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <Link
+          to="/instructor/courses"
+          className={cn(
+            'inline-flex items-center gap-1 text-body-sm text-text-secondary font-medium',
+            'hover:text-text-primary motion-safe:transition-colors duration-fast',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
+          )}
+        >
+          <ArrowLeft size={14} aria-hidden="true" />
+          Back to teaching courses
+        </Link>
+        {!isInvalidId && (
+          <Link
+            to={`/instructor/courses/${courseId}/quizzes`}
+            className={cn(
+              'inline-flex items-center text-body-sm text-text-secondary font-medium',
+              'hover:text-text-primary motion-safe:transition-colors duration-fast',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
+            )}
+          >
+            Manage quizzes
+          </Link>
         )}
-      >
-        <ArrowLeft size={14} aria-hidden="true" />
-        Back to teaching courses
-      </Link>
+      </div>
 
       {/* Header */}
       <div className="mb-8">
