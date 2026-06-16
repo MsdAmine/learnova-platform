@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, X } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
@@ -13,6 +13,25 @@ import {
   type CourseContentResponse,
   type LessonContentResponse,
 } from '../../../api/courseContent';
+import {
+  listLearnerCourseQuizzes,
+  getLearnerQuizDetail,
+  startQuizAttempt,
+  submitQuizAttempt,
+  getQuizAttempt,
+  type LearnerQuizSummaryResponse,
+  type LearnerQuizDetailResponse,
+  type QuizAttemptResponse,
+} from '../../../api/learnerQuizzes';
+
+// ── HTTP status helper ──────────────────────────────────────────────────────
+// Reads the response status off an unknown Axios error without importing axios.
+
+function getStatus(err: unknown): number | undefined {
+  return (err as { response?: { status?: number } })?.response?.status;
+}
+
+type TabKey = 'lessons' | 'quizzes';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -240,6 +259,440 @@ function CourseOutline({
   );
 }
 
+// ── Quiz list skeleton ────────────────────────────────────────────────────────
+
+function QuizListSkeleton() {
+  return (
+    <div className="flex flex-col gap-4" aria-hidden="true">
+      {[0, 1].map(i => (
+        <div
+          key={i}
+          className="bg-surface border border-border-default rounded-lg p-4"
+        >
+          <Bone className="h-5 w-1/2 mb-2" />
+          <Bone className="h-4 w-3/4 mb-3" />
+          <Bone className="h-9 w-28 rounded-md" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Quiz card (list item) ──────────────────────────────────────────────────────
+
+function QuizCard({
+  quiz,
+  starting,
+  onStart,
+}: {
+  quiz: LearnerQuizSummaryResponse;
+  starting: boolean;
+  onStart: (id: number) => void;
+}) {
+  return (
+    <article className="bg-surface border border-border-default rounded-lg p-4">
+      <h3 className="text-title-sm font-semibold text-text-primary break-words">
+        {quiz.title}
+      </h3>
+      {quiz.description && (
+        <p className="text-body-sm text-text-secondary mt-1 break-words">
+          {quiz.description}
+        </p>
+      )}
+      <p className="text-caption text-text-muted mt-2">
+        Passing score: {quiz.passingScore}%
+      </p>
+      <div className="mt-3">
+        <Button
+          size="sm"
+          loading={starting}
+          disabled={starting}
+          onClick={() => onStart(quiz.id)}
+        >
+          Start quiz
+        </Button>
+      </div>
+    </article>
+  );
+}
+
+// ── Quiz taking panel ──────────────────────────────────────────────────────────
+
+function QuizTakingPanel({
+  detail,
+  selections,
+  onSelect,
+  onSubmit,
+  submitting,
+  submitError,
+  allAnswered,
+  onBack,
+}: {
+  detail: LearnerQuizDetailResponse;
+  selections: Record<number, number>;
+  onSelect: (questionId: number, optionId: number) => void;
+  onSubmit: () => void;
+  submitting: boolean;
+  submitError: string | null;
+  allAnswered: boolean;
+  onBack: () => void;
+}) {
+  return (
+    <section
+      aria-labelledby="quiz-taking-heading"
+      className="bg-surface border border-border-default rounded-lg p-4"
+    >
+      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
+        <h3
+          id="quiz-taking-heading"
+          className="text-title-sm font-semibold text-text-primary break-words"
+        >
+          {detail.title}
+        </h3>
+        <Button variant="secondary" size="sm" onClick={onBack}>
+          Back to quizzes
+        </Button>
+      </div>
+
+      {detail.description && (
+        <p className="text-body-sm text-text-secondary mb-2 break-words">
+          {detail.description}
+        </p>
+      )}
+      <p className="text-caption text-text-muted mb-5">
+        Passing score: {detail.passingScore}%
+      </p>
+
+      <ol className="flex flex-col gap-6">
+        {detail.questions.map((q, i) => (
+          <li key={q.id}>
+            <fieldset className="border-0 p-0 m-0 min-w-0">
+              <legend className="text-body-sm font-medium text-text-primary mb-2 break-words">
+                <span className="text-text-muted mr-1">{i + 1}.</span>
+                {q.content}
+                <span className="ml-2 text-caption text-text-muted">
+                  {q.points} pt{q.points === 1 ? '' : 's'}
+                </span>
+              </legend>
+              <div className="flex flex-col gap-1">
+                {q.answerOptions.map(o => {
+                  const inputId = `q${q.id}-o${o.id}`;
+                  return (
+                    <label
+                      key={o.id}
+                      htmlFor={inputId}
+                      className={cn(
+                        'flex items-start gap-2.5 rounded-md px-2 py-2 min-h-[44px] cursor-pointer',
+                        'motion-safe:transition-colors duration-fast',
+                        'hover:bg-surface-elevated',
+                        'focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-salem',
+                      )}
+                    >
+                      <input
+                        id={inputId}
+                        type="radio"
+                        name={`question-${q.id}`}
+                        value={o.id}
+                        checked={selections[q.id] === o.id}
+                        onChange={() => onSelect(q.id, o.id)}
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 accent-salem"
+                      />
+                      <span className="text-body-sm text-text-primary break-words">
+                        {o.optionText}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          </li>
+        ))}
+      </ol>
+
+      {submitError && (
+        <p className="text-body-sm text-error mt-4" role="alert">
+          {submitError}
+        </p>
+      )}
+
+      <div className="mt-6 flex items-center gap-3 flex-wrap">
+        <Button
+          size="sm"
+          onClick={onSubmit}
+          loading={submitting}
+          disabled={!allAnswered || submitting}
+          aria-label="Submit quiz"
+        >
+          Submit quiz
+        </Button>
+        {!allAnswered && (
+          <p className="text-caption text-text-muted">
+            Answer every question to submit.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ── Quiz result panel ──────────────────────────────────────────────────────────
+
+function QuizResultPanel({
+  detail,
+  attempt,
+  onBack,
+}: {
+  detail: LearnerQuizDetailResponse;
+  attempt: QuizAttemptResponse;
+  onBack: () => void;
+}) {
+  const passed = attempt.passed === true;
+  const resultById = new Map(attempt.answerResults.map(r => [r.questionId, r]));
+
+  return (
+    <section
+      aria-labelledby="quiz-result-heading"
+      className="bg-surface border border-border-default rounded-lg p-4"
+    >
+      <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+        <h3
+          id="quiz-result-heading"
+          className="text-title-sm font-semibold text-text-primary break-words"
+        >
+          {detail.title}
+        </h3>
+        <Button variant="secondary" size="sm" onClick={onBack}>
+          Back to quizzes
+        </Button>
+      </div>
+
+      <div className="bg-surface-elevated rounded-md p-4 mb-5">
+        <div className="flex items-center gap-3 flex-wrap mb-1">
+          <span className="text-title font-semibold text-text-primary">
+            {attempt.scorePercentage ?? 0}%
+          </span>
+          <Badge variant={passed ? 'salem' : 'coral'}>
+            {passed ? 'Passed' : 'Not passed'}
+          </Badge>
+        </div>
+        <p className="text-body-sm text-text-secondary">
+          You scored {attempt.earnedPoints ?? 0} of {attempt.totalPoints ?? 0} points.
+          {' '}Passing score is {detail.passingScore}%.
+        </p>
+      </div>
+
+      <h4 className="text-body-sm font-semibold text-text-primary mb-2">
+        Your answers
+      </h4>
+      <ol className="flex flex-col gap-3">
+        {detail.questions.map((q, i) => {
+          const r = resultById.get(q.id);
+          const selected = q.answerOptions.find(o => o.id === r?.selectedOptionId);
+          const correct = r?.correct === true;
+          return (
+            <li
+              key={q.id}
+              className="border border-border-default rounded-md p-3"
+            >
+              <p className="text-body-sm font-medium text-text-primary mb-1 break-words">
+                <span className="text-text-muted mr-1">{i + 1}.</span>
+                {q.content}
+              </p>
+              {r ? (
+                <>
+                  <p className="text-body-sm text-text-secondary break-words">
+                    Your answer: {selected ? selected.optionText : '—'}
+                  </p>
+                  <p className="mt-1.5">
+                    <Badge variant={correct ? 'salem' : 'coral'} className="gap-1">
+                      {correct ? (
+                        <Check size={10} aria-hidden="true" />
+                      ) : (
+                        <X size={10} aria-hidden="true" />
+                      )}
+                      {correct ? 'Correct' : 'Incorrect'}
+                    </Badge>
+                  </p>
+                </>
+              ) : (
+                <p className="text-caption text-text-muted">
+                  Result unavailable for this question.
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+// ── Quizzes tab ────────────────────────────────────────────────────────────────
+
+function QuizzesTab({ courseId, active }: { courseId: number; active: boolean }) {
+  const [listStatus, setListStatus] = useState<'idle' | 'loaded' | 'error'>('idle');
+  const [quizzes, setQuizzes] = useState<LearnerQuizSummaryResponse[]>([]);
+
+  const [phase, setPhase] = useState<'list' | 'taking' | 'result'>('list');
+  const [detail, setDetail] = useState<LearnerQuizDetailResponse | null>(null);
+  const [attempt, setAttempt] = useState<QuizAttemptResponse | null>(null);
+  const [startingId, setStartingId] = useState<number | null>(null);
+  const [startError, setStartError] = useState<string | null>(null);
+
+  const [selections, setSelections] = useState<Record<number, number>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Fetch the quiz list the first time the tab is opened (status 'idle'), and
+  // again after a retry (handleListRetry resets status to 'idle'). Only async
+  // setState in the promise callbacks — never synchronous in the effect body,
+  // per the react-hooks/set-state-in-effect rule observed elsewhere in this file.
+  useEffect(() => {
+    if (!active || listStatus !== 'idle') return;
+    const token = { cancelled: false };
+    listLearnerCourseQuizzes(courseId)
+      .then(data => {
+        if (token.cancelled) return;
+        setQuizzes(data);
+        setListStatus('loaded');
+      })
+      .catch(() => {
+        if (!token.cancelled) setListStatus('error');
+      });
+    return () => {
+      token.cancelled = true;
+    };
+  }, [active, courseId, listStatus]);
+
+  function handleListRetry() {
+    setListStatus('idle');
+  }
+
+  async function handleStart(quizId: number) {
+    setStartingId(quizId);
+    setStartError(null);
+    try {
+      const startedAttempt = await startQuizAttempt(quizId);
+      const quizDetail = await getLearnerQuizDetail(quizId);
+      setAttempt(startedAttempt);
+      setDetail(quizDetail);
+      setSelections({});
+      setSubmitError(null);
+      setPhase('taking');
+    } catch (err) {
+      setStartError(
+        getStatus(err) === 404
+          ? 'This quiz is no longer available.'
+          : 'We could not start this quiz. Please try again.',
+      );
+    } finally {
+      setStartingId(null);
+    }
+  }
+
+  function handleSelect(questionId: number, optionId: number) {
+    setSelections(prev => ({ ...prev, [questionId]: optionId }));
+  }
+
+  function handleBackToList() {
+    setPhase('list');
+    setDetail(null);
+    setAttempt(null);
+    setSelections({});
+    setSubmitError(null);
+  }
+
+  const allAnswered =
+    detail != null &&
+    detail.questions.length > 0 &&
+    detail.questions.every(q => selections[q.id] != null);
+
+  async function handleSubmit() {
+    if (!detail || !attempt || !allAnswered) return;
+    // Build the answer set by iterating the questions so it always matches the
+    // backend's strict "every question, no extras" rule (a partial set → 400).
+    const answers: { questionId: number; selectedOptionId: number }[] = [];
+    for (const q of detail.questions) {
+      const selectedOptionId = selections[q.id];
+      if (selectedOptionId == null) return;
+      answers.push({ questionId: q.id, selectedOptionId });
+    }
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const result = await submitQuizAttempt(attempt.id, { answers });
+      setAttempt(result);
+      setPhase('result');
+    } catch (err) {
+      const status = getStatus(err);
+      if (status === 409) {
+        // Already submitted — surface the stored result if we can fetch it.
+        try {
+          const existing = await getQuizAttempt(attempt.id);
+          setAttempt(existing);
+          setPhase('result');
+        } catch {
+          setSubmitError('This attempt has already been submitted.');
+        }
+      } else if (status === 400) {
+        setSubmitError('Some answers were not accepted. Please review and try again.');
+      } else if (status === 404) {
+        setSubmitError('This quiz is no longer available.');
+      } else {
+        setSubmitError('We could not submit your answers. Please try again.');
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (phase === 'taking' && detail) {
+    return (
+      <QuizTakingPanel
+        detail={detail}
+        selections={selections}
+        onSelect={handleSelect}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        submitError={submitError}
+        allAnswered={allAnswered}
+        onBack={handleBackToList}
+      />
+    );
+  }
+
+  if (phase === 'result' && detail && attempt) {
+    return <QuizResultPanel detail={detail} attempt={attempt} onBack={handleBackToList} />;
+  }
+
+  // phase === 'list'
+  if (listStatus === 'idle') return <QuizListSkeleton />;
+  if (listStatus === 'error') {
+    return <StatePanel message="We could not load quizzes." onRetry={handleListRetry} />;
+  }
+  if (quizzes.length === 0) {
+    return <StatePanel message="No quizzes available yet." />;
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {startError && (
+        <p className="text-body-sm text-error" role="alert">
+          {startError}
+        </p>
+      )}
+      {quizzes.map(quiz => (
+        <QuizCard
+          key={quiz.id}
+          quiz={quiz}
+          starting={startingId === quiz.id}
+          onStart={handleStart}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ── Back link (shared between states) ────────────────────────────────────────
 
 const backLinkClass = cn(
@@ -262,6 +715,7 @@ export default function CoursePlayerPage() {
   const [savingLessonId, setSavingLessonId] = useState<number | null>(null);
   const [saveError, setSaveError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [activeTab, setActiveTab] = useState<TabKey>('lessons');
 
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
@@ -404,23 +858,7 @@ export default function CoursePlayerPage() {
 
   const hasLessons = flatLessons.length > 0;
 
-  if (!hasLessons) {
-    return (
-      <div className="px-8 py-8 pb-14 max-w-container mx-auto">
-        <Link to="/dashboard/courses" className={backLinkClass}>
-          <ArrowLeft size={13} aria-hidden="true" />
-          Back to My Courses
-        </Link>
-        <h1 className="text-title font-semibold text-text-primary mb-8">
-          {content.courseTitle}
-        </h1>
-        <StatePanel
-          title="No lessons available yet"
-          message="This course does not have published lessons yet."
-        />
-      </div>
-    );
-  }
+  const tabs: TabKey[] = ['lessons', 'quizzes'];
 
   return (
     <div className="px-8 py-8 pb-14 max-w-container mx-auto">
@@ -432,87 +870,148 @@ export default function CoursePlayerPage() {
       </Link>
 
       {/* Course header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-title font-semibold text-text-primary">
           {content.courseTitle}
         </h1>
-        <p className="text-body-sm text-text-secondary mt-1">
-          Continue learning where you left off.
-        </p>
-        <div className="mt-3">
-          <p className="text-body-sm text-text-secondary mb-1.5">
-            <span className="font-semibold text-text-primary">
-              {completedLessons}
-            </span>
-            {' of '}
-            <span className="font-semibold text-text-primary">
-              {totalLessons}
-            </span>
-            {' lessons complete · '}
-            <span className="font-semibold text-text-primary">
-              {progressPercentage}%
-            </span>
-          </p>
-          <ProgressBar value={progressPercentage} label="Course progress" />
-        </div>
-      </div>
-
-      {/* Player grid */}
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
-
-        {/* Mobile: collapsible outline, collapsed by default, hidden on lg */}
-        <details
-          ref={detailsRef}
-          className="group lg:hidden bg-surface border border-border-default rounded-lg"
-        >
-          <summary className={cn(
-            'flex items-center justify-between px-4 py-3 cursor-pointer list-none rounded-lg',
-            'text-body-sm font-medium text-text-primary',
-            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
-            '[&::-webkit-details-marker]:hidden',
-          )}>
-            <span>Lessons · {completedLessons} of {totalLessons} complete</span>
-            <ChevronDown
-              size={15}
-              aria-hidden="true"
-              className="text-text-muted motion-safe:transition-transform duration-fast group-open:rotate-180"
-            />
-          </summary>
-          <div className="px-4 pb-4">
-            <CourseOutline
-              content={content}
-              selectedLessonId={selectedLessonId}
-              onSelectLesson={handleSelectLesson}
-            />
-          </div>
-        </details>
-
-        {/* Lesson content panel */}
-        {selectedLesson && (
-          <LessonPanel
-            lesson={selectedLesson}
-            saving={savingLessonId === selectedLesson.id}
-            saveError={saveError}
-            onMarkComplete={handleMarkComplete}
-            onPrev={() => prevLesson && handleSelectLesson(prevLesson.id)}
-            onNext={() => nextLesson && handleSelectLesson(nextLesson.id)}
-            hasPrev={prevLesson !== null}
-            hasNext={nextLesson !== null}
-            prevTitle={prevLesson?.title ?? null}
-            nextTitle={nextLesson?.title ?? null}
-          />
+        {hasLessons && (
+          <>
+            <p className="text-body-sm text-text-secondary mt-1">
+              Continue learning where you left off.
+            </p>
+            <div className="mt-3">
+              <p className="text-body-sm text-text-secondary mb-1.5">
+                <span className="font-semibold text-text-primary">
+                  {completedLessons}
+                </span>
+                {' of '}
+                <span className="font-semibold text-text-primary">
+                  {totalLessons}
+                </span>
+                {' lessons complete · '}
+                <span className="font-semibold text-text-primary">
+                  {progressPercentage}%
+                </span>
+              </p>
+              <ProgressBar value={progressPercentage} label="Course progress" />
+            </div>
+          </>
         )}
-
-        {/* Desktop sidebar outline (hidden on mobile) */}
-        <aside className="hidden lg:block" aria-label="Course outline">
-          <CourseOutline
-            content={content}
-            selectedLessonId={selectedLessonId}
-            onSelectLesson={handleSelectLesson}
-          />
-        </aside>
-
       </div>
+
+      {/* Tabs: Lessons | Quizzes */}
+      <div
+        role="tablist"
+        aria-label="Course player sections"
+        className="flex items-center gap-1 border-b border-border-default mb-6"
+      >
+        {tabs.map(tab => {
+          const selected = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              id={`tab-${tab}`}
+              aria-selected={selected}
+              aria-controls={`panel-${tab}`}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                'min-h-[44px] px-4 -mb-px border-b-2 text-body-sm font-medium',
+                'motion-safe:transition-colors duration-fast',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
+                selected
+                  ? 'border-salem text-salem'
+                  : 'border-transparent text-text-secondary hover:text-text-primary',
+              )}
+            >
+              {tab === 'lessons' ? 'Lessons' : 'Quizzes'}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Lessons panel */}
+      <div
+        role="tabpanel"
+        id="panel-lessons"
+        aria-labelledby="tab-lessons"
+        hidden={activeTab !== 'lessons'}
+      >
+        {!hasLessons ? (
+          <StatePanel
+            title="No lessons available yet"
+            message="This course does not have published lessons yet."
+          />
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+
+            {/* Mobile: collapsible outline, collapsed by default, hidden on lg */}
+            <details
+              ref={detailsRef}
+              className="group lg:hidden bg-surface border border-border-default rounded-lg"
+            >
+              <summary className={cn(
+                'flex items-center justify-between px-4 py-3 cursor-pointer list-none rounded-lg',
+                'text-body-sm font-medium text-text-primary',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
+                '[&::-webkit-details-marker]:hidden',
+              )}>
+                <span>Lessons · {completedLessons} of {totalLessons} complete</span>
+                <ChevronDown
+                  size={15}
+                  aria-hidden="true"
+                  className="text-text-muted motion-safe:transition-transform duration-fast group-open:rotate-180"
+                />
+              </summary>
+              <div className="px-4 pb-4">
+                <CourseOutline
+                  content={content}
+                  selectedLessonId={selectedLessonId}
+                  onSelectLesson={handleSelectLesson}
+                />
+              </div>
+            </details>
+
+            {/* Lesson content panel */}
+            {selectedLesson && (
+              <LessonPanel
+                lesson={selectedLesson}
+                saving={savingLessonId === selectedLesson.id}
+                saveError={saveError}
+                onMarkComplete={handleMarkComplete}
+                onPrev={() => prevLesson && handleSelectLesson(prevLesson.id)}
+                onNext={() => nextLesson && handleSelectLesson(nextLesson.id)}
+                hasPrev={prevLesson !== null}
+                hasNext={nextLesson !== null}
+                prevTitle={prevLesson?.title ?? null}
+                nextTitle={nextLesson?.title ?? null}
+              />
+            )}
+
+            {/* Desktop sidebar outline (hidden on mobile) */}
+            <aside className="hidden lg:block" aria-label="Course outline">
+              <CourseOutline
+                content={content}
+                selectedLessonId={selectedLessonId}
+                onSelectLesson={handleSelectLesson}
+              />
+            </aside>
+
+          </div>
+        )}
+      </div>
+
+      {/* Quizzes panel */}
+      <div
+        role="tabpanel"
+        id="panel-quizzes"
+        aria-labelledby="tab-quizzes"
+        hidden={activeTab !== 'quizzes'}
+      >
+        <QuizzesTab courseId={courseId} active={activeTab === 'quizzes'} />
+      </div>
+
     </div>
   );
 }
