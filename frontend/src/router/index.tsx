@@ -28,7 +28,8 @@ const CertificatesPage = lazy(() => import('../features/dashboard/pages/Certific
 const LiveSessionsPage = lazy(() => import('../features/dashboard/pages/LiveSessionsPage'));
 const SettingsPage     = lazy(() => import('../features/dashboard/pages/SettingsPage'));
 
-const CoursePlayerPage = lazy(() => import('../features/dashboard/pages/CoursePlayerPage'));
+const CoursePlayerPage    = lazy(() => import('../features/dashboard/pages/CoursePlayerPage'));
+const SavedCoursesPage    = lazy(() => import('../features/dashboard/pages/SavedCoursesPage'));
 
 const InstructorLayout             = lazy(() => import('../features/instructor/components/InstructorLayout'));
 const InstructorCoursesPage        = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
@@ -167,6 +168,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <SettingsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'saved-courses',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <SavedCoursesPage />
               </Suspense>
             ),
           },

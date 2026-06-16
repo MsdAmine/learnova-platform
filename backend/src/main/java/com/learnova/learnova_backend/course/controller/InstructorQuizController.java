@@ -4,9 +4,12 @@ import com.learnova.learnova_backend.course.dto.AnswerOptionRequest;
 import com.learnova.learnova_backend.course.dto.AnswerOptionResponse;
 import com.learnova.learnova_backend.course.dto.QuestionRequest;
 import com.learnova.learnova_backend.course.dto.QuestionResponse;
+import com.learnova.learnova_backend.course.dto.QuizDetailResponse;
 import com.learnova.learnova_backend.course.dto.QuizRequest;
 import com.learnova.learnova_backend.course.dto.QuizResponse;
 import com.learnova.learnova_backend.course.dto.QuizUpdateRequest;
+
+import java.util.List;
 import com.learnova.learnova_backend.course.service.QuizService;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -24,6 +27,22 @@ import org.springframework.web.bind.annotation.*;
 public class InstructorQuizController {
 
     private final QuizService quizService;
+
+    @GetMapping("/{courseId}/quizzes")
+    public ResponseEntity<List<QuizResponse>> listQuizzesForCourse(
+            @PathVariable Long courseId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        return ResponseEntity.ok(quizService.listQuizzesForCourse(currentUser, courseId));
+    }
+
+    @GetMapping("/quizzes/{quizId}")
+    public ResponseEntity<QuizDetailResponse> getQuizDetail(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        return ResponseEntity.ok(quizService.getQuizDetail(currentUser, quizId));
+    }
 
     @PostMapping("/{courseId}/quizzes")
     public ResponseEntity<QuizResponse> createQuiz(

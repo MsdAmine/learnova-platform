@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { type ComponentType, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   BookOpen,
+  Bookmark,
   TrendingUp,
   Award,
   Video,
@@ -16,14 +17,23 @@ import { useAuth } from '../../../context/AuthContext';
 import { cn } from '../../../lib/cn';
 import logoPrimary from '../../../assets/logo-primary.png';
 
-const NAV_ITEMS = [
+interface NavItem {
+  icon: ComponentType<{ size?: number; 'aria-hidden'?: boolean | 'true' | 'false' }>;
+  label: string;
+  path: string;
+  end: boolean;
+  roleRequired?: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard',      path: '/dashboard',                end: true  },
   { icon: BookOpen,        label: 'My Courses',     path: '/dashboard/courses',        end: false },
+  { icon: Bookmark,        label: 'Saved',          path: '/dashboard/saved-courses',  end: false, roleRequired: 'ROLE_LEARNER' },
   { icon: TrendingUp,      label: 'Progress',       path: '/dashboard/progress',       end: false },
   { icon: Award,           label: 'Certificates',   path: '/dashboard/certificates',   end: false },
   { icon: Video,           label: 'Live Sessions',  path: '/dashboard/live-sessions',  end: false },
   { icon: Settings,        label: 'Settings',       path: '/dashboard/settings',       end: false },
-] as const;
+];
 
 function getInitials(name: string): string {
   return name
@@ -42,9 +52,15 @@ export default function DashboardLayout() {
   const initials     = user?.fullName ? getInitials(user.fullName) : '?';
   const profileLabel = activeProfile === 'INSTRUCTOR' ? 'Instructor' : 'Learner';
 
+  const userRoles = user?.roles ?? [];
+
   const isAdminOnly =
-    (user?.roles ?? []).includes('ROLE_ADMIN') &&
+    userRoles.includes('ROLE_ADMIN') &&
     !(user?.availableProfiles ?? []).includes('INSTRUCTOR');
+
+  const navItems = NAV_ITEMS.filter(
+    item => !item.roleRequired || userRoles.includes(item.roleRequired),
+  );
 
   const showInstructorCta = !isAdminOnly && user?.instructorApprovalStatus === null;
   const showPendingNote   = !isAdminOnly && user?.instructorApprovalStatus === 'PENDING';
@@ -145,7 +161,7 @@ export default function DashboardLayout() {
           aria-label="Main navigation"
         >
           <nav className="flex flex-col gap-0.5 p-4 pt-5 flex-1">
-            {NAV_ITEMS.map(({ icon: Icon, label, path, end }) => (
+            {navItems.map(({ icon: Icon, label, path, end }) => (
               <NavLink
                 key={path}
                 to={path}

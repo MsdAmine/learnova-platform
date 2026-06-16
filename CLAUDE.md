@@ -177,9 +177,9 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 **Error reconciliation:** 409 on add = already saved (treat as saved, no error). 404 on remove = course gone from wishlist (treat as unsaved, no error). Both are stale-state paths, not user errors.
 
 **Scope (current):**
-- Wishlist UI is implemented only on `/courses/:courseId` (`CourseDetailPage`).
+- Wishlist save-for-later action is implemented on `/courses/:courseId` (`CourseDetailPage`).
+- `/dashboard/saved-courses` (`SavedCoursesPage`) is implemented: learner dashboard page under `ProtectedRoute` + `DashboardLayout`; uses `GET /api/v1/wishlist?size=200` and `DELETE /api/v1/wishlist/course/{courseId}`; reads `page.content`; card titles and "View details" links go to `/courses/:courseId`; loading, empty, error, per-card remove-loading, remove-404 stale reconciliation, and inline per-card remove-error states. Does not show enrollment CTA, progress, or protected content.
 - Catalog cards (`CourseCatalogCard`) intentionally do not show wishlist controls yet.
-- No `/dashboard/saved-courses` page exists.
 - Wishlist does not enroll the learner, does not unlock course content, and does not replace the enrollment CTA.
 
 ## API Surface (current)

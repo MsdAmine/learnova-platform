@@ -37,6 +37,7 @@ public class Question {
     private QuestionType type;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @Builder.Default
     private List<AnswerOption> answerOptions = new ArrayList<>();
 
