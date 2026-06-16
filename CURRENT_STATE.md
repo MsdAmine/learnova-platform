@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player, instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Remaining gap is the learner quiz-taking flow.
+Frontend integration: learner course player, instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking backend is complete (attempt creation, answer submission, scoring, result retrieval). Remaining gap is the learner quiz-taking frontend.
 
 ## Backend Status
 
@@ -38,6 +38,14 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
   - `GET /api/v1/instructor/courses/{courseId}/quizzes` — lists all quizzes for an instructor-owned course; consumed by `InstructorQuizzesPage` on load
   - `GET /api/v1/instructor/courses/quizzes/{quizId}` — returns quiz detail with questions and answer options; consumed by `InstructorQuizzesPage` on expand
+- Learner quiz-taking: enrolled learners can list, preview, attempt, submit, and retrieve quiz results
+  - `GET /api/v1/learner/courses/{courseId}/quizzes` — lists PUBLISHED quizzes for an enrolled course; excludes DRAFT and ARCHIVED; no isCorrect in response
+  - `GET /api/v1/learner/quizzes/{quizId}` — returns learner-safe quiz detail (questions + options without isCorrect); enrollment-gated
+  - `POST /api/v1/learner/quizzes/{quizId}/attempts` — starts or resumes an IN_PROGRESS attempt; idempotent (returns existing attempt if one is in progress)
+  - `POST /api/v1/learner/quiz-attempts/{attemptId}/submit` — submits answers; validates all quiz questions answered, no duplicates, options belong to questions; computes score: `scorePercentage = floor((earnedPoints * 100) / totalPoints)`, `passed = scorePercentage >= quiz.passingScore`; 409 if already SUBMITTED
+  - `GET /api/v1/learner/quiz-attempts/{attemptId}` — returns submitted attempt result with per-question breakdown; ownership-gated (own attempt only)
+  - Access control: enrollment must be ACTIVE or COMPLETED; CANCELLED → 404; DRAFT/ARCHIVED quiz → 404; non-enrolled → 404 (content enumeration protection)
+  - New entities: `QuizAttempt`, `QuizAttemptAnswer`, `QuizAttemptStatus` (IN_PROGRESS, SUBMITTED); v1 supports one selected option per question
 - Wishlist: list, add course, remove course
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
@@ -87,7 +95,7 @@ Still mocked or placeholder:
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
 - No auto-remove from wishlist after enrollment; wishlist and enrollment are independent at both the backend and frontend layers
-- No learner quiz-taking UI, attempts, scoring, or results (instructor quiz authoring and management is implemented at `/instructor/courses/:courseId/quizzes`; no learner quiz attempt flow, no submission tracking, no per-learner score recording)
+- No learner quiz-taking UI (backend learner quiz-taking is now complete; no frontend React pages for quiz attempts yet)
 - No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
 - No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)
 - No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)

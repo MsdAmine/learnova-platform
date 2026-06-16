@@ -1,5 +1,5 @@
 import { type ComponentType, useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   BookOpen,
@@ -10,6 +10,7 @@ import {
   Settings,
   Bell,
   GraduationCap,
+  ArrowRightLeft,
   Menu,
   X,
 } from 'lucide-react';
@@ -45,7 +46,8 @@ function getInitials(name: string): string {
 }
 
 export default function DashboardLayout() {
-  const { user, activeProfile } = useAuth();
+  const { user, activeProfile, setActiveProfile } = useAuth();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const displayName  = user?.fullName ?? 'User';
@@ -58,13 +60,16 @@ export default function DashboardLayout() {
     userRoles.includes('ROLE_ADMIN') &&
     !(user?.availableProfiles ?? []).includes('INSTRUCTOR');
 
+  const isApprovedInstructor = (user?.availableProfiles ?? []).includes('INSTRUCTOR');
+
   const navItems = NAV_ITEMS.filter(
     item => !item.roleRequired || userRoles.includes(item.roleRequired),
   );
 
-  const showInstructorCta = !isAdminOnly && user?.instructorApprovalStatus === null;
-  const showPendingNote   = !isAdminOnly && user?.instructorApprovalStatus === 'PENDING';
+  const showInstructorCta = !isAdminOnly && !isApprovedInstructor && user?.instructorApprovalStatus === null;
+  const showPendingNote   = !isAdminOnly && !isApprovedInstructor && user?.instructorApprovalStatus === 'PENDING';
   const showSidebarCta    = showInstructorCta || showPendingNote;
+  const showProfileSwitchCard = isApprovedInstructor;
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -223,6 +228,47 @@ export default function DashboardLayout() {
                     </span>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Profile switch card — shown only for approved instructors */}
+          {showProfileSwitchCard && (
+            <div className="p-4 pt-2">
+              <div className="border border-border-default rounded-lg p-3.5">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <ArrowRightLeft size={14} className="text-salem flex-shrink-0" aria-hidden="true" />
+                  <span className="text-body-sm font-medium text-text-primary">Profile</span>
+                </div>
+                <p className="text-caption text-text-secondary mb-3 leading-relaxed">
+                  {activeProfile === 'INSTRUCTOR'
+                    ? 'You are browsing as an instructor.'
+                    : 'You are browsing as a learner.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeSidebar();
+                    if (activeProfile === 'INSTRUCTOR') {
+                      setActiveProfile('LEARNER');
+                    } else {
+                      setActiveProfile('INSTRUCTOR');
+                      navigate('/instructor/courses');
+                    }
+                  }}
+                  aria-label={
+                    activeProfile === 'INSTRUCTOR'
+                      ? 'Switch to learner profile'
+                      : 'Switch to instructor profile'
+                  }
+                  className={cn(
+                    'inline-flex items-center text-body-sm font-medium text-salem',
+                    'hover:text-salem-400 transition-colors duration-fast',
+                    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
+                  )}
+                >
+                  {activeProfile === 'INSTRUCTOR' ? 'Switch to learner' : 'Switch to instructor'}
+                </button>
               </div>
             </div>
           )}

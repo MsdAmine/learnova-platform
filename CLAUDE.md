@@ -209,7 +209,9 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/instructor/courses/sections/{sectionId}/lessons` | INSTRUCTOR (own course; ARCHIVED → 409) |
 | PATCH | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR (own course; ARCHIVED → 409) |
 | DELETE | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR (own course; ARCHIVED → 409) |
+| GET | `/api/v1/instructor/courses/{courseId}/quizzes` | INSTRUCTOR |
 | POST | `/api/v1/instructor/courses/{courseId}/quizzes` | INSTRUCTOR |
+| GET | `/api/v1/instructor/courses/quizzes/{quizId}` | INSTRUCTOR |
 | PUT | `/api/v1/instructor/courses/quizzes/{quizId}` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/publish` | INSTRUCTOR |
 | PATCH | `/api/v1/instructor/courses/quizzes/{quizId}/archive` | INSTRUCTOR |
@@ -227,9 +229,14 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | GET | `/api/v1/learner/courses/{courseId}/content` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled → 404) |
 | PATCH | `/api/v1/lessons/{lessonId}/progress` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled or CANCELLED → 404; also atomically updates enrollment.progressPercentage; sets status=COMPLETED+completedAt when all lessons done) |
 | GET | `/api/v1/lessons/course/{courseId}/progress` | Authenticated (enrolled learner only; ACTIVE or COMPLETED enrollment; not-enrolled or CANCELLED → 404) |
-| GET | `/api/v1/wishlist` | Authenticated |
-| POST | `/api/v1/wishlist/course/{courseId}` | Authenticated |
-| DELETE | `/api/v1/wishlist/course/{courseId}` | Authenticated |
+| GET | `/api/v1/wishlist` | LEARNER |
+| POST | `/api/v1/wishlist/course/{courseId}` | LEARNER |
+| DELETE | `/api/v1/wishlist/course/{courseId}` | LEARNER |
+| GET | `/api/v1/learner/courses/{courseId}/quizzes` | LEARNER (enrolled; ACTIVE or COMPLETED; PUBLISHED quizzes only; no isCorrect) |
+| GET | `/api/v1/learner/quizzes/{quizId}` | LEARNER (enrolled; PUBLISHED only; no isCorrect on options) |
+| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER (enrolled; PUBLISHED; reuses existing IN_PROGRESS attempt) |
+| POST | `/api/v1/learner/quiz-attempts/{attemptId}/submit` | LEARNER (own attempt; IN_PROGRESS only; 409 if already SUBMITTED) |
+| GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER (own attempt only) |
 
 Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
@@ -258,3 +265,5 @@ Rules:
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
 - `graphify-out/` is a generated local artifact and is git-ignored. Do not commit it.
+
+If the `graphify` CLI is not installed, skip graph refresh and report it explicitly. Do not block the task on graphify.
