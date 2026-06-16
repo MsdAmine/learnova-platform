@@ -56,3 +56,6 @@ verify-*.png
 # Local QA screenshots
 /*.png
 .playwright-mcp/
+
+settings.json
+settings.local.json
