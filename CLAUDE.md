@@ -77,7 +77,7 @@ Each feature is a sub-package following this layout:
 - Stateless JWT — `JwtAuthenticationFilter` validates the token before every request
 - `CustomUserDetails` wraps `User` and exposes roles as `GrantedAuthority`
 - Method-level authorization via `@PreAuthorize("hasRole('INSTRUCTOR')")` — `@EnableMethodSecurity` is active
-- CORS is configured to allow `http://localhost:5173`
+- CORS is configured to allow `http://localhost:5173` and `http://localhost:5174` (5174 added for local dev with alternate Vite port)
 
 **Role seeding:** `RoleSeeder` (a `CommandLineRunner`) inserts all `RoleName` enum values into the `roles` table on startup if they don't exist. Do not seed roles manually.
 

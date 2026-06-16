@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player, instructor content builder, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Remaining gap is the quiz-taking flow.
+Frontend integration: learner course player, instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Remaining gap is the learner quiz-taking flow.
 
 ## Backend Status
 
@@ -36,6 +36,8 @@ The backend is feature-complete for the current phase. These modules exist and a
   - Security: requires INSTRUCTOR role + approved profile + course ownership; mutations on ARCHIVED courses return 409
   - Wired to `InstructorCourseContentPage` via `src/api/instructorCourseContent.ts`; inline edit/delete with confirm and optimistic state are all implemented
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
+  - `GET /api/v1/instructor/courses/{courseId}/quizzes` — lists all quizzes for an instructor-owned course; consumed by `InstructorQuizzesPage` on load
+  - `GET /api/v1/instructor/courses/quizzes/{quizId}` — returns quiz detail with questions and answer options; consumed by `InstructorQuizzesPage` on expand
 - Wishlist: list, add course, remove course
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
@@ -62,9 +64,10 @@ What is in place:
 - Design token system in tokens.css aligned with DESIGN.md
 - `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error
 - `SavedCoursesPage` at `/dashboard/saved-courses` — learner dashboard page under the existing `ProtectedRoute` + `DashboardLayout`; uses `GET /api/v1/wishlist?size=200` and `DELETE /api/v1/wishlist/course/{courseId}`; reads the Spring `Page` `.content` field; renders saved course cards with category badge, level, title (links to `/courses/:courseId`), description, instructor name, and a Remove button; states: loading skeleton (3-card grid), empty state (→ `/courses` link), generic fetch error with retry, per-card remove-loading spinner, remove-404 stale-state reconciliation (treated as success), and inline per-card remove error; does not fetch enrollments; does not show enroll CTA, progress, duration, lesson count, price, rating, or certificate claims
-- Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`) — all wired to real backend; guarded by `InstructorRoute`
+- Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`), `InstructorQuizzesPage` (`/instructor/courses/:courseId/quizzes`) — all wired to real backend; guarded by `InstructorRoute` (checks `isAuthenticated` + `availableProfiles` includes `INSTRUCTOR`); uses `InstructorLayout`; `InstructorCourseContentPage` exposes a "Manage quizzes" link that navigates to the quiz management page for the same course
+  - `InstructorQuizzesPage` supports: list quizzes; create quiz (title, optional description, passing score %, optional section); edit quiz; expand quiz detail (lazy-loads questions + answer options via `GET /quizzes/{quizId}`); add/edit/delete questions (content, points, type: MULTIPLE\_CHOICE | TRUE\_FALSE); add/edit/delete answer options; mark/unmark options as correct; publish quiz with friendly inline validation messages (no questions, no options, no correct option); archive quiz (renders the quiz and its questions/options as read-only); loading skeleton; not-found and generic-error states with retry
 - Admin area: `AdminLayout`, `AdminInstructorApprovalsPage` (`/admin/instructor-approvals`) — wired to real backend; guarded by `AdminRoute`
-- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form)
+- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form), `src/api/instructorQuizzes.ts` (quiz/question/option CRUD, publish, archive, list, detail; exports `QuizResponse`, `QuizDetailResponse`, `QuestionResponse`, `AnswerOptionResponse`, `QuizStatus`, `QuestionType`, and all request payload types)
 - `SettingsPage` instructor application panel: bio (required, max 1000 chars), expertise (required, max 500 chars), experience (optional), motivation (optional); on success re-fetches `/api/v1/auth/me` and refreshes `AuthContext`; surfaces null/pending/approved/rejected states; rejected state lazily fetches `/api/v1/instructor-profile/me` for `rejectionReason` and displays it inline; hidden for admin-only users (users with `ROLE_ADMIN` but without `INSTRUCTOR` in `availableProfiles`)
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
@@ -84,7 +87,9 @@ Still mocked or placeholder:
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
 - No auto-remove from wishlist after enrollment; wishlist and enrollment are independent at both the backend and frontend layers
-- No quiz-taking learner UI (backend quiz authoring API exists; no learner quiz attempt flow)
+- No learner quiz-taking UI, attempts, scoring, or results (instructor quiz authoring and management is implemented at `/instructor/courses/:courseId/quizzes`; no learner quiz attempt flow, no submission tracking, no per-learner score recording)
+- No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
+- No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)
 - No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
 - No admin user management beyond instructor approvals
 - No media upload; `thumbnailUrl` accepts a plain URL string only
