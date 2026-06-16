@@ -51,6 +51,7 @@ public class Quiz {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id ASC")
     @Builder.Default
     private java.util.List<Question> questions = new java.util.ArrayList<>();
 }

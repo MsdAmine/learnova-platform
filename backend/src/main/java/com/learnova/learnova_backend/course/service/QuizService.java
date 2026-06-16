@@ -4,6 +4,7 @@ import com.learnova.learnova_backend.course.dto.AnswerOptionRequest;
 import com.learnova.learnova_backend.course.dto.AnswerOptionResponse;
 import com.learnova.learnova_backend.course.dto.QuestionRequest;
 import com.learnova.learnova_backend.course.dto.QuestionResponse;
+import com.learnova.learnova_backend.course.dto.QuizDetailResponse;
 import com.learnova.learnova_backend.course.dto.QuizRequest;
 import com.learnova.learnova_backend.course.dto.QuizResponse;
 import com.learnova.learnova_backend.course.dto.QuizUpdateRequest;
@@ -249,6 +250,44 @@ public class QuizService {
 
                 option.getQuestion().getAnswerOptions().remove(option);
                 answerOptionRepository.delete(option);
+        }
+
+        @Transactional(readOnly = true)
+        public List<QuizResponse> listQuizzesForCourse(CustomUserDetails currentUser, Long courseId) {
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Target course context not found"));
+
+                checkTeacherOwnership(course, currentUser);
+
+                return quizRepository.findByCourseIdOrderByIdAsc(courseId).stream()
+                                .map(this::toResponse)
+                                .toList();
+        }
+
+        @Transactional(readOnly = true)
+        public QuizDetailResponse getQuizDetail(CustomUserDetails currentUser, Long quizId) {
+                Quiz quiz = quizRepository.findById(quizId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Quiz not found"));
+
+                checkTeacherOwnership(quiz.getCourse(), currentUser);
+
+                List<QuestionResponse> questions = quiz.getQuestions().stream()
+                                .map(this::toQuestionResponse)
+                                .toList();
+
+                return new QuizDetailResponse(
+                                quiz.getId(),
+                                quiz.getTitle(),
+                                quiz.getDescription(),
+                                quiz.getPassingScore(),
+                                quiz.getStatus(),
+                                quiz.getCourse().getId(),
+                                quiz.getSection() != null ? quiz.getSection().getId() : null,
+                                quiz.getCreatedAt(),
+                                quiz.getUpdatedAt(),
+                                questions);
         }
 
         private void checkTeacherOwnership(Course course, CustomUserDetails currentUser) {
