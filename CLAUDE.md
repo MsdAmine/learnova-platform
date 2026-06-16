@@ -182,6 +182,21 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 - Catalog cards (`CourseCatalogCard`) intentionally do not show wishlist controls yet.
 - Wishlist does not enroll the learner, does not unlock course content, and does not replace the enrollment CTA.
 
+### Learner Quiz-Taking Integration
+
+**API client:** `src/api/learnerQuizzes.ts` — exports `listLearnerCourseQuizzes(courseId)`, `getLearnerQuizDetail(quizId)`, `startQuizAttempt(quizId)`, `submitQuizAttempt(attemptId, payload)`, `getQuizAttempt(attemptId)`. Types: `LearnerQuizSummaryResponse`, `LearnerQuizDetailResponse`, `LearnerQuestionResponse`, `LearnerAnswerOptionResponse` (no `isCorrect` field — secrecy enforced by backend), `QuizAttemptResponse`, `QuizAttemptAnswerResultResponse`, `QuizAttemptSubmitRequest`, `QuizAttemptStatus`, `QuestionType`.
+
+**CoursePlayerPage quiz tab:** `CoursePlayerPage` (`/dashboard/courses/:courseId`) has two tabs — **Lessons** and **Quizzes**. The Quizzes tab is managed by the `QuizzesTab` component (inline in `CoursePlayerPage.tsx`), which:
+- Lists PUBLISHED quizzes via `GET /api/v1/learner/courses/{courseId}/quizzes`; lazy-loads on first tab activation.
+- Starts or resumes an IN_PROGRESS attempt via `POST /api/v1/learner/quizzes/{quizId}/attempts` (idempotent — returns existing attempt if one is already in progress).
+- Renders questions with native `<input type="radio">` controls; one selection per question; Submit button is disabled until all questions have a selection.
+- Submits via `POST /api/v1/learner/quiz-attempts/{attemptId}/submit`; a 409 response triggers `GET /api/v1/learner/quiz-attempts/{attemptId}` to surface the already-stored result.
+- Renders a result panel: score percentage, passed/not-passed badge, earned vs total points, and per-question correct/incorrect feedback.
+
+**Correct answer secrecy:** `isCorrect` is never present on `LearnerAnswerOptionResponse`. Answer option DTOs sent to learners contain only `id` and `optionText`. Correctness feedback (`correct: boolean`) is available only on `QuizAttemptAnswerResultResponse` after submission.
+
+**Scoring rule:** `scorePercentage = floor((earnedPoints × 100) / totalPoints)`. Correct answer earns the full question point value; incorrect earns 0. `passed = scorePercentage >= quiz.passingScore`. v1 supports one selected option per question.
+
 ## API Surface (current)
 
 | Method | Path | Auth |
