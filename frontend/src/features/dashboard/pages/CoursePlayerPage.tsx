@@ -23,6 +23,7 @@ import {
   type LearnerQuizDetailResponse,
   type QuizAttemptResponse,
 } from '../../../api/learnerQuizzes';
+import { getMyCertificates, issueCertificate } from '../../../api/certificates';
 
 // ── HTTP status helper ──────────────────────────────────────────────────────
 // Reads the response status off an unknown Axios error without importing axios.
@@ -256,6 +257,108 @@ function CourseOutline({
         </div>
       ))}
     </div>
+  );
+}
+
+// ── Certificate panel ─────────────────────────────────────────────────────────
+// Shown only once the learner has finished every lesson. Checks for an
+// existing certificate first so a learner who already issued one sees
+// "View certificate" instead of a redundant issue action.
+
+type CertificateStatus = 'checking' | 'none' | 'issuing' | 'issued' | 'error';
+
+function CertificatePanel({
+  courseId,
+  courseTitle,
+}: {
+  courseId: number;
+  courseTitle: string;
+}) {
+  const [status, setStatus] = useState<CertificateStatus>('checking');
+  const [certificateId, setCertificateId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = { cancelled: false };
+    getMyCertificates()
+      .then(list => {
+        if (token.cancelled) return;
+        const existing = list.find(c => c.courseId === courseId);
+        if (existing) {
+          setCertificateId(existing.id);
+          setStatus('issued');
+        } else {
+          setStatus('none');
+        }
+      })
+      .catch(() => {
+        if (!token.cancelled) setStatus('none');
+      });
+    return () => {
+      token.cancelled = true;
+    };
+  }, [courseId]);
+
+  async function handleIssue() {
+    setStatus('issuing');
+    setErrorMessage(null);
+    try {
+      const certificate = await issueCertificate(courseId);
+      setCertificateId(certificate.id);
+      setStatus('issued');
+    } catch (err) {
+      setErrorMessage(
+        getStatus(err) === 409
+          ? 'This course is not fully completed yet, so a certificate cannot be issued.'
+          : 'We could not issue your certificate. Please try again.',
+      );
+      setStatus('error');
+    }
+  }
+
+  if (status === 'checking') return null;
+
+  return (
+    <section
+      aria-label="Certificate"
+      className="bg-surface border border-border-default rounded-lg p-4 mt-4"
+    >
+      <h2 className="text-title-sm font-semibold text-text-primary mb-1">
+        Course completed
+      </h2>
+      <p className="text-body-sm text-text-secondary mb-3">
+        {status === 'issued'
+          ? `You've earned a certificate for ${courseTitle}.`
+          : `You've finished every lesson in ${courseTitle}. You can issue a certificate of completion.`}
+      </p>
+
+      {status === 'error' && errorMessage && (
+        <p className="text-body-sm text-error mb-3" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      {status === 'issued' && certificateId != null ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          asChild
+          aria-label={`View certificate for ${courseTitle}`}
+        >
+          <Link to={`/dashboard/certificates/${certificateId}`}>View certificate</Link>
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          loading={status === 'issuing'}
+          disabled={status === 'issuing'}
+          aria-label={`Issue certificate for ${courseTitle}`}
+          onClick={handleIssue}
+        >
+          Issue certificate
+        </Button>
+      )}
+    </section>
   );
 }
 
@@ -896,6 +999,9 @@ export default function CoursePlayerPage() {
               <ProgressBar value={progressPercentage} label="Course progress" />
             </div>
           </>
+        )}
+        {hasLessons && progressPercentage === 100 && (
+          <CertificatePanel courseId={courseId} courseTitle={content.courseTitle} />
         )}
       </div>
 

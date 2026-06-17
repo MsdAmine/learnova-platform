@@ -113,7 +113,7 @@ export default function CertificatesPage() {
       <div className="mb-8">
         <h1 className="text-title font-semibold text-text-primary">Certificates</h1>
         <p className="text-body text-text-secondary mt-1 max-w-[72ch]">
-          Certificates are issued automatically when you complete a course.
+          Finish every lesson in a course to issue a certificate from the course player.
         </p>
       </div>
 
