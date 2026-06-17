@@ -62,12 +62,16 @@ export default function AdminInstructorApprovalsPage() {
   const [actionErrorById, setActionErrorById] = useState<Record<number, string>>({});
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectReasonById, setRejectReasonById] = useState<Record<number, string>>({});
+  const [confirmingApproveId, setConfirmingApproveId] = useState<number | null>(null);
 
   // Single textarea ref is valid because only one row is in reject state at a time.
   const rejectTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Per-row refs for returning focus to the Reject trigger button on cancel.
   const rejectTriggerRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+
+  // Per-row refs for returning focus to the Approve trigger button on cancel.
+  const approveTriggerRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
   // All setState calls are inside .then()/.catch() — asynchronous, not synchronous
   // in the effect body. Satisfies react-hooks/set-state-in-effect.
@@ -120,17 +124,33 @@ export default function AdminInstructorApprovalsPage() {
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
+  function openApproveConfirm(profileId: number) {
+    clearActionError(profileId);
+    setConfirmingApproveId(profileId);
+  }
+
+  function cancelApprove(profileId: number) {
+    setConfirmingApproveId(null);
+    clearActionError(profileId);
+    // Return focus to the Approve trigger button after the confirmation collapses.
+    setTimeout(() => {
+      approveTriggerRefs.current.get(profileId)?.focus();
+    }, 0);
+  }
+
   function handleApprove(item: InstructorProfileReviewItem) {
     clearActionError(item.id);
     setActionPendingId(item.id);
     approveInstructorProfile(item.id)
       .then(() => {
         removeRequest(item.id);
+        setConfirmingApproveId(null);
       })
       .catch((err: unknown) => {
         const status = getHttpStatus(err);
         if (status === 404) {
           removeRequest(item.id);
+          setConfirmingApproveId(null);
         } else {
           setActionErrorById(prev => ({
             ...prev,
@@ -244,6 +264,7 @@ export default function AdminInstructorApprovalsPage() {
                 const applicantName = item.fullName || item.email;
                 const isActionPending = actionPendingId === item.id;
                 const isRejecting = rejectingId === item.id;
+                const isConfirmingApprove = confirmingApproveId === item.id;
                 const rawReason = rejectReasonById[item.id] ?? '';
                 const reasonValid = rawReason.trim().length > 0 && rawReason.length <= 1000;
                 const actionError = actionErrorById[item.id];
@@ -329,6 +350,13 @@ export default function AdminInstructorApprovalsPage() {
                       </div>
                     )}
 
+                    {/* Inline approve confirmation */}
+                    {isConfirmingApprove && (
+                      <p className="text-body-sm text-text-primary mt-3">
+                        Approve this instructor request?
+                      </p>
+                    )}
+
                     {/* Row-level action error */}
                     {actionError && (
                       <p role="alert" className="text-caption text-error mt-2">
@@ -358,14 +386,39 @@ export default function AdminInstructorApprovalsPage() {
                           Cancel
                         </Button>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-end gap-2 mt-3 flex-wrap">
+                    ) : isConfirmingApprove ? (
+                      <div className="flex items-center gap-2 mt-3 flex-wrap">
                         <Button
                           variant="primary"
                           size="sm"
                           loading={isActionPending}
                           disabled={isActionPending}
                           onClick={() => handleApprove(item)}
+                          aria-label={`Approve instructor request from ${applicantName}`}
+                        >
+                          Approve instructor
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => cancelApprove(item.id)}
+                          disabled={isActionPending}
+                          aria-label={`Cancel approval of instructor request from ${applicantName}`}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-end gap-2 mt-3 flex-wrap">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          ref={(el) => {
+                            if (el) approveTriggerRefs.current.set(item.id, el);
+                            else approveTriggerRefs.current.delete(item.id);
+                          }}
+                          onClick={() => openApproveConfirm(item.id)}
+                          disabled={isActionPending}
                           aria-label={`Approve instructor request from ${applicantName}`}
                         >
                           Approve
