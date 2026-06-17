@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { Bone } from '../../../components/common/skeletons/Bone';
@@ -37,6 +37,7 @@ function CertificatesSkeleton() {
 // ── Certificate card ──────────────────────────────────────────────────────────
 
 function CertificateCard({ certificate }: { certificate: CertificateResponse }) {
+  const navigate = useNavigate();
   return (
     <article
       className="bg-surface border border-border-default rounded-lg p-lg"
@@ -62,6 +63,7 @@ function CertificateCard({ certificate }: { certificate: CertificateResponse }) 
         variant="secondary"
         size="sm"
         aria-label={`View certificate for ${certificate.courseTitle}`}
+        onClick={() => navigate(`/dashboard/certificates/${certificate.id}`)}
       >
         View certificate
       </Button>
