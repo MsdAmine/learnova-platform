@@ -66,6 +66,8 @@ endpoints and routes are taken directly from the controllers under
 
 **Result:** `InstructorProfile.approvalStatus` transitions `PENDING → APPROVED` or `PENDING → REJECTED`; only `APPROVED` unlocks instructor-only routes and the `INSTRUCTOR` role for `@PreAuthorize` checks.
 
+**Evidence:** `assets/screenshots/06-admin-instructor-approvals.png` (demo/report screenshot, not an automated test)
+
 ---
 
 ## 3. Instructor Creates Course, Content, and Quiz
@@ -103,6 +105,8 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 
 **Result:** A `PUBLISHED` course with section/lesson structure and at least one `PUBLISHED` quiz, visible to learners in the catalog and course player.
 
+**Evidence:** `assets/screenshots/05-instructor-content-builder.png` (demo/report screenshot, not an automated test)
+
 ---
 
 ## 4. Learner Enrolls in a Course
@@ -126,6 +130,8 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Frontend routes:** `/courses` (public catalog), `/courses/:courseId` (public detail, no guard) → `/dashboard/courses/:courseId` (course player, under `ProtectedRoute`)
 
 **Result:** An `ACTIVE` enrollment record; the learner can now reach `/dashboard/courses/:courseId` and its lessons/quizzes.
+
+**Evidence:** `assets/screenshots/01-public-catalog.png` (demo/report screenshot, not an automated test)
 
 ---
 
@@ -154,6 +160,8 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Frontend routes:** `/dashboard/courses/:courseId` (Lessons tab)
 
 **Result:** Per-lesson completion state persisted; enrollment-level progress percentage kept in sync; note that the lesson content area itself is a placeholder panel — there is no rich text/video rendering of lesson bodies.
+
+**Evidence:** `assets/screenshots/03-course-player-lessons.png`; also `assets/screenshots/mobile-course-player.png` (mobile viewport) (demo/report screenshots, not automated tests)
 
 ---
 
@@ -190,6 +198,8 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab)
 
 **Result:** A `SUBMITTED` `QuizAttempt` with computed score and per-question correctness. There is no attempt-history list and no dedicated retake flow — starting the quiz again simply creates a new attempt.
+
+**Evidence:** `assets/screenshots/04-course-player-quiz-result.png` (demo/report screenshot, not an automated test)
 
 ---
 
@@ -249,3 +259,5 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Frontend routes:** `/dashboard/settings`
 
 **Result:** Updated `LearnerProfile` and/or `InstructorProfile` fields, scoped strictly to the authenticated user's own record.
+
+**Evidence:** `assets/screenshots/mobile-settings.png` (mobile viewport) (demo/report screenshot, not an automated test)
