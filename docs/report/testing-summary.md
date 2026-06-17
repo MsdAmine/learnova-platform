@@ -84,7 +84,9 @@ report. Verification is currently manual and tooling-based:
 - **Browser QA** — manual exercise of each workflow in a running dev server
   (`npm run dev`), covering the golden path and the documented edge/error
   states (e.g., 404 on not-enrolled course content, 409 on duplicate
-  wishlist add, stale-state reconciliation on remove).
+  wishlist add, stale-state reconciliation on remove). Screenshots captured
+  during this manual QA are stored in `docs/report/assets/screenshots/` as
+  report/demo evidence, not as automated test artifacts.
 
 ## Known Untested / Placeholder Areas
 

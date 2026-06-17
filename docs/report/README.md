@@ -95,6 +95,25 @@ See `limitations.md` for the complete, categorized list.
 All diagrams render directly from standard Mermaid syntax — no external
 tooling or generated image assets are required.
 
+## Screenshot Evidence
+
+Manual browser-QA screenshots captured from a running dev instance, stored
+under `docs/report/assets/screenshots/`. These are demo/report evidence of
+what the running application looks like — they are not automated tests and
+do not by themselves prove backend correctness (that evidence is the test
+suite, see `testing-summary.md`).
+
+| Screenshot | Demonstrates |
+| --- | --- |
+| `assets/screenshots/01-public-catalog.png` | Public catalog and course discovery |
+| `assets/screenshots/02-learner-dashboard.png` | Learner dashboard overview |
+| `assets/screenshots/03-course-player-lessons.png` | Course player — lesson study and progress |
+| `assets/screenshots/04-course-player-quiz-result.png` | Learner quiz-taking and scored result |
+| `assets/screenshots/05-instructor-content-builder.png` | Instructor content authoring (sections/lessons/quiz builder) |
+| `assets/screenshots/06-admin-instructor-approvals.png` | Admin instructor-approval review |
+| `assets/screenshots/mobile-course-player.png` | Course player on a mobile viewport (responsive layout) |
+| `assets/screenshots/mobile-settings.png` | Settings/profile-editing page on a mobile viewport (responsive layout) |
+
 ## Testing Evidence Summary
 
 The backend test suite (`backend/src/test/java`) contains 27 test classes
@@ -115,9 +134,9 @@ either. Full categorized list in `limitations.md`.
 
 ## Suggested Next Report Assets to Add Later
 
-- Annotated screenshots or a short screen recording of the three flagship
-  flows (instructor approval, enrollment + lesson progress, quiz attempt),
-  once the task scope allows visual assets.
+- A short screen recording of the three flagship flows (instructor approval,
+  enrollment + lesson progress, quiz attempt) to complement the static
+  screenshots in `assets/screenshots/`.
 - A short slide deck summarizing `project-overview.md` for the oral defense.
 - An actual `./mvnw test` run transcript captured at submission time, to
   pin down the exact test count referenced loosely in `testing-summary.md`.
