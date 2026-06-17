@@ -242,98 +242,108 @@ function InstructorApplicationPanel() {
       <SettingsSection
         id="instructor-application-heading"
         heading="Instructor application"
-        description="Share your expertise with learners on Learnova."
       >
-        <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
-          <p className="text-body-sm text-text-secondary">
-            Tell us about your background. Fields marked with * are required.
-          </p>
-
-          <FormField
-            label="Bio *"
-            htmlFor="instructor-bio"
-            error={fieldErrors.bio}
-            hint="Max 1000 characters."
-          >
-            <textarea
-              id="instructor-bio"
-              value={bio}
-              onChange={e => setBio(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Share your teaching background and what you specialize in."
-              aria-invalid={fieldErrors.bio ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.bio)}
-            />
-          </FormField>
-
-          <FormField
-            label="Expertise *"
-            htmlFor="instructor-expertise"
-            error={fieldErrors.expertise}
-            hint="Max 500 characters."
-          >
-            <Input
-              id="instructor-expertise"
-              value={expertise}
-              onChange={e => setExpertise(e.target.value)}
-              maxLength={500}
-              hasError={!!fieldErrors.expertise}
-              placeholder="e.g. JavaScript, React, Web Development"
-            />
-          </FormField>
-
-          <FormField
-            label="Experience"
-            htmlFor="instructor-experience"
-            error={fieldErrors.experience}
-            hint="Optional. Max 1000 characters."
-          >
-            <textarea
-              id="instructor-experience"
-              value={experience}
-              onChange={e => setExperience(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Describe your teaching or professional experience."
-              aria-invalid={fieldErrors.experience ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.experience)}
-            />
-          </FormField>
-
-          <FormField
-            label="Motivation"
-            htmlFor="instructor-motivation"
-            error={fieldErrors.motivation}
-            hint="Optional. Max 1000 characters."
-          >
-            <textarea
-              id="instructor-motivation"
-              value={motivation}
-              onChange={e => setMotivation(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Why do you want to teach on Learnova?"
-              aria-invalid={fieldErrors.motivation ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.motivation)}
-            />
-          </FormField>
-
+        <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)] mt-4">
           <div>
-            <Button
-              type="submit"
-              variant="secondary"
-              size="sm"
-              loading={isApplying}
-              aria-label="Submit instructor application"
-            >
-              Submit instructor application
-            </Button>
-            {applyError && (
-              <p className="text-caption text-error mt-1" role="alert">{applyError}</p>
-            )}
+            <p className="text-body-sm text-text-secondary">
+              Share your expertise with learners on Learnova.
+            </p>
+            <p className="text-body-sm text-text-secondary mt-2">
+              Tell us about your background. Fields marked with * are required.
+            </p>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit} noValidate className="grid gap-4 md:grid-cols-2">
+            <FormField
+              label="Bio *"
+              htmlFor="instructor-bio"
+              error={fieldErrors.bio}
+              hint="Max 1000 characters."
+              className="md:col-span-2"
+            >
+              <textarea
+                id="instructor-bio"
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Share your teaching background and what you specialize in."
+                aria-invalid={fieldErrors.bio ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.bio)}
+              />
+            </FormField>
+
+            <FormField
+              label="Expertise *"
+              htmlFor="instructor-expertise"
+              error={fieldErrors.expertise}
+              hint="Max 500 characters."
+            >
+              <Input
+                id="instructor-expertise"
+                value={expertise}
+                onChange={e => setExpertise(e.target.value)}
+                maxLength={500}
+                hasError={!!fieldErrors.expertise}
+                placeholder="e.g. JavaScript, React, Web Development"
+              />
+            </FormField>
+
+            <FormField
+              label="Experience"
+              htmlFor="instructor-experience"
+              error={fieldErrors.experience}
+              hint="Optional. Max 1000 characters."
+            >
+              <textarea
+                id="instructor-experience"
+                value={experience}
+                onChange={e => setExperience(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Describe your teaching or professional experience."
+                aria-invalid={fieldErrors.experience ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.experience)}
+              />
+            </FormField>
+
+            <FormField
+              label="Motivation"
+              htmlFor="instructor-motivation"
+              error={fieldErrors.motivation}
+              hint="Optional. Max 1000 characters."
+              className="md:col-span-2"
+            >
+              <textarea
+                id="instructor-motivation"
+                value={motivation}
+                onChange={e => setMotivation(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Why do you want to teach on Learnova?"
+                aria-invalid={fieldErrors.motivation ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.motivation)}
+              />
+            </FormField>
+
+            <div className="md:col-span-2">
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  loading={isApplying}
+                  aria-label="Submit instructor application"
+                >
+                  Submit instructor application
+                </Button>
+              </div>
+              {applyError && (
+                <p className="text-caption text-error mt-1 text-right" role="alert">{applyError}</p>
+              )}
+            </div>
+          </form>
+        </div>
       </SettingsSection>
     );
   }
@@ -625,15 +635,19 @@ export default function SettingsPage() {
             </dl>
           </SettingsSection>
 
-          {(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
-            <InstructorApplicationPanel />
-          )}
-
           <AdminAccessPanel />
 
           <AccountActionsPanel />
 
         </div>
+
+        {/* Instructor application — spans full grid width so the form is not confined to the narrow sidebar */}
+        {(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
+          <div className="lg:col-span-2">
+            <InstructorApplicationPanel />
+          </div>
+        )}
+
       </div>
     </div>
   );
