@@ -56,6 +56,13 @@ no external database is required.
 - `InstructorProfileUpdateIntegrationTest`
 - `LearnerProfileUpdateIntegrationTest`
 
+**Certificates** (1 class)
+- `CertificateIntegrationTest` — covers issuance on a completed enrollment,
+  idempotent re-issuance, rejection on an incomplete enrollment (`409`),
+  rejection with no enrollment (`404`), per-learner list scoping, ownership
+  checks on certificate retrieval, certificate code uniqueness, and
+  unauthenticated access (`401`)
+
 **Application context** (1 class)
 - `LearnovaBackendApplicationTests`
 
@@ -88,15 +95,36 @@ report. Verification is currently manual and tooling-based:
   during this manual QA are stored in `docs/report/assets/screenshots/` as
   report/demo evidence, not as automated test artifacts.
 
+**Certificate issuance UI — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - Incomplete course (progress < 100%): certificate panel is absent from
+    the course player.
+  - Complete course (progress = 100%): certificate panel appears; "Issue
+    certificate" successfully creates a certificate and switches the panel
+    to "View certificate".
+  - Existing certificate: opening the course player for an already-issued
+    course shows the "View certificate" state directly (no re-issue button).
+  - Backend mismatch / `409` (e.g., issuing for a not-yet-completed
+    enrollment): an accessible (`role="alert"`) error message is shown in
+    the panel.
+- No automated frontend component test was added for this UI in this
+  change — the claims above are manual QA only, not covered by an
+  automated test suite (the frontend has none, per the section above).
+  The backend behavior it depends on is covered by the automated
+  `CertificateIntegrationTest` listed above.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
 and should not be presented as verified in the report:
 
-- **Certificates backend** — does not exist in this codebase (owned by
-  another developer); no tests apply.
 - **Live sessions backend** — does not exist; `LiveSessionsPage` is a
   frontend placeholder only.
+- **Certificate issuance UI** — covered by manual browser QA only (see
+  above); no automated frontend component test exists for the certificate
+  panel or certificate pages.
 - **Quiz attempt history** — no list/review-of-past-attempts feature exists,
   so there is nothing to test here beyond the single-attempt flow already
   covered by `LearnerQuizIntegrationTest`.

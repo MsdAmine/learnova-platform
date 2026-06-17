@@ -12,15 +12,14 @@ screen). **Planned / not fully implemented** use cases are marked explicitly
 and must not be presented as complete in the report or demo. Live-session,
 rich lesson media, quiz analytics, retake-history, and broader admin
 user-management capability are not claimed as complete — none of these exist
-in this codebase per `limitations.md`. **Certificates are a partial
-exception**: as of this validation pass, a real certificate backend module
-(`certificate/controller`, `entity`, `service`, `repository`) and two
-frontend pages (`CertificatesPage`, `CertificateViewPage`) exist and are
-wired to live endpoints — see UC-28 — but `limitations.md` and
-`CURRENT_STATE.md` still describe certificates as out of scope/non-existent
-and have not been updated to reflect this. Treat UC-28 as the
-current source of truth for certificates pending a refresh of those two
-files.
+in this codebase per `limitations.md`. **Certificates** are now implemented
+end-to-end: a real certificate backend module (`certificate/controller`,
+`entity`, `service`, `repository`) and two frontend pages (`CertificatesPage`,
+`CertificateViewPage`) exist and are wired to live endpoints, and — as of the
+certificate-issuance UI work that followed this validation pass —
+`CoursePlayerPage` now exposes a certificate panel that calls the issuance
+endpoint once a course reaches 100% progress. See UC-28 for the exact flow
+and remaining caveats (issuance is manual, not automatic).
 
 ---
 
@@ -130,7 +129,7 @@ graph TB
     UC10 -.includes.-> UC11
     UC13 -.precedes.-> UC14
     UC15 -.precedes.-> UC17
-    UC9 -.precedes, not wired.-> UC28
+    UC9 -.precedes.-> UC28
 ```
 
 `★ Insight ─────────────────────────────────────`
@@ -609,20 +608,22 @@ replaces "Learner" capabilities — it's additive.
 ---
 
 ### UC-28: View / Issue Course Completion Certificate
-- **Status:** Partially implemented — backend and the list/view screens are wired end-to-end; **the issuance trigger itself is not wired to any user-facing action**
+- **Status:** Implemented
 - **Primary actor:** Learner (own certificates only)
 - **Goal:** Obtain and view a certificate of completion for a finished course.
 - **Preconditions:** `Enrollment.status = COMPLETED` for the target course (enforced server-side; `CONFLICT`/409 if not yet completed).
-- **Main success flow (as actually wired today):**
-  1. Learner opens `/dashboard/certificates`.
-  2. Frontend calls `GET /api/v1/learner/certificates` and lists any certificates that already exist for the caller.
-  3. Learner clicks "View certificate" on a card, navigating to `/dashboard/certificates/:certificateId` (rendered outside `DashboardLayout` as a full-screen printable document via `CertificateViewPage`).
-  4. Frontend calls `GET /api/v1/learner/certificates/{certificateId}`; the page renders a certificate document (learner name, course title, instructor name, issued date, a generated `certificateCode`) with a "Print / Save as PDF" button (`window.print()` — no server-side PDF generation).
-- **Gap — issuance is not actually reachable from the UI:** `POST /api/v1/learner/certificates/course/{courseId}/issue` exists on the backend (idempotent: `201` on first issue, `200` returning the existing certificate on repeat calls) and is exported from the frontend API client (`src/api/certificates.ts` → `issueCertificate()`), but **no component anywhere in `frontend/src` calls it** — not from `CoursePlayerPage` on lesson/course completion, not from `CertificatesPage`, not from anywhere else. This means a learner who completes a course will see an **empty certificates list** in the current build; nothing in the live application can place a `Certificate` row in the database except a direct API call (e.g., via Swagger or a manual request). `CertificatesPage`'s copy — "Certificates are issued automatically when you complete a course" — is **not accurate against the current code** and should not be treated as a working claim until an issuance trigger is wired up.
-- **Alternative/error flows:** Certificate not found or not owned by the caller → `404`, "Certificate not found" panel with a back-link. Issuing for a non-`COMPLETED` enrollment → `409` (not reachable from any UI button today).
-- **Postconditions:** A `Certificate` row (course, enrollment, learner profile, UUID `certificateCode`, `issuedAt`) once issued by any means; read-only afterward — no revoke/regenerate flow exists.
-- **Frontend routes:** `/dashboard/certificates` (list, under `ProtectedRoute` + `DashboardLayout`), `/dashboard/certificates/:certificateId` (full-screen view, under `ProtectedRoute` only, intentionally outside `DashboardLayout`)
-- **Backend endpoints:** `POST /api/v1/learner/certificates/course/{courseId}/issue`, `GET /api/v1/learner/certificates`, `GET /api/v1/learner/certificates/{certificateId}` (all `ROLE_LEARNER`, self-scoped)
+- **Main success flow:**
+  1. Learner finishes every lesson in a course; `progressPercentage` reaches 100% (see UC-9).
+  2. On `/dashboard/courses/:courseId`, `CoursePlayerPage` renders a `CertificatePanel` once `progressPercentage === 100`. The panel first calls `GET /api/v1/learner/certificates` to check whether a certificate already exists for this course.
+  3. If none exists, the panel shows an "Issue certificate" button. Clicking it calls `POST /api/v1/learner/certificates/course/{courseId}/issue` (idempotent: `201` on first issue, `200` returning the existing certificate on repeat calls).
+  4. On success, the panel switches to a "View certificate" link to `/dashboard/certificates/:certificateId`.
+  5. Learner can also reach the same certificate later via `/dashboard/certificates` (list, `GET /api/v1/learner/certificates`), clicking "View certificate" on a card.
+  6. `/dashboard/certificates/:certificateId` (rendered outside `DashboardLayout` as a full-screen printable document via `CertificateViewPage`) calls `GET /api/v1/learner/certificates/{certificateId}` and renders the certificate (learner name, course title, instructor name, issued date, a generated `certificateCode`) with a "Print / Save as PDF" button (`window.print()` — no server-side PDF generation).
+- **Important caveat — issuance is manual, not automatic:** the certificate panel only appears after a course reaches 100% progress, and the learner must explicitly click "Issue certificate" — there is no background job or completion hook that issues certificates without this click. `CertificatesPage`'s copy was corrected to say "Finish every lesson in a course to issue a certificate from the course player," replacing an earlier claim that certificates were issued automatically.
+- **Alternative/error flows:** Certificate not found or not owned by the caller → `404`, "Certificate not found" panel with a back-link. Issuing for a non-`COMPLETED` enrollment → `409`, surfaced in the certificate panel via an accessible `role="alert"` message ("This course is not fully completed yet, so a certificate cannot be issued."). Any other issuance failure shows a generic accessible error message and lets the learner retry.
+- **Postconditions:** A `Certificate` row (course, enrollment, learner profile, UUID `certificateCode`, `issuedAt`) once issued; read-only afterward — no revoke/regenerate flow exists.
+- **Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, under `ProtectedRoute`), `/dashboard/certificates` (list, under `ProtectedRoute` + `DashboardLayout`), `/dashboard/certificates/:certificateId` (full-screen view, under `ProtectedRoute` only, intentionally outside `DashboardLayout`)
+- **Backend endpoints:** `POST /api/v1/learner/certificates/course/{courseId}/issue`, `GET /api/v1/learner/certificates`, `GET /api/v1/learner/certificates/{certificateId}` (all `ROLE_LEARNER`, self-scoped). Not modified as part of this UI work.
 - **Entities/tables:** `Certificate`, `Enrollment`, `Course`, `LearnerProfile`
 
 ---
@@ -659,7 +660,7 @@ replaces "Learner" capabilities — it's additive.
 - UC-21 Archive Course
 - UC-26 Edit Instructor Profile
 - UC-27 Switch Back to Learner Area
-- UC-28 View/Issue Certificate — **caveat: demo this only via a pre-seeded/manually-issued certificate row, since the in-app issuance trigger is not wired (see UC-28 gap note)**
+- UC-28 View/Issue Certificate — demo by completing a course's lessons in the player, then issuing the certificate from the certificate panel that appears at 100% progress
 
 ### Planned / future extension
 - A true `activeProfile` switcher UI calling `POST /api/v1/profile/switch` (the endpoint exists; nothing in the frontend calls it — see UC-17/UC-27)
@@ -667,7 +668,7 @@ replaces "Learner" capabilities — it's additive.
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
-- A certificate issuance trigger wired to a real UI action (e.g., on course completion in `CoursePlayerPage`) — the backend issue endpoint and list/view screens exist (UC-28), but nothing in the frontend calls the issue endpoint today
+- Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28), plus PDF download/sharing beyond the existing browser print
 - Live sessions (no backend exists; frontend page is a placeholder)
 - Catalog-card wishlist controls (currently the wishlist action exists only on course detail and saved-courses pages)
 - Broader admin user management beyond instructor approvals and category creation

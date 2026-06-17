@@ -261,3 +261,46 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Result:** Updated `LearnerProfile` and/or `InstructorProfile` fields, scoped strictly to the authenticated user's own record.
 
 **Evidence:** `assets/screenshots/mobile-settings.png` (mobile viewport) (demo/report screenshot, not an automated test)
+
+---
+
+## 9. Learner Issues and Views a Course Completion Certificate
+
+**Actor:** Enrolled Learner (own certificates only)
+
+**Goal:** Obtain a certificate of completion once a course is finished, and view it later.
+
+**Main steps:**
+1. Learner completes every lesson in an enrolled course (see workflow 5);
+   `Enrollment.progressPercentage` reaches 100%.
+2. The course player (`CoursePlayerPage`) renders a certificate panel once
+   `progressPercentage === 100`. The panel checks `GET
+   /api/v1/learner/certificates` to see whether a certificate for this course
+   already exists.
+3. If none exists, the learner clicks "Issue certificate", which calls
+   `POST /api/v1/learner/certificates/course/{courseId}/issue`. The backend
+   validates `Enrollment.status = COMPLETED` and creates a `Certificate` row
+   (idempotent: a repeat call returns the existing certificate with `200`
+   instead of creating a duplicate).
+4. On success, the panel shows a "View certificate" link to
+   `/dashboard/certificates/:certificateId`.
+5. The same certificate is also reachable later from `/dashboard/certificates`
+   (the certificates list page), which calls `GET
+   /api/v1/learner/certificates` and links each card to its certificate view.
+6. `CertificateViewPage` calls `GET
+   /api/v1/learner/certificates/{certificateId}` and renders a full-screen,
+   printable certificate document with a "Print / Save as PDF" button
+   (browser `window.print()` — no server-side PDF generation).
+
+**Error handling:** Issuing for a non-`COMPLETED` enrollment returns `409`,
+surfaced in the panel as an accessible (`role="alert"`) message. A certificate
+not found, or not owned by the caller, returns `404` on the view page.
+
+**Backend endpoints:**
+- `POST /api/v1/learner/certificates/course/{courseId}/issue` (LEARNER; self-scoped; idempotent)
+- `GET /api/v1/learner/certificates` (LEARNER; self-scoped)
+- `GET /api/v1/learner/certificates/{certificateId}` (LEARNER; self-scoped)
+
+**Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
+
+**Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. The certificate backend itself was not changed by this workflow's UI integration.

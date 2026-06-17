@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the three flows most relevant to the PFA demo. Internal helper method
+for the four flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -232,3 +232,75 @@ sequenceDiagram
   back to fetching the stored result rather than treating it as an error.
   There is no attempt-history list — only the most recent attempt's result
   is retrievable by id.
+
+---
+
+## 4. Learner Certificate Issuance
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Player as CoursePlayerPage
+    participant Panel as CertificatePanel
+    participant CertCtrl as CertificateController
+    participant CertSvc as CertificateService
+    participant DB as Certificate/Enrollment persistence
+
+    Learner->>Player: Complete all lessons (progressPercentage = 100)
+    Player->>Panel: Render certificate panel
+    Panel->>CertCtrl: GET /api/v1/learner/certificates
+    CertCtrl->>DB: list certificates for caller
+    DB-->>CertCtrl: certificates
+    CertCtrl-->>Panel: 200 list
+
+    alt Certificate already exists for this course
+        Panel-->>Learner: show "View certificate" link
+    else No certificate yet
+        Panel-->>Learner: show "Issue certificate" button
+        Learner->>Panel: Click "Issue certificate"
+        Panel->>CertCtrl: POST /api/v1/learner/certificates/course/{courseId}/issue
+        CertCtrl->>CertSvc: issueCertificateForCourse
+
+        alt Enrollment not COMPLETED
+            CertSvc-->>Panel: 409 Conflict
+            Panel-->>Learner: accessible role="alert" error message
+        else Certificate already issued (idempotent repeat)
+            CertSvc->>DB: find existing certificate
+            DB-->>CertSvc: existing certificate
+            CertSvc-->>Panel: 200 CertificateResponse (existing)
+            Panel-->>Learner: show "View certificate" link
+        else First issuance, enrollment COMPLETED
+            CertSvc->>DB: create Certificate (certificateCode, issuedAt)
+            DB-->>CertSvc: saved certificate
+            CertSvc-->>Panel: 201 CertificateResponse (new)
+            Panel-->>Learner: show "View certificate" link
+        end
+    end
+
+    Learner->>Panel: Click "View certificate"
+    Panel->>CertCtrl: GET /api/v1/learner/certificates/{certificateId}
+    CertCtrl->>DB: find by id, verify ownership
+    alt Not found or not owned by caller
+        CertCtrl-->>Panel: 404 Not Found
+    else Found and owned
+        DB-->>CertCtrl: certificate
+        CertCtrl-->>Panel: 200 CertificateResponse
+        Panel-->>Learner: render full-screen certificate document (Print / Save as PDF)
+    end
+```
+
+**Notes:**
+- **Manual trigger, not automatic** — reaching 100% progress only makes the
+  certificate panel appear; the `POST .../issue` call happens only on an
+  explicit learner click. Nothing issues a certificate as a side effect of
+  the lesson-progress endpoint itself.
+- **Idempotent issuance** — a repeat `POST .../issue` call for a course that
+  already has a certificate returns `200` with the existing certificate
+  rather than creating a duplicate or erroring.
+- **Completion gate** — `CertificateService` rejects issuance with `409` if
+  the caller's enrollment for the course is not `COMPLETED`; the frontend
+  surfaces this as an accessible (`role="alert"`) message in the panel
+  rather than a silent failure.
+- **No PDF generation** — the certificate view renders an HTML document and
+  relies on the browser's native print dialog (`window.print()`) for a PDF;
+  there is no server-side rendering, email delivery, or sharing endpoint.

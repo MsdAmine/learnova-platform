@@ -42,8 +42,9 @@ model where one account can act as both learner and instructor (see
 - **class-diagram.md** answers "how is the data modeled" — entities,
   relationships, and enums, taken directly from the JPA entity classes.
 - **sequence-diagrams.md** answers "how do the pieces actually talk to each
-  other" for the three flows most relevant to a live demo: instructor
-  approval, enrollment + lesson progress, and quiz scoring.
+  other" for the four flows most relevant to a live demo: instructor
+  approval, enrollment + lesson progress, quiz scoring, and certificate
+  issuance.
 - **core-workflows.md** is the demo script — each workflow lists the exact
   endpoints and frontend routes involved, suitable for narrating a live
   walkthrough.
@@ -61,12 +62,11 @@ model where one account can act as both learner and instructor (see
 learner registration/login, instructor application and admin approval,
 instructor course/content/quiz authoring, learner enrollment, lesson study
 and progress tracking, learner quiz-taking with automatic scoring, wishlist
-/ saved courses, and profile self-editing for both learner and instructor
-profiles.
+/ saved courses, profile self-editing for both learner and instructor
+profiles, and learner certificate issuance + viewing (manually triggered
+from the course player once a course reaches 100% progress).
 
 **Not implemented / explicitly out of scope for this codebase:**
-- **Certificates** — owned by another developer; no certificate backend
-  exists here. Do not present certificate issuance as implemented.
 - **Live sessions** — no backend exists; the frontend page is a
   placeholder/mock only.
 - **Lesson video/rich content** — the course player's lesson content area is
@@ -91,6 +91,7 @@ See `limitations.md` for the complete, categorized list.
 | Instructor application and approval | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner enrollment and lesson progress | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner quiz attempt and scoring | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
+| Learner certificate issuance | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 
 All diagrams render directly from standard Mermaid syntax — no external
 tooling or generated image assets are required.
@@ -119,7 +120,7 @@ suite, see `testing-summary.md`).
 The backend test suite (`backend/src/test/java`) contains 27 test classes
 covering auth/security, course lifecycle, enrollment, lesson progress,
 instructor content authoring, instructor quiz read/authoring, learner quiz
-attempts, and profile editing. Exact current pass/fail counts are not stated
+attempts, certificates, and profile editing. Exact current pass/fail counts are not stated
 here — run `./mvnw test` from `backend/` for the live number. The frontend
 has no automated test suite yet; verification is lint (`npm run lint`),
 build (`npm run build`), and manual browser QA. Full detail in
@@ -127,10 +128,13 @@ build (`npm run build`), and manual browser QA. Full detail in
 
 ## Known Limitations Note
 
-Certificates and live sessions have no backend in this codebase and must not
-be presented as implemented. Lesson video/rich content, file upload, quiz
-attempt history, and section/lesson/question/option ordering do not exist
-either. Full categorized list in `limitations.md`.
+Live sessions have no backend in this codebase and must not be presented as
+implemented. Certificates are implemented but issuance is manual (triggered
+from the course player), not automatic, and offers only browser print —
+no PDF generation, sharing, QR code, or revocation. Lesson video/rich
+content, file upload, quiz attempt history, and section/lesson/question/
+option ordering do not exist either. Full categorized list in
+`limitations.md`.
 
 ## Suggested Next Report Assets to Add Later
 

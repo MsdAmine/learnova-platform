@@ -29,7 +29,9 @@ profile, with instructor access gated behind an admin approval step.
 
 **Learner** — browses the public course catalog, enrolls in published
 courses, studies lessons at their own pace, takes quizzes and receives a
-score, saves courses to a wishlist for later, and edits their own profile.
+score, saves courses to a wishlist for later, edits their own profile, and
+can issue and view a certificate of completion once a course reaches 100%
+progress.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -49,6 +51,7 @@ implemented; there is no broader user-management console.
 | `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
+| `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
 
 ## Implemented Workflows
@@ -65,16 +68,19 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner quiz-taking with automatic scoring
 - Learner wishlist (save-for-later) and saved-courses dashboard
 - Profile self-editing for both learner and instructor profiles
+- Learner certificate issuance and viewing, triggered manually from the
+  course player once a course reaches 100% progress (see
+  `core-workflows.md` §9)
 
 ## Current Limitations
 
 These areas are intentionally **not** presented as complete:
 
-- **Certificates** — owned by another developer; no certificate backend or
-  frontend exists in this codebase. `CertificatesPage` is a frontend
-  placeholder only.
 - **Live sessions** — no backend exists. `LiveSessionsPage` is a frontend
   placeholder/mock.
+- **Certificate issuance is manual, not automatic**, and offers only a
+  browser print/save-as-PDF option — no server-generated PDF, sharing, QR
+  code, or revocation flow exists. See `limitations.md` for the full list.
 - **Lesson content body** — the course player's lesson content area is a
   placeholder panel; there is no rich text, video, or media rendering.
 - **Quiz attempt history** — learners can start and submit one attempt at a

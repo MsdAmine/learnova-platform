@@ -8,12 +8,30 @@ controllers.
 
 ## Features owned elsewhere / explicitly out of scope here
 
-- **Certificates** — owned by another developer. No certificate backend
-  exists in this codebase. `CertificatesPage` (`/dashboard/certificates`) is
-  a frontend placeholder page with no backend contract behind it. Do not
-  present certificate issuance as implemented.
 - **Live sessions** — no backend exists. `LiveSessionsPage`
   (`/dashboard/live-sessions`) is frontend placeholder/mock only.
+
+## Certificates
+
+Certificates are implemented end-to-end (backend module + `CertificatesPage`,
+`CertificateViewPage`, and a certificate panel in `CoursePlayerPage` — see
+`core-workflows.md` §9 and `use-cases.md` UC-28), with these real, code-backed
+limitations:
+
+- **Issuance is manual, not automatic.** A learner must explicitly click
+  "Issue certificate" from the course player's certificate panel; there is no
+  background job or completion hook that creates a `Certificate` row without
+  that click.
+- **Certificate availability depends on course completion.** The panel only
+  appears once `Enrollment.progressPercentage` reaches 100%; issuing for a
+  non-`COMPLETED` enrollment is rejected by the backend with `409`.
+- **No PDF generation, download, sharing, QR code, or revocation.** The
+  certificate view page offers only a browser "Print / Save as PDF" button
+  (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
+  share action, no QR/verification code, and no revoke or regenerate flow.
+- **No certificate-issuance trigger from anywhere except the course player.**
+  `CertificatesPage` (the certificates list) only reads existing certificates
+  — it does not itself offer an issuance action.
 
 ## Course content and player
 
@@ -35,8 +53,9 @@ controllers.
   attempt; there is no retake CTA after viewing a result.
 - No timers/duration fields on quizzes.
 - No quiz analytics or learner-results dashboard for instructors.
-- No certificate integration tied to quiz passing (depends on the
-  certificates module, which does not exist here).
+- No certificate integration tied to quiz passing — certificate issuance
+  (see the **Certificates** section above) is keyed only to lesson/course
+  progress reaching 100%, not to quiz results.
 - v1 supports exactly one selected option per question — no multi-select /
   partial-credit question type.
 - No unpublish or restore-from-archived flow for quizzes; publish is
