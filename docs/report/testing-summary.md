@@ -46,7 +46,13 @@ no external database is required.
 - `InstructorQuizReadIntegrationTest`
 
 **Learner quiz attempts** (1 class)
-- `LearnerQuizIntegrationTest`
+- `LearnerQuizIntegrationTest` — covers listing/detail/start/submit/result
+  for the original quiz-taking flow, plus attempt-history coverage added for
+  retake and history support: empty history, retake history ordering
+  (most-recent-first), no `isCorrect` leak on attempt-history responses,
+  learner-scoped isolation (a learner cannot see another learner's
+  attempts), non-enrolled learner → `404`, draft quiz → `404`, and
+  unauthenticated access → `401`
 
 **Profile editing / dual-profile** (6 classes)
 - `LearnerProfileRegistrationIntegrationTest`
@@ -79,6 +85,15 @@ that number changes as the suite evolves. To get the current count, run from
 Maven's Surefire summary at the end of the run reports the exact number of
 tests run, failures, and skips.
 
+**Quiz retake and attempt-history — backend test run:**
+- Full backend suite (`./mvnw test`): **193 tests, 0 failures, 0 errors.**
+- `LearnerQuizIntegrationTest` additions specific to this feature: empty
+  attempt history, retake creates a new attempt and history is ordered
+  most-recent-first, attempt-history responses never leak `isCorrect`,
+  attempt history is scoped to the requesting learner only, non-enrolled
+  learner requesting attempt history → `404`, requesting attempt history for
+  a `DRAFT` quiz → `404`, unauthenticated request → `401`.
+
 ## Frontend Verification Style
 
 The frontend (`frontend/`) does not have an automated test suite as of this
@@ -94,6 +109,20 @@ report. Verification is currently manual and tooling-based:
   wishlist add, stale-state reconciliation on remove). Screenshots captured
   during this manual QA are stored in `docs/report/assets/screenshots/` as
   report/demo evidence, not as automated test artifacts.
+
+**Quiz retake and attempt-history UI — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - No horizontal overflow on the Quizzes tab at the mobile (390×844) or
+    tablet (768×1024) viewport.
+  - Keyboard navigation reaches the "Retake quiz", "Resume", and "View
+    result" actions with a visible focus state.
+  - Correct answers remain hidden before submission, including inside the
+    attempt-history panel's `IN_PROGRESS` rows.
+- No automated frontend component test was added for this UI in this
+  change — these claims are manual QA only. The backend behavior it depends
+  on is covered by the `LearnerQuizIntegrationTest` additions above.
 
 **Certificate issuance UI — manual verification:**
 - `npm run lint` passed.
@@ -125,9 +154,12 @@ and should not be presented as verified in the report:
 - **Certificate issuance UI** — covered by manual browser QA only (see
   above); no automated frontend component test exists for the certificate
   panel or certificate pages.
-- **Quiz attempt history** — no list/review-of-past-attempts feature exists,
-  so there is nothing to test here beyond the single-attempt flow already
-  covered by `LearnerQuizIntegrationTest`.
+- **Quiz attempt-history pagination** — the attempt-history endpoint has no
+  pagination; this is untested because there is nothing to paginate, not
+  because coverage is missing.
+- **Quiz retake/attempt-history frontend UI** — covered by manual browser QA
+  only (see above); no automated frontend component test exists for the
+  attempt-history panel or retake action.
 - **Rich lesson body/media** — the course player's lesson content area is a
   placeholder panel; there is no video/rich-text rendering to test.
 - **Ordering/reordering** — sections, lessons, questions, and answer options

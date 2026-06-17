@@ -10,9 +10,11 @@ Every use case below is checked against `backend/src/main/java` controllers,
 **Implemented** use cases are wired end-to-end (backend endpoint + frontend
 screen). **Planned / not fully implemented** use cases are marked explicitly
 and must not be presented as complete in the report or demo. Live-session,
-rich lesson media, quiz analytics, retake-history, and broader admin
-user-management capability are not claimed as complete — none of these exist
-in this codebase per `limitations.md`. **Certificates** are now implemented
+rich lesson media, quiz analytics, and broader admin user-management
+capability are not claimed as complete — none of these exist in this
+codebase per `limitations.md`. Quiz attempt history and retake **are**
+implemented (see UC-10, UC-11, UC-29, UC-30) — correct answers remain
+hidden before submission in every case. **Certificates** are now implemented
 end-to-end: a real certificate backend module (`certificate/controller`,
 `entity`, `service`, `repository`) and two frontend pages (`CertificatesPage`,
 `CertificateViewPage`) exist and are wired to live endpoints, and — as of the
@@ -87,6 +89,8 @@ graph TB
     UC26((Edit Instructor Profile))
     UC27((Switch Back to Learner Area))
     UC28((View/Issue Certificate))
+    UC29((View Quiz Attempt History))
+    UC30((Retake Quiz))
 
     Guest --> UC1
     Guest --> UC2
@@ -105,6 +109,8 @@ graph TB
     Learner --> UC12
     Learner --> UC13
     Learner --> UC28
+    Learner --> UC29
+    Learner --> UC30
 
     Applicant --> UC14
 
@@ -127,6 +133,9 @@ graph TB
 
     UC5 -.includes.-> UC8
     UC10 -.includes.-> UC11
+    UC10 -.includes.-> UC29
+    UC11 -.precedes.-> UC30
+    UC30 -.includes.-> UC10
     UC13 -.precedes.-> UC14
     UC15 -.precedes.-> UC17
     UC9 -.precedes.-> UC28
@@ -326,7 +335,7 @@ replaces "Learner" capabilities — it's additive.
 - **Alternative/error flows:**
   - Re-submitting an already-`SUBMITTED` attempt → `409`; frontend then fetches the stored result via `GET /api/v1/learner/quiz-attempts/{attemptId}` instead.
   - Submission missing answers, duplicate answers, or options not belonging to their question → backend validation rejects the request.
-- **Postconditions:** A `QuizAttempt` row with `status = SUBMITTED`, computed `scorePercentage` and `passed`; one `QuizAttemptAnswer` per question.
+- **Postconditions:** A `QuizAttempt` row with `status = SUBMITTED`, computed `scorePercentage` and `passed`; one `QuizAttemptAnswer` per question. Prior `SUBMITTED` attempts for the same quiz are never overwritten — see UC-29/UC-30.
 - **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab)
 - **Backend endpoints:** `GET /api/v1/learner/courses/{courseId}/quizzes`, `GET /api/v1/learner/quizzes/{quizId}`, `POST /api/v1/learner/quizzes/{quizId}/attempts`, `POST /api/v1/learner/quiz-attempts/{attemptId}/submit`
 - **Entities/tables:** `Quiz`, `Question`, `AnswerOption`, `QuizAttempt`, `QuizAttemptAnswer`
@@ -342,7 +351,7 @@ replaces "Learner" capabilities — it's additive.
   1. After submission (or after a `409`-triggered re-fetch), frontend calls `GET /api/v1/learner/quiz-attempts/{attemptId}`.
   2. Result panel renders score percentage, passed/not-passed badge, earned vs. total points, and per-question correct/incorrect feedback.
 - **Alternative/error flows:** Attempt belongs to another learner → ownership check rejects the request.
-- **Postconditions:** None (read-only). **Planned / not fully implemented:** there is no list of past attempts and no dedicated retake flow — restarting the same quiz simply creates a new `QuizAttempt`.
+- **Postconditions:** None (read-only). A learner can also reach this same result later from the attempt-history list (UC-29) via "View result" instead of only right after submitting.
 - **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab, result panel)
 - **Backend endpoints:** `GET /api/v1/learner/quiz-attempts/{attemptId}`
 - **Entities/tables:** `QuizAttempt`, `QuizAttemptAnswer`
@@ -628,6 +637,42 @@ replaces "Learner" capabilities — it's additive.
 
 ---
 
+### UC-29: View Quiz Attempt History
+- **Status:** Implemented
+- **Primary actor:** Enrolled Learner (own attempts only)
+- **Goal:** Review all of a learner's own past attempts at a quiz, not just the most recent one.
+- **Preconditions:** Enrollment `ACTIVE`/`COMPLETED`; quiz `status = PUBLISHED` (DRAFT/ARCHIVED → `404`, same enumeration-protection pattern as UC-10).
+- **Main success flow:**
+  1. Learner expands the collapsible "Attempt history" panel on a quiz card in the Quizzes tab.
+  2. Frontend calls `GET /api/v1/learner/quizzes/{quizId}/attempts`, fetched per quiz once the quiz list loads.
+  3. Backend returns the caller's own attempts for that quiz, most-recent-first (`ORDER BY startedAt DESC`). `SUBMITTED` attempts include per-question result details; `IN_PROGRESS` attempts never expose answer correctness (no `QuizAttemptAnswer` rows exist for them yet).
+  4. Each row shows attempt number, date, status, and — for `SUBMITTED` attempts — score and passed/not-passed; rows offer "Resume" (`IN_PROGRESS`) or "View result" (`SUBMITTED`).
+- **Alternative/error flows:** No attempts yet → empty-state message ("No attempts yet."), not an error. Per-quiz history fetch failure → that quiz card's history silently stays empty (non-blocking, `Promise.allSettled`); does not block the rest of the Quizzes tab.
+- **Postconditions:** None (read-only). No pagination — the endpoint returns the full attempt list for the quiz.
+- **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab, attempt-history panel)
+- **Backend endpoints:** `GET /api/v1/learner/quizzes/{quizId}/attempts`
+- **Entities/tables:** `QuizAttempt`, `QuizAttemptAnswer`
+
+---
+
+### UC-30: Retake Quiz
+- **Status:** Implemented
+- **Primary actor:** Enrolled Learner
+- **Goal:** Attempt a quiz again after a prior submission, without losing the earlier result.
+- **Preconditions:** Learner has at least one `SUBMITTED` attempt for the quiz; enrollment and quiz-status preconditions are the same as UC-10.
+- **Main success flow:**
+  1. After viewing a submitted result, learner clicks "Retake quiz" on the quiz card.
+  2. Frontend calls `POST /api/v1/learner/quizzes/{quizId}/attempts`, the same idempotent start/resume endpoint used by UC-10.
+  3. Because the prior attempt is already `SUBMITTED` (not `IN_PROGRESS`), the backend creates a brand-new `QuizAttempt` row rather than resuming — the earlier `SUBMITTED` attempt and its `QuizAttemptAnswer` rows are untouched.
+  4. Learner answers and submits the new attempt exactly as in UC-10; the result panel and the attempt-history list (UC-29) both reflect the new attempt while the old one remains viewable.
+- **Alternative/error flows:** None beyond the standard UC-10 submission error flows.
+- **Postconditions:** A second (or further) `QuizAttempt` row for the same (learner, quiz) pair; all earlier `SUBMITTED` attempts remain stored and retrievable via UC-29/UC-11.
+- **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab)
+- **Backend endpoints:** `POST /api/v1/learner/quizzes/{quizId}/attempts`, `POST /api/v1/learner/quiz-attempts/{attemptId}/submit`
+- **Entities/tables:** `QuizAttempt`, `QuizAttemptAnswer`
+
+---
+
 ## 4. Priority List
 
 ### Essential for demo
@@ -661,10 +706,12 @@ replaces "Learner" capabilities — it's additive.
 - UC-26 Edit Instructor Profile
 - UC-27 Switch Back to Learner Area
 - UC-28 View/Issue Certificate — demo by completing a course's lessons in the player, then issuing the certificate from the certificate panel that appears at 100% progress
+- UC-29 View Quiz Attempt History
+- UC-30 Retake Quiz
 
 ### Planned / future extension
 - A true `activeProfile` switcher UI calling `POST /api/v1/profile/switch` (the endpoint exists; nothing in the frontend calls it — see UC-17/UC-27)
-- Quiz attempt history and a dedicated retake flow (currently each restart creates a new `QuizAttempt` with no list view)
+- Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
@@ -686,8 +733,8 @@ truth: the backend `@RestController`/`@Service`/`@Entity` classes under
 endpoint, or entity name in this document was invented — every claim traces
 to a controller method, a router entry, a frontend component, or an explicit
 statement in the existing report documents. Where a capability is incomplete
-or absent (e.g., the profile switcher UI, quiz attempt history, live
-sessions), it is marked **Planned / not fully implemented** rather than
+or absent (e.g., the profile switcher UI, live sessions), it is marked
+**Planned / not fully implemented** rather than
 presented as done. Where a capability is real on one side but not wired on
 the other (e.g., the certificate issuance endpoint with no calling UI, the
 `POST /api/v1/profile/switch` endpoint with no calling UI), it is marked

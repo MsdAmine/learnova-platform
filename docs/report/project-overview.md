@@ -29,9 +29,9 @@ profile, with instructor access gated behind an admin approval step.
 
 **Learner** — browses the public course catalog, enrolls in published
 courses, studies lessons at their own pace, takes quizzes and receives a
-score, saves courses to a wishlist for later, edits their own profile, and
-can issue and view a certificate of completion once a course reaches 100%
-progress.
+score, retakes quizzes and reviews full attempt history, saves courses to a
+wishlist for later, edits their own profile, and can issue and view a
+certificate of completion once a course reaches 100% progress.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -65,7 +65,8 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Instructor course creation, content authoring, and quiz authoring
 - Learner enrollment in published courses
 - Learner lesson study and progress tracking
-- Learner quiz-taking with automatic scoring
+- Learner quiz-taking with automatic scoring, retake, and full attempt
+  history
 - Learner wishlist (save-for-later) and saved-courses dashboard
 - Profile self-editing for both learner and instructor profiles
 - Learner certificate issuance and viewing, triggered manually from the
@@ -83,8 +84,6 @@ These areas are intentionally **not** presented as complete:
   code, or revocation flow exists. See `limitations.md` for the full list.
 - **Lesson content body** — the course player's lesson content area is a
   placeholder panel; there is no rich text, video, or media rendering.
-- **Quiz attempt history** — learners can start and submit one attempt at a
-  time; there is no list of past attempts or a retake flow.
 - **Content ordering** — sections, lessons, questions, and answer options are
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL

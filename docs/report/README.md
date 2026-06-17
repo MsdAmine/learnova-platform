@@ -16,7 +16,7 @@ model where one account can act as both learner and instructor (see
 
 1. **[project-overview.md](./project-overview.md)** — start here for the big picture
 2. **[class-diagram.md](./class-diagram.md)** — the persistent domain model
-3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the three flagship flows
+3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the five flagship flows
 4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all eight implemented workflows
 5. **[api-summary.md](./api-summary.md)** — the full REST surface, grouped by module
 6. **[testing-summary.md](./testing-summary.md)** — backend test coverage and frontend verification style
@@ -28,7 +28,7 @@ model where one account can act as both learner and instructor (see
 |---|---|
 | `project-overview.md` | Objective, target users, modules, implemented workflows, limitations summary, architecture summary |
 | `class-diagram.md` | Mermaid UML class diagrams of the JPA domain model (main model + quiz/assessment model) and enum reference |
-| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, and quiz attempt/scoring |
+| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, quiz attempt/scoring, quiz retake/attempt history, and certificate issuance |
 | `core-workflows.md` | Actor/goal/steps/endpoints/routes/result for all eight implemented end-to-end workflows |
 | `api-summary.md` | REST endpoint reference grouped by module (method, path, access level, purpose), sourced from controllers |
 | `testing-summary.md` | Backend test suite breakdown by category, frontend verification style, untested/placeholder areas |
@@ -42,9 +42,9 @@ model where one account can act as both learner and instructor (see
 - **class-diagram.md** answers "how is the data modeled" — entities,
   relationships, and enums, taken directly from the JPA entity classes.
 - **sequence-diagrams.md** answers "how do the pieces actually talk to each
-  other" for the four flows most relevant to a live demo: instructor
-  approval, enrollment + lesson progress, quiz scoring, and certificate
-  issuance.
+  other" for the five flows most relevant to a live demo: instructor
+  approval, enrollment + lesson progress, quiz scoring, quiz retake/attempt
+  history, and certificate issuance.
 - **core-workflows.md** is the demo script — each workflow lists the exact
   endpoints and frontend routes involved, suitable for narrating a live
   walkthrough.
@@ -61,10 +61,11 @@ model where one account can act as both learner and instructor (see
 **Implemented end-to-end** (backend endpoint + wired frontend screen):
 learner registration/login, instructor application and admin approval,
 instructor course/content/quiz authoring, learner enrollment, lesson study
-and progress tracking, learner quiz-taking with automatic scoring, wishlist
-/ saved courses, profile self-editing for both learner and instructor
-profiles, and learner certificate issuance + viewing (manually triggered
-from the course player once a course reaches 100% progress).
+and progress tracking, learner quiz-taking with automatic scoring plus
+retake and full attempt history, wishlist / saved courses, profile
+self-editing for both learner and instructor profiles, and learner
+certificate issuance + viewing (manually triggered from the course player
+once a course reaches 100% progress).
 
 **Not implemented / explicitly out of scope for this codebase:**
 - **Live sessions** — no backend exists; the frontend page is a
@@ -73,9 +74,8 @@ from the course player once a course reaches 100% progress).
   a placeholder panel; no video or rich-body rendering exists.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; there is no upload pipeline.
-- **Quiz attempt history** — learners can attempt and resume one
-  in-progress attempt at a time, but there is no list/review of past
-  attempts and no dedicated retake flow.
+- **Quiz attempt-history pagination** — the attempt-history endpoint returns
+  the full, unbounded list of a learner's attempts for a quiz.
 - **Ordering / reordering** — sections, lessons, questions, and answer
   options are always appended; no drag-reorder or explicit order field
   exists.
@@ -91,6 +91,7 @@ See `limitations.md` for the complete, categorized list.
 | Instructor application and approval | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner enrollment and lesson progress | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner quiz attempt and scoring | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
+| Learner quiz retake and attempt history | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner certificate issuance | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 
 All diagrams render directly from standard Mermaid syntax — no external
@@ -131,10 +132,10 @@ build (`npm run build`), and manual browser QA. Full detail in
 Live sessions have no backend in this codebase and must not be presented as
 implemented. Certificates are implemented but issuance is manual (triggered
 from the course player), not automatic, and offers only browser print —
-no PDF generation, sharing, QR code, or revocation. Lesson video/rich
-content, file upload, quiz attempt history, and section/lesson/question/
-option ordering do not exist either. Full categorized list in
-`limitations.md`.
+no PDF generation, sharing, QR code, or revocation. Quiz attempt history and
+retake are implemented but the attempt-history endpoint has no pagination.
+Lesson video/rich content, file upload, and section/lesson/question/option
+ordering do not exist either. Full categorized list in `limitations.md`.
 
 ## Suggested Next Report Assets to Add Later
 

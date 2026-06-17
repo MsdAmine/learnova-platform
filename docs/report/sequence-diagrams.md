@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the four flows most relevant to the PFA demo. Internal helper method
+for the five flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -230,12 +230,91 @@ sequenceDiagram
   enumeration-prevention pattern used elsewhere in the API. Resubmitting an
   already-`SUBMITTED` attempt returns `409`, after which the frontend falls
   back to fetching the stored result rather than treating it as an error.
-  There is no attempt-history list — only the most recent attempt's result
-  is retrievable by id.
+  The full attempt history (not just the most recent attempt) is retrievable
+  via `GET /api/v1/learner/quizzes/{quizId}/attempts` — see §4 below.
 
 ---
 
-## 4. Learner Certificate Issuance
+## 4. Learner Quiz Retake and Attempt History
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Quizzes as CoursePlayerPage Quizzes tab
+    participant QuizCtrl as LearnerQuizController
+    participant QuizSvc as LearnerQuizService
+    participant ADB as QuizAttempt/QuizAttemptAnswer persistence
+
+    Learner->>Quizzes: Open Quizzes tab
+    Quizzes->>QuizCtrl: GET /api/v1/learner/courses/{courseId}/quizzes
+    QuizCtrl-->>Quizzes: 200 quiz summaries
+
+    par Per-quiz attempt history (non-blocking)
+        Quizzes->>QuizCtrl: GET /api/v1/learner/quizzes/{quizId}/attempts
+        QuizCtrl->>QuizSvc: listAttempts
+        QuizSvc->>ADB: find attempts by (learnerProfileId, quizId), order by startedAt desc
+
+        alt Not enrolled, or quiz DRAFT/ARCHIVED
+            QuizSvc-->>Quizzes: 404 Not Found
+            Note over Quizzes: that quiz card's history panel stays empty (Promise.allSettled)
+        else Enrolled and quiz PUBLISHED
+            ADB-->>QuizSvc: attempts (most-recent-first)
+            QuizSvc->>ADB: load QuizAttemptAnswer rows for SUBMITTED attempts only
+            ADB-->>QuizSvc: per-question results (IN_PROGRESS attempts have none)
+            QuizSvc-->>Quizzes: 200 QuizAttemptResponse[] (no isCorrect leak on IN_PROGRESS)
+            Quizzes-->>Learner: render attempt-history panel (number, date, status, score)
+        end
+    end
+
+    Learner->>Quizzes: Start or resume attempt
+    Quizzes->>QuizCtrl: POST /api/v1/learner/quizzes/{quizId}/attempts
+    QuizCtrl->>QuizSvc: startOrResumeAttempt
+    QuizSvc->>ADB: find existing IN_PROGRESS attempt
+
+    alt IN_PROGRESS attempt exists
+        ADB-->>QuizSvc: existing attempt (resumed)
+    else No IN_PROGRESS attempt (first attempt or all prior attempts SUBMITTED)
+        QuizSvc->>ADB: create new QuizAttempt (status = IN_PROGRESS)
+        ADB-->>QuizSvc: new attempt
+        Note over ADB: any earlier SUBMITTED attempts are untouched
+    end
+    QuizSvc-->>Quizzes: 200 QuizAttemptResponse (IN_PROGRESS)
+
+    Learner->>Quizzes: Answer questions, submit
+    Quizzes->>QuizCtrl: POST /api/v1/learner/quiz-attempts/{attemptId}/submit
+    QuizCtrl->>QuizSvc: submitAttempt
+    QuizSvc->>QuizSvc: compute scorePercentage, passed
+    QuizSvc->>ADB: save QuizAttempt (SUBMITTED) and QuizAttemptAnswer rows
+    ADB-->>QuizSvc: persisted
+    QuizSvc-->>Quizzes: 200 QuizAttemptResponse (score, passed, per-question results)
+    Quizzes-->>Learner: show result panel; refresh attempt-history panel for this quiz
+
+    Learner->>Quizzes: Click "Retake quiz"
+    Note over Quizzes,QuizCtrl: Same POST .../attempts call as above — since the\nprior attempt is SUBMITTED (not IN_PROGRESS), a new\nattempt is created, and the old SUBMITTED attempt\nremains stored and visible in the attempt-history panel.
+```
+
+**Notes:**
+- **Retake is the same start/resume endpoint.** There is no separate
+  "retake" backend endpoint — `POST /api/v1/learner/quizzes/{quizId}/attempts`
+  is idempotent for an `IN_PROGRESS` attempt and creates a fresh attempt once
+  the prior one is `SUBMITTED`. This is the same call UC-10 uses for the
+  first attempt.
+- **History never overwrites.** Every `SUBMITTED` `QuizAttempt` row persists
+  indefinitely; retaking only ever adds a new row, so `GET
+  /api/v1/learner/quizzes/{quizId}/attempts` always reflects the full
+  history, most-recent-first.
+- **Correctness secrecy holds in history too.** `IN_PROGRESS` attempts have
+  no `QuizAttemptAnswer` rows yet (they are created only on submit), so the
+  attempt-history response for an in-progress attempt is structurally
+  incapable of leaking `isCorrect` — confirmed by
+  `listAttemptsDoesNotExposeIsCorrect` in `LearnerQuizIntegrationTest`.
+- **Non-blocking per-quiz fetch.** The frontend fetches attempt history per
+  quiz with `Promise.allSettled`; a `404`/error for one quiz's history does
+  not block the quiz list or other quizzes' history panels from rendering.
+
+---
+
+## 5. Learner Certificate Issuance
 
 ```mermaid
 sequenceDiagram

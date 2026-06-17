@@ -174,30 +174,46 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Main steps:**
 1. Learner opens the Quizzes tab in the course player; published quizzes for
    the course are lazy-loaded on first activation.
-2. Learner starts an attempt (or resumes an existing `IN_PROGRESS` one —
+2. Once the quiz list loads, the frontend fetches each quiz's attempt
+   history (`GET /api/v1/learner/quizzes/{quizId}/attempts`, most-recent-first)
+   in parallel; a failed per-quiz fetch degrades silently — that card's
+   history panel just stays empty rather than blocking the tab.
+3. Each quiz card shows its current status (not started / in progress /
+   passed / not passed) and latest score when available.
+4. Learner starts an attempt (or resumes an existing `IN_PROGRESS` one —
    this call is idempotent).
-3. Learner selects one answer option per question via radio controls.
+5. Learner selects one answer option per question via radio controls.
    **Correct answers are never exposed before submission** — the learner-safe
-   question/option DTOs carry no `isCorrect` field.
-4. Submit is enabled only once every question has a selection.
-5. Backend validates the submission (all questions answered, no duplicate
+   question/option DTOs carry no `isCorrect` field, and `IN_PROGRESS`
+   attempts in the history list never expose answer correctness either.
+6. Submit is enabled only once every question has a selection.
+7. Backend validates the submission (all questions answered, no duplicate
    answers, options belong to their questions), computes
    `scorePercentage = floor(earnedPoints * 100 / totalPoints)`, and sets
    `passed = scorePercentage >= quiz.passingScore`.
-6. A second submit attempt on an already-`SUBMITTED` attempt returns `409`;
+8. A second submit attempt on an already-`SUBMITTED` attempt returns `409`;
    the frontend then fetches the stored result instead.
-7. Result panel shows score percentage, passed/not-passed badge, and
+9. Result panel shows score percentage, passed/not-passed badge, and
    per-question correct/incorrect feedback.
+10. Learner can click "Retake quiz" after viewing a submitted result — this
+    calls the same start/resume endpoint, which creates a brand-new
+    `QuizAttempt` since the previous one is no longer `IN_PROGRESS`. The
+    earlier `SUBMITTED` attempt is never overwritten.
+11. The collapsible attempt-history panel lists every past attempt (number,
+    date, status, score where applicable) with "Resume" for `IN_PROGRESS`
+    attempts and "View result" for `SUBMITTED` ones — old submitted attempts
+    remain viewable after a retake.
 
 **Backend endpoints:**
 - `GET /api/v1/learner/courses/{courseId}/quizzes`, `GET /api/v1/learner/quizzes/{quizId}`
 - `POST /api/v1/learner/quizzes/{quizId}/attempts`
 - `POST /api/v1/learner/quiz-attempts/{attemptId}/submit`
 - `GET /api/v1/learner/quiz-attempts/{attemptId}`
+- `GET /api/v1/learner/quizzes/{quizId}/attempts`
 
 **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab)
 
-**Result:** A `SUBMITTED` `QuizAttempt` with computed score and per-question correctness. There is no attempt-history list and no dedicated retake flow — starting the quiz again simply creates a new attempt.
+**Result:** A `SUBMITTED` `QuizAttempt` with computed score and per-question correctness, plus a retake path and a full attempt-history list per quiz. There is no pagination on the attempt-history endpoint — it returns the full list for the quiz.
 
 **Evidence:** `assets/screenshots/04-course-player-quiz-result.png` (demo/report screenshot, not an automated test)
 

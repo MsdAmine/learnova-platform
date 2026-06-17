@@ -114,9 +114,10 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 |---|---|---|---|
 | GET | `/api/v1/learner/courses/{courseId}/quizzes` | LEARNER; enrollment-gated | List `PUBLISHED` quizzes for an enrolled course (no `isCorrect` exposed) |
 | GET | `/api/v1/learner/quizzes/{quizId}` | LEARNER; enrollment-gated | Get learner-safe quiz detail (no `isCorrect` exposed) |
-| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt |
+| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt; creates a new attempt (retake) if the existing one is already `SUBMITTED` |
 | POST | `/api/v1/learner/quiz-attempts/{attemptId}/submit` | LEARNER; own attempt only | Submit answers, compute score and pass/fail; 409 if already submitted |
 | GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER; own attempt only | Retrieve a submitted attempt's result with per-question correctness |
+| GET | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | List the caller's own attempts for a quiz, most-recent-first; `SUBMITTED` attempts include per-question results, `IN_PROGRESS` attempts never expose correctness; no pagination |
 
 ## Certificates
 

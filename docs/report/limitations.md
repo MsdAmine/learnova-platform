@@ -47,10 +47,13 @@ limitations:
 
 ## Quizzes
 
-- No attempt-history UI — learners can start a new attempt, but there is no
-  list of past attempts or a way to review earlier results.
-- No dedicated retake flow — starting the same quiz again creates a new
-  attempt; there is no retake CTA after viewing a result.
+- No pagination on the attempt-history endpoint
+  (`GET /api/v1/learner/quizzes/{quizId}/attempts`) — it returns the full,
+  unbounded list of the caller's attempts for a quiz, ordered purely by
+  `startedAt` descending with no other sort/filter options.
+- Per-quiz attempt-history fetches on the Quizzes tab are non-blocking and
+  fail silently per card — a failed fetch for one quiz leaves that card's
+  history empty without surfacing an error or blocking the rest of the tab.
 - No timers/duration fields on quizzes.
 - No quiz analytics or learner-results dashboard for instructors.
 - No certificate integration tied to quiz passing — certificate issuance
