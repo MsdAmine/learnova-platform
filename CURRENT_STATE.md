@@ -88,7 +88,7 @@ What is in place:
 
 Still mocked or placeholder:
 
-- `CertificatesPage` and `LiveSessionsPage` — frontend placeholder pages; no backend exists for either feature
+- `LiveSessionsPage` — frontend placeholder page; no backend exists for this feature
 - Weekly activity chart and some dashboard sections are placeholder/mock
 - `ProgressPage` shows enrollment-level progress only; no per-lesson breakdown display
 - Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
@@ -96,7 +96,7 @@ Still mocked or placeholder:
 ## Known Gaps
 
 - No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
-- No certificates backend or frontend certificate UI
+- No certificate PDF generation or download (v1 issues a record with a verification code only; no PDF, no download link)
 - No live sessions backend or frontend live session UI
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
