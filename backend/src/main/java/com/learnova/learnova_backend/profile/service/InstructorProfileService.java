@@ -2,6 +2,7 @@ package com.learnova.learnova_backend.profile.service;
 
 import com.learnova.learnova_backend.profile.dto.InstructorProfileRequest;
 import com.learnova.learnova_backend.profile.dto.InstructorProfileResponse;
+import com.learnova.learnova_backend.profile.dto.InstructorProfileUpdateRequest;
 import com.learnova.learnova_backend.profile.entity.InstructorApprovalStatus;
 import com.learnova.learnova_backend.profile.entity.InstructorProfile;
 import com.learnova.learnova_backend.profile.repository.InstructorProfileRepository;
@@ -52,6 +53,46 @@ public class InstructorProfileService {
                 .motivation(normalizeOptional(request.motivation()))
                 .approvalStatus(InstructorApprovalStatus.PENDING)
                 .build();
+
+        InstructorProfile savedProfile = instructorProfileRepository.save(instructorProfile);
+
+        return toResponse(savedProfile);
+    }
+
+    @Transactional
+    public InstructorProfileResponse updateMyProfile(
+            CustomUserDetails currentUser,
+            InstructorProfileUpdateRequest request
+    ) {
+        InstructorProfile instructorProfile = instructorProfileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Instructor profile not found"
+                ));
+
+        if (request.bio() != null) {
+            String trimmed = request.bio().trim();
+            if (trimmed.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bio must not be blank");
+            }
+            instructorProfile.setBio(trimmed);
+        }
+
+        if (request.expertise() != null) {
+            String trimmed = request.expertise().trim();
+            if (trimmed.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Expertise must not be blank");
+            }
+            instructorProfile.setExpertise(trimmed);
+        }
+
+        if (request.experience() != null) {
+            instructorProfile.setExperience(normalizeOptional(request.experience()));
+        }
+
+        if (request.motivation() != null) {
+            instructorProfile.setMotivation(normalizeOptional(request.motivation()));
+        }
 
         InstructorProfile savedProfile = instructorProfileRepository.save(instructorProfile);
 
