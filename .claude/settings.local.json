@@ -62,7 +62,8 @@
       "PowerShell(\\(Get-Command uv -ErrorAction SilentlyContinue\\) -ne $null)",
       "PowerShell(uv tool *)",
       "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" claude install 2>&1)",
-      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" --help 2>&1)"
+      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" --help 2>&1)",
+      "Bash(./mvnw test *)"
     ]
   },
   "outputStyle": "Explanatory"

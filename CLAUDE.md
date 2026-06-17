@@ -265,6 +265,9 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER (enrolled; PUBLISHED; reuses existing IN_PROGRESS attempt) |
 | POST | `/api/v1/learner/quiz-attempts/{attemptId}/submit` | LEARNER (own attempt; IN_PROGRESS only; 409 if already SUBMITTED) |
 | GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER (own attempt only) |
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | Authenticated (ROLE_LEARNER; COMPLETED enrollment only; idempotent: 201 new / 200 existing) |
+| GET | `/api/v1/learner/certificates` | Authenticated (ROLE_LEARNER; own certificates only) |
+| GET | `/api/v1/learner/certificates/{certificateId}` | Authenticated (ROLE_LEARNER; own certificate; not found or not mine → 404) |
 
 Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
