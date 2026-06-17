@@ -230,6 +230,9 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | GET | `/api/v1/wishlist` | Authenticated |
 | POST | `/api/v1/wishlist/course/{courseId}` | Authenticated |
 | DELETE | `/api/v1/wishlist/course/{courseId}` | Authenticated |
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | Authenticated (ROLE_LEARNER; COMPLETED enrollment only; idempotent: 201 new / 200 existing) |
+| GET | `/api/v1/learner/certificates` | Authenticated (ROLE_LEARNER; own certificates only) |
+| GET | `/api/v1/learner/certificates/{certificateId}` | Authenticated (ROLE_LEARNER; own certificate; not found or not mine → 404) |
 
 Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 

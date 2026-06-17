@@ -39,6 +39,7 @@ The backend is feature-complete for the current phase. These modules exist and a
   - `GET /api/v1/instructor/courses/{courseId}/quizzes` — lists all quizzes for an instructor-owned course; consumed by `InstructorQuizzesPage` on load
   - `GET /api/v1/instructor/courses/quizzes/{quizId}` — returns quiz detail with questions and answer options; consumed by `InstructorQuizzesPage` on expand
 - Wishlist: list, add course, remove course
+- Certificate issuance: POST/GET /api/v1/learner/certificates; eligibility gate is enrollment.status == COMPLETED; idempotent issue; ownership enforced; no PDF generation; 12-scenario integration test suite passes
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
 Do not recreate or re-implement any of the above. The backend foundation is done.
@@ -82,7 +83,7 @@ Still mocked or placeholder:
 ## Known Gaps
 
 - No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
-- No certificates backend or frontend certificate UI
+- No frontend certificate UI (backend certificate API is implemented; CertificatesPage exists as a placeholder)
 - No live sessions backend or frontend live session UI
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)

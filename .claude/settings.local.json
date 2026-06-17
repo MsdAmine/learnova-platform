@@ -62,7 +62,17 @@
       "PowerShell(\\(Get-Command uv -ErrorAction SilentlyContinue\\) -ne $null)",
       "PowerShell(uv tool *)",
       "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" claude install 2>&1)",
-      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" --help 2>&1)"
+      "PowerShell(& \"C:\\\\Users\\\\massi\\\\AppData\\\\Roaming\\\\uv\\\\tools\\\\graphifyy\\\\Scripts\\\\graphify.exe\" --help 2>&1)",
+      "PowerShell(\\(Get-Command powershell\\).Source; Write-Output \"---\"; \\(Get-Command pwsh -ErrorAction SilentlyContinue\\).Source)",
+      "Bash(echo '{\"workspace\":{\"current_dir\":\"C:\\\\\\\\Users\\\\\\\\mouss\\\\\\\\Documents\\\\\\\\learnova-platform\"},\"cwd\":\"C:\\\\\\\\Users\\\\\\\\mouss\\\\\\\\Documents\\\\\\\\learnova-platform\",\"model\":{\"display_name\":\"Opus 4.8\"},\"context_window\":{\"used_percentage\":42}}')",
+      "Bash(powershell -NoProfile -File 'C:\\\\Users\\\\mouss\\\\.claude\\\\statusline-command.ps1')",
+      "Bash(echo \"===EXIT $?===\")",
+      "Bash(powershell -NoProfile -File C:\\\\Users\\\\mouss\\\\.claude\\\\statusline-command.ps1)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(powershell -NoProfile -File C:/Users/mouss/.claude/statusline-command.ps1)",
+      "Bash(printf '{\"workspace\":{\"current_dir\":\"C:\\\\\\\\\\\\\\\\Users\\\\\\\\\\\\\\\\mouss\\\\\\\\\\\\\\\\Documents\\\\\\\\\\\\\\\\learnova-platform\"},\"model\":{\"display_name\":\"Opus 4.8\"},\"context_window\":{\"used_percentage\":42}}')",
+      "Bash(echo \"  <exit=$?>\")",
+      "Bash(where graphify *)"
     ]
   },
   "outputStyle": "Explanatory"
