@@ -47,6 +47,11 @@ The backend is feature-complete for the current phase. These modules exist and a
   - Access control: enrollment must be ACTIVE or COMPLETED; CANCELLED → 404; DRAFT/ARCHIVED quiz → 404; non-enrolled → 404 (content enumeration protection)
   - New entities: `QuizAttempt`, `QuizAttemptAnswer`, `QuizAttemptStatus` (IN_PROGRESS, SUBMITTED); v1 supports one selected option per question
 - Wishlist: list, add course, remove course
+- Profile self-editing: authenticated users can view and update their own profile data
+  - `GET /api/v1/learner-profile/me` — returns the caller's learner profile
+  - `PATCH /api/v1/learner-profile/me` — updates `displayName`, `bio`, `profileImageUrl` for the caller's learner profile
+  - `PATCH /api/v1/instructor-profile/me` — updates `bio`, `expertise`, `experience`, `motivation` for the caller's instructor profile
+  - No profile id appears in any of these URLs; the profile is always resolved from the authenticated principal
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
 Do not recreate or re-implement any of the above. The backend foundation is done.
@@ -75,8 +80,9 @@ What is in place:
 - Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`), `InstructorQuizzesPage` (`/instructor/courses/:courseId/quizzes`) — all wired to real backend; guarded by `InstructorRoute` (checks `isAuthenticated` + `availableProfiles` includes `INSTRUCTOR`); uses `InstructorLayout`; `InstructorCourseContentPage` exposes a "Manage quizzes" link that navigates to the quiz management page for the same course
   - `InstructorQuizzesPage` supports: list quizzes; create quiz (title, optional description, passing score %, optional section); edit quiz; expand quiz detail (lazy-loads questions + answer options via `GET /quizzes/{quizId}`); add/edit/delete questions (content, points, type: MULTIPLE\_CHOICE | TRUE\_FALSE); add/edit/delete answer options; mark/unmark options as correct; publish quiz with friendly inline validation messages (no questions, no options, no correct option); archive quiz (renders the quiz and its questions/options as read-only); loading skeleton; not-found and generic-error states with retry
 - Admin area: `AdminLayout`, `AdminInstructorApprovalsPage` (`/admin/instructor-approvals`) — wired to real backend; guarded by `AdminRoute`
-- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form), `src/api/instructorQuizzes.ts` (quiz/question/option CRUD, publish, archive, list, detail; exports `QuizResponse`, `QuizDetailResponse`, `QuestionResponse`, `AnswerOptionResponse`, `QuizStatus`, `QuestionType`, and all request payload types), `src/api/learnerQuizzes.ts` (learner quiz list, quiz detail, start/resume attempt, submit attempt, get attempt result; exports `LearnerQuizSummaryResponse`, `LearnerQuizDetailResponse`, `QuizAttemptResponse`, `QuizAttemptAnswerResultResponse`, `QuizAttemptSubmitRequest`, `QuizAttemptStatus`, `QuestionType`)
+- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form), `src/api/instructorQuizzes.ts` (quiz/question/option CRUD, publish, archive, list, detail; exports `QuizResponse`, `QuizDetailResponse`, `QuestionResponse`, `AnswerOptionResponse`, `QuizStatus`, `QuestionType`, and all request payload types), `src/api/learnerQuizzes.ts` (learner quiz list, quiz detail, start/resume attempt, submit attempt, get attempt result; exports `LearnerQuizSummaryResponse`, `LearnerQuizDetailResponse`, `QuizAttemptResponse`, `QuizAttemptAnswerResultResponse`, `QuizAttemptSubmitRequest`, `QuizAttemptStatus`, `QuestionType`), `src/api/profile.ts` (get/update learner profile, update instructor profile)
 - `SettingsPage` instructor application panel: bio (required, max 1000 chars), expertise (required, max 500 chars), experience (optional), motivation (optional); on success re-fetches `/api/v1/auth/me` and refreshes `AuthContext`; surfaces null/pending/approved/rejected states; rejected state lazily fetches `/api/v1/instructor-profile/me` for `rejectionReason` and displays it inline; hidden for admin-only users (users with `ROLE_ADMIN` but without `INSTRUCTOR` in `availableProfiles`)
+- `SettingsPage` profile editing: learners can edit `displayName`, `bio`, and `profileImageUrl` via `GET`/`PATCH /api/v1/learner-profile/me`; instructors (when `INSTRUCTOR` is in `availableProfiles`) can edit `bio`, `expertise`, `experience`, and `motivation` via `PATCH /api/v1/instructor-profile/me`; uses `src/api/profile.ts`; the "Profile editing is not available yet" placeholder is removed
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
 
@@ -106,7 +112,6 @@ Still mocked or placeholder:
 - No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
 - No admin user management beyond instructor approvals
 - No media upload; `thumbnailUrl` accepts a plain URL string only
-- Profile editing not available in Settings; name and email are displayed read-only
 
 ## Current Priority
 

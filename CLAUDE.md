@@ -182,6 +182,16 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 - Catalog cards (`CourseCatalogCard`) intentionally do not show wishlist controls yet.
 - Wishlist does not enroll the learner, does not unlock course content, and does not replace the enrollment CTA.
 
+### Profile Self-Editing
+
+**API client:** `src/api/profile.ts` — get/update learner profile and update instructor profile. Uses the shared Axios instance.
+
+**Self-edit rule:** All three endpoints (`GET/PATCH /api/v1/learner-profile/me`, `PATCH /api/v1/instructor-profile/me`) resolve the target profile from the authenticated principal — no profile id is ever passed in the URL or request body. A user can only edit their own profile.
+
+**Editable fields:** Learners edit `displayName`, `bio`, `profileImageUrl`. Instructors edit `bio`, `expertise`, `experience`, `motivation`.
+
+**SettingsPage:** Renders the profile edit form for the active profile type; instructor fields are shown only when `INSTRUCTOR` is in `user.availableProfiles`.
+
 ### Learner Quiz-Taking Integration
 
 **API client:** `src/api/learnerQuizzes.ts` — exports `listLearnerCourseQuizzes(courseId)`, `getLearnerQuizDetail(quizId)`, `startQuizAttempt(quizId)`, `submitQuizAttempt(attemptId, payload)`, `getQuizAttempt(attemptId)`. Types: `LearnerQuizSummaryResponse`, `LearnerQuizDetailResponse`, `LearnerQuestionResponse`, `LearnerAnswerOptionResponse` (no `isCorrect` field — secrecy enforced by backend), `QuizAttemptResponse`, `QuizAttemptAnswerResultResponse`, `QuizAttemptSubmitRequest`, `QuizAttemptStatus`, `QuestionType`.
@@ -209,6 +219,9 @@ The shared client is `src/api/axios.ts`. Never import axios directly in feature 
 | POST | `/api/v1/profile/switch` | Authenticated |
 | POST | `/api/v1/instructor-profile/request` | Authenticated |
 | GET | `/api/v1/instructor-profile/me` | Authenticated |
+| PATCH | `/api/v1/instructor-profile/me` | Authenticated (self-edit only; no profile id in URL) |
+| GET | `/api/v1/learner-profile/me` | Authenticated (self-edit only; no profile id in URL) |
+| PATCH | `/api/v1/learner-profile/me` | Authenticated (self-edit only; no profile id in URL) |
 | GET | `/api/v1/admin/instructor-profiles/pending` | ADMIN |
 | POST | `/api/v1/admin/instructor-profiles/{id}/approve` | ADMIN |
 | POST | `/api/v1/admin/instructor-profiles/{id}/reject` | ADMIN |
