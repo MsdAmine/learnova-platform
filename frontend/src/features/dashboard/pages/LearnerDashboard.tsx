@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Calendar, Download } from 'lucide-react';
-import { cn } from '../../../lib/cn';
+import { Award } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { Button } from '../../../components/ui/Button';
 import { CourseCard, CourseThumb, CourseProgressFooter } from '../../../components/dashboard/CourseCard';
@@ -11,54 +10,21 @@ import { FilterTabs } from '../../../components/ui/FilterTabs';
 import { Bone } from '../../../components/common/skeletons/Bone';
 import { useEnrollments } from '../../../hooks/useEnrollments';
 import { enrollmentToCourse } from '../../../api/enrollments';
+import { getMyCertificates } from '../../../api/certificates';
+import type { CertificateResponse } from '../../../api/certificates';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type FilterValue = 'all' | 'in-progress' | 'completed';
 
-interface Session {
-  id: number;
-  title: string;
-  course: string;
-  date: string;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function formatIssuedAt(isoString: string): string {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(isoString));
 }
-
-interface Certificate {
-  id: number;
-  course: string;
-  issuedAt: string;
-}
-
-// ── Local placeholder data ──────────────────────────────────────────────────────
-// Live sessions and certificates have no backend endpoint yet, so they remain
-// static local placeholders. Course data below is wired to the real enrollment
-// API; these two sections are the documented next step.
-
-const SESSIONS: Session[] = [
-  {
-    id: 1,
-    title: 'Live Q&A: Building Scalable APIs',
-    course: 'Node.js Backend Engineering',
-    date: 'Fri, Jun 6, 3:00 PM',
-  },
-  {
-    id: 2,
-    title: 'Code Review Workshop',
-    course: 'Advanced React Patterns and Architecture',
-    date: 'Mon, Jun 9, 10:00 AM',
-  },
-  {
-    id: 3,
-    title: 'Career AMA with Sarah Chen',
-    course: 'Advanced React Patterns and Architecture',
-    date: 'Wed, Jun 11, 5:00 PM',
-  },
-];
-
-const CERTIFICATES: Certificate[] = [
-  { id: 1, course: 'JavaScript Fundamentals', issuedAt: 'March 2026' },
-  { id: 2, course: 'Node.js Backend Engineering', issuedAt: 'May 2026' },
-];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
@@ -66,6 +32,38 @@ export default function LearnerDashboard() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<FilterValue>('all');
   const { enrollments, loading, error, reload } = useEnrollments();
+
+  const [certificates, setCertificates] = useState<CertificateResponse[]>([]);
+  const [certsLoading, setCertsLoading] = useState(true);
+  const [certsError, setCertsError] = useState(false);
+
+  const fetchCertificates = useCallback((token: { cancelled: boolean }) => {
+    getMyCertificates()
+      .then(data => {
+        if (token.cancelled) return;
+        setCertificates(data);
+      })
+      .catch(() => {
+        if (token.cancelled) return;
+        setCertsError(true);
+      })
+      .finally(() => {
+        if (token.cancelled) return;
+        setCertsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    const token = { cancelled: false };
+    fetchCertificates(token);
+    return () => { token.cancelled = true; };
+  }, [fetchCertificates]);
+
+  const handleCertsRetry = useCallback(() => {
+    setCertsLoading(true);
+    setCertsError(false);
+    fetchCertificates({ cancelled: false });
+  }, [fetchCertificates]);
 
   const firstName = user?.fullName?.split(' ')[0] ?? 'there';
 
@@ -238,43 +236,7 @@ export default function LearnerDashboard() {
         )}
       </section>
 
-      {/* 5. Upcoming Live Sessions (local placeholder — no backend yet) ── */}
-      <section aria-labelledby="sessions-heading" className="mb-8">
-        <h2
-          id="sessions-heading"
-          className="text-title-sm font-semibold text-text-primary mb-4"
-        >
-          Upcoming Live Sessions
-        </h2>
-
-        <div className="bg-surface border border-border-default rounded-lg divide-y divide-border-default">
-          {SESSIONS.map(session => (
-            <div
-              key={session.id}
-              className="flex items-center justify-between p-4 gap-4"
-            >
-              <div className="min-w-0">
-                <p className="text-body-sm font-semibold text-text-primary truncate">
-                  {session.title}
-                </p>
-                <p className="text-caption text-text-secondary mt-0.5">
-                  {session.course}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <div className="flex items-center gap-1.5 text-caption text-text-muted whitespace-nowrap">
-                  <Calendar size={12} aria-hidden="true" />
-                  {session.date}
-                </div>
-                <Button variant="secondary" size="sm">Join</Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 6. Certificates (local placeholder — no backend yet) ─────────── */}
+      {/* 5. Certificates ──────────────────────────────────────────────── */}
       <section aria-labelledby="certs-heading">
         <h2
           id="certs-heading"
@@ -283,48 +245,59 @@ export default function LearnerDashboard() {
           Certificates
         </h2>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          {CERTIFICATES.map(cert => (
-            <div
-              key={cert.id}
-              className="flex items-center gap-4 bg-surface border border-border-default rounded-lg p-4 flex-1 min-w-0"
-            >
-              <div
-                className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 bg-anzac-50"
-                aria-hidden="true"
+        {certsLoading ? (
+          <div aria-hidden="true" className="flex flex-col sm:flex-row gap-4">
+            {[0, 1].map(i => (
+              <div key={i} className="flex items-center gap-4 bg-surface border border-border-default rounded-lg p-4 flex-1 min-w-0">
+                <Bone className="w-9 h-9 rounded-md flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <Bone className="h-4 w-3/4 mb-2" />
+                  <Bone className="h-3 w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : certsError ? (
+          <StatePanel
+            message="We could not load your certificates."
+            onRetry={handleCertsRetry}
+          />
+        ) : certificates.length === 0 ? (
+          <StatePanel
+            title="No certificates yet"
+            message="Complete a course to earn your first certificate."
+          />
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-4">
+            {certificates.map(cert => (
+              <Link
+                key={cert.id}
+                to={`/dashboard/certificates/${cert.id}`}
+                className="flex items-center gap-4 bg-surface border border-border-default rounded-lg p-4 flex-1 min-w-0 hover:border-border-hover motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
               >
-                <Award
-                  size={18}
-                  className="text-anzac"
+                <div
+                  className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 bg-anzac-50"
                   aria-hidden="true"
-                />
-              </div>
+                >
+                  <Award
+                    size={18}
+                    className="text-anzac"
+                    aria-hidden="true"
+                  />
+                </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="text-body-sm font-semibold text-text-primary truncate">
-                  {cert.course}
-                </p>
-                <p className="text-caption text-text-muted mt-0.5">
-                  Issued {cert.issuedAt}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                aria-label={`Download ${cert.course} certificate`}
-                className={cn(
-                  'flex items-center gap-1.5 text-body-sm font-medium text-salem flex-shrink-0',
-                  'min-h-[44px] px-1 rounded-sm',
-                  'hover:text-salem-400 transition-colors duration-fast',
-                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
-                )}
-              >
-                <Download size={13} aria-hidden="true" />
-                Download
-              </button>
-            </div>
-          ))}
-        </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-body-sm font-semibold text-text-primary truncate">
+                    {cert.courseTitle}
+                  </p>
+                  <p className="text-caption text-text-muted mt-0.5">
+                    Issued {formatIssuedAt(cert.issuedAt)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
     </div>
