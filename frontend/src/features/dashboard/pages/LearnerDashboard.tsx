@@ -1,18 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Calendar, Download, Play } from 'lucide-react';
+import { Award, Calendar, Download } from 'lucide-react';
 import { cn } from '../../../lib/cn';
 import { useAuth } from '../../../context/AuthContext';
 import { Button } from '../../../components/ui/Button';
-import { ProgressBar } from '../../../components/ui/ProgressBar';
-import { CourseCard } from '../../../components/dashboard/CourseCard';
+import { CourseCard, CourseThumb, CourseProgressFooter } from '../../../components/dashboard/CourseCard';
 import { FeaturedCourseRow } from '../../../components/dashboard/FeaturedCourseRow';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { FilterTabs } from '../../../components/ui/FilterTabs';
 import { Bone } from '../../../components/common/skeletons/Bone';
 import { useEnrollments } from '../../../hooks/useEnrollments';
 import { enrollmentToCourse } from '../../../api/enrollments';
-import { courseGradient } from '../../../components/dashboard/courseCardUtils';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -150,28 +148,13 @@ export default function LearnerDashboard() {
 
           <div className="bg-surface border border-border-default rounded-lg overflow-hidden">
             <div className="flex">
-              {/* Thumbnail */}
-              <div
-                className="w-[280px] flex-shrink-0 hidden sm:flex items-center justify-center"
-                style={{
-                  background: courseGradient(continueCourse),
-                  minHeight: '172px',
-                }}
-                aria-hidden="true"
-              >
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center bg-white/[0.12]"
-                >
-                  <Play
-                    size={18}
-                    className="translate-x-px text-white/75"
-                    aria-hidden="true"
-                  />
-                </div>
-              </div>
+              <CourseThumb
+                course={continueCourse}
+                className="w-[240px] flex-shrink-0 hidden sm:block"
+              />
 
               {/* Content */}
-              <div className="flex-1 p-6 flex flex-col justify-between min-h-[172px]">
+              <div className="flex-1 p-4 flex flex-col justify-between">
                 <div>
                   <h3 className="text-title-sm font-semibold text-text-primary mb-1 max-w-[48ch]">
                     {continueCourse.title}
@@ -182,16 +165,7 @@ export default function LearnerDashboard() {
                 </div>
 
                 <div className="mt-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-caption text-text-muted">Progress</span>
-                    <span className="text-caption font-medium text-text-secondary">
-                      {continueCourse.progress}% complete
-                    </span>
-                  </div>
-                  <ProgressBar
-                    value={continueCourse.progress}
-                    label={`${continueCourse.title} progress`}
-                  />
+                  <CourseProgressFooter course={continueCourse} />
                   <div className="mt-4">
                     <Button variant="primary" size="md" asChild>
                       <Link to={`/dashboard/courses/${continueCourse.id}`}>Continue</Link>
@@ -277,10 +251,10 @@ export default function LearnerDashboard() {
           {SESSIONS.map(session => (
             <div
               key={session.id}
-              className="flex items-center justify-between px-5 py-4 gap-4"
+              className="flex items-center justify-between p-4 gap-4"
             >
               <div className="min-w-0">
-                <p className="text-body-sm font-medium text-text-primary truncate">
+                <p className="text-body-sm font-semibold text-text-primary truncate">
                   {session.title}
                 </p>
                 <p className="text-caption text-text-secondary mt-0.5">
@@ -313,7 +287,7 @@ export default function LearnerDashboard() {
           {CERTIFICATES.map(cert => (
             <div
               key={cert.id}
-              className="flex items-center gap-4 bg-surface border border-border-default rounded-lg px-5 py-4 flex-1"
+              className="flex items-center gap-4 bg-surface border border-border-default rounded-lg p-4 flex-1 min-w-0"
             >
               <div
                 className="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 bg-anzac-50"
@@ -327,7 +301,7 @@ export default function LearnerDashboard() {
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-body-sm font-medium text-text-primary truncate">
+                <p className="text-body-sm font-semibold text-text-primary truncate">
                   {cert.course}
                 </p>
                 <p className="text-caption text-text-muted mt-0.5">
@@ -340,6 +314,7 @@ export default function LearnerDashboard() {
                 aria-label={`Download ${cert.course} certificate`}
                 className={cn(
                   'flex items-center gap-1.5 text-body-sm font-medium text-salem flex-shrink-0',
+                  'min-h-[44px] px-1 rounded-sm',
                   'hover:text-salem-400 transition-colors duration-fast',
                   'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
                 )}

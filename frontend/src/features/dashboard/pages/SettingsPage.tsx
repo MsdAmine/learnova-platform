@@ -3,6 +3,14 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import api from '../../../api/axios';
+import {
+  getMyLearnerProfile,
+  updateMyLearnerProfile,
+  getMyInstructorProfile,
+  updateMyInstructorProfile,
+  type LearnerProfileResponse,
+  type InstructorProfileResponse,
+} from '../../../api/profile';
 import { Button } from '../../../components/ui/Button';
 import { Badge, type BadgeVariant } from '../../../components/ui/Badge';
 import { FormField, Input } from '../../../components/ui/Input';
@@ -149,15 +157,6 @@ function AccountOverview({ user, activeProfile }: AccountOverviewProps) {
   );
 }
 
-// ─── InstructorApplicationPanel ───────────────────────────────────────────────
-
-interface ApplicationFormErrors {
-  bio?: string;
-  expertise?: string;
-  experience?: string;
-  motivation?: string;
-}
-
 function textareaInputClass(hasError = false): string {
   return [
     'w-full bg-surface text-text-primary text-body',
@@ -170,6 +169,383 @@ function textareaInputClass(hasError = false): string {
       ? 'border-error focus:border-error focus-visible:outline-error'
       : 'border-border-default focus:border-salem focus-visible:outline-salem',
   ].join(' ');
+}
+
+// ─── LearnerProfileSection ─────────────────────────────────────────────────────
+
+interface LearnerProfileFormErrors {
+  displayName?: string;
+  bio?: string;
+  profileImageUrl?: string;
+}
+
+function LearnerProfileSection() {
+  const [profile, setProfile] = useState<LearnerProfileResponse | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<LearnerProfileFormErrors>({});
+  const [displayName, setDisplayName] = useState('');
+  const [bio, setBio] = useState('');
+  const [profileImageUrl, setProfileImageUrl] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    getMyLearnerProfile()
+      .then(data => { if (!cancelled) setProfile(data); })
+      .catch(() => { if (!cancelled) setLoadError('Could not load your profile details.'); });
+    return () => { cancelled = true; };
+  }, []);
+
+  function startEditing() {
+    if (!profile) return;
+    setDisplayName(profile.displayName);
+    setBio(profile.bio ?? '');
+    setProfileImageUrl(profile.profileImageUrl ?? '');
+    setFieldErrors({});
+    setFormError(null);
+    setIsEditing(true);
+  }
+
+  function cancelEditing() {
+    setIsEditing(false);
+    setFieldErrors({});
+    setFormError(null);
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const trimmedDisplayName = displayName.trim();
+    const trimmedBio = bio.trim();
+    const trimmedImageUrl = profileImageUrl.trim();
+
+    const errors: LearnerProfileFormErrors = {};
+    if (!trimmedDisplayName) errors.displayName = 'Display name is required.';
+    else if (trimmedDisplayName.length > 150) errors.displayName = 'Display name must not exceed 150 characters.';
+    if (trimmedBio.length > 500) errors.bio = 'Bio must not exceed 500 characters.';
+    if (trimmedImageUrl.length > 500) errors.profileImageUrl = 'Profile image URL must not exceed 500 characters.';
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setIsSaving(true);
+    setFormError(null);
+    try {
+      const updated = await updateMyLearnerProfile({
+        displayName: trimmedDisplayName,
+        bio: trimmedBio,
+        profileImageUrl: trimmedImageUrl,
+      });
+      setProfile(updated);
+      setIsEditing(false);
+    } catch {
+      setFormError('We could not save your profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  if (loadError) {
+    return <p className="text-body-sm text-error mt-3" role="alert">{loadError}</p>;
+  }
+
+  if (!profile) {
+    return <p className="text-body-sm text-text-secondary mt-4">Loading profile details…</p>;
+  }
+
+  if (!isEditing) {
+    return (
+      <div className="mt-4">
+        <dl className="divide-y divide-border-default">
+          <InfoRow label="Display name">{profile.displayName}</InfoRow>
+          <InfoRow label="Bio">{profile.bio || 'Not set'}</InfoRow>
+          <InfoRow label="Profile image URL">{profile.profileImageUrl || 'Not set'}</InfoRow>
+        </dl>
+        <div className="mt-3">
+          <Button variant="secondary" size="sm" onClick={startEditing} aria-label="Edit profile">
+            Edit profile
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} noValidate className="mt-4 grid gap-4">
+      <FormField
+        label="Display name *"
+        htmlFor="learner-display-name"
+        error={fieldErrors.displayName}
+        hint="Max 150 characters."
+      >
+        <Input
+          id="learner-display-name"
+          value={displayName}
+          onChange={e => setDisplayName(e.target.value)}
+          maxLength={150}
+          hasError={!!fieldErrors.displayName}
+        />
+      </FormField>
+
+      <FormField
+        label="Bio"
+        htmlFor="learner-bio"
+        error={fieldErrors.bio}
+        hint="Optional. Max 500 characters."
+      >
+        <textarea
+          id="learner-bio"
+          value={bio}
+          onChange={e => setBio(e.target.value)}
+          maxLength={500}
+          rows={3}
+          placeholder="Tell other learners a little about yourself."
+          aria-invalid={fieldErrors.bio ? true : undefined}
+          className={textareaInputClass(!!fieldErrors.bio)}
+        />
+      </FormField>
+
+      <FormField
+        label="Profile image URL"
+        htmlFor="learner-profile-image-url"
+        error={fieldErrors.profileImageUrl}
+        hint="Optional. Max 500 characters."
+      >
+        <Input
+          id="learner-profile-image-url"
+          value={profileImageUrl}
+          onChange={e => setProfileImageUrl(e.target.value)}
+          maxLength={500}
+          hasError={!!fieldErrors.profileImageUrl}
+          placeholder="https://example.com/avatar.png"
+        />
+      </FormField>
+
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={cancelEditing}
+          disabled={isSaving}
+          aria-label="Cancel profile edits"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="sm"
+          loading={isSaving}
+          aria-label="Save profile changes"
+        >
+          Save changes
+        </Button>
+      </div>
+      {formError && (
+        <p className="text-caption text-error mt-1 text-right" role="alert">{formError}</p>
+      )}
+    </form>
+  );
+}
+
+// ─── InstructorApplicationPanel ───────────────────────────────────────────────
+
+interface ApplicationFormErrors {
+  bio?: string;
+  expertise?: string;
+  experience?: string;
+  motivation?: string;
+}
+
+interface InstructorProfileEditFormProps {
+  profile: InstructorProfileResponse;
+  onSaved: (profile: InstructorProfileResponse) => void;
+}
+
+function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFormProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ApplicationFormErrors>({});
+  const [bio, setBio] = useState(profile.bio);
+  const [expertise, setExpertise] = useState(profile.expertise);
+  const [experience, setExperience] = useState(profile.experience ?? '');
+  const [motivation, setMotivation] = useState(profile.motivation ?? '');
+
+  function startEditing() {
+    setBio(profile.bio);
+    setExpertise(profile.expertise);
+    setExperience(profile.experience ?? '');
+    setMotivation(profile.motivation ?? '');
+    setFieldErrors({});
+    setFormError(null);
+    setIsEditing(true);
+  }
+
+  function cancelEditing() {
+    setIsEditing(false);
+    setFieldErrors({});
+    setFormError(null);
+  }
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const trimmedBio = bio.trim();
+    const trimmedExpertise = expertise.trim();
+    const trimmedExperience = experience.trim();
+    const trimmedMotivation = motivation.trim();
+
+    const errors: ApplicationFormErrors = {};
+    if (!trimmedBio) errors.bio = 'Bio is required.';
+    else if (trimmedBio.length > 1000) errors.bio = 'Bio must not exceed 1000 characters.';
+    if (!trimmedExpertise) errors.expertise = 'Expertise is required.';
+    else if (trimmedExpertise.length > 500) errors.expertise = 'Expertise must not exceed 500 characters.';
+    if (trimmedExperience.length > 1000) errors.experience = 'Experience must not exceed 1000 characters.';
+    if (trimmedMotivation.length > 1000) errors.motivation = 'Motivation must not exceed 1000 characters.';
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setIsSaving(true);
+    setFormError(null);
+    try {
+      const updated = await updateMyInstructorProfile({
+        bio: trimmedBio,
+        expertise: trimmedExpertise,
+        experience: trimmedExperience,
+        motivation: trimmedMotivation,
+      });
+      onSaved(updated);
+      setIsEditing(false);
+    } catch {
+      setFormError('We could not save your instructor profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  if (!isEditing) {
+    return (
+      <div className="mt-4 pt-4 border-t border-border-default">
+        <dl className="divide-y divide-border-default">
+          <InfoRow label="Bio">{profile.bio}</InfoRow>
+          <InfoRow label="Expertise">{profile.expertise}</InfoRow>
+          <InfoRow label="Experience">{profile.experience || 'Not set'}</InfoRow>
+          <InfoRow label="Motivation">{profile.motivation || 'Not set'}</InfoRow>
+        </dl>
+        <div className="mt-3">
+          <Button variant="secondary" size="sm" onClick={startEditing} aria-label="Edit instructor profile">
+            Edit instructor profile
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="mt-4 pt-4 border-t border-border-default grid gap-4 md:grid-cols-2"
+    >
+      <FormField
+        label="Bio *"
+        htmlFor="instructor-edit-bio"
+        error={fieldErrors.bio}
+        hint="Max 1000 characters."
+        className="md:col-span-2"
+      >
+        <textarea
+          id="instructor-edit-bio"
+          value={bio}
+          onChange={e => setBio(e.target.value)}
+          maxLength={1000}
+          rows={3}
+          aria-invalid={fieldErrors.bio ? true : undefined}
+          className={textareaInputClass(!!fieldErrors.bio)}
+        />
+      </FormField>
+
+      <FormField
+        label="Expertise *"
+        htmlFor="instructor-edit-expertise"
+        error={fieldErrors.expertise}
+        hint="Max 500 characters."
+      >
+        <Input
+          id="instructor-edit-expertise"
+          value={expertise}
+          onChange={e => setExpertise(e.target.value)}
+          maxLength={500}
+          hasError={!!fieldErrors.expertise}
+        />
+      </FormField>
+
+      <FormField
+        label="Experience"
+        htmlFor="instructor-edit-experience"
+        error={fieldErrors.experience}
+        hint="Optional. Max 1000 characters."
+      >
+        <textarea
+          id="instructor-edit-experience"
+          value={experience}
+          onChange={e => setExperience(e.target.value)}
+          maxLength={1000}
+          rows={3}
+          aria-invalid={fieldErrors.experience ? true : undefined}
+          className={textareaInputClass(!!fieldErrors.experience)}
+        />
+      </FormField>
+
+      <FormField
+        label="Motivation"
+        htmlFor="instructor-edit-motivation"
+        error={fieldErrors.motivation}
+        hint="Optional. Max 1000 characters."
+        className="md:col-span-2"
+      >
+        <textarea
+          id="instructor-edit-motivation"
+          value={motivation}
+          onChange={e => setMotivation(e.target.value)}
+          maxLength={1000}
+          rows={3}
+          aria-invalid={fieldErrors.motivation ? true : undefined}
+          className={textareaInputClass(!!fieldErrors.motivation)}
+        />
+      </FormField>
+
+      <div className="md:col-span-2 flex items-center justify-end gap-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={cancelEditing}
+          disabled={isSaving}
+          aria-label="Cancel instructor profile edits"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="sm"
+          loading={isSaving}
+          aria-label="Save instructor profile changes"
+        >
+          Save changes
+        </Button>
+      </div>
+      {formError && (
+        <p className="text-caption text-error mt-1 text-right md:col-span-2" role="alert">{formError}</p>
+      )}
+    </form>
+  );
 }
 
 function InstructorApplicationPanel() {
@@ -185,16 +561,15 @@ function InstructorApplicationPanel() {
   const status            = user?.instructorApprovalStatus ?? null;
   const availableProfiles = user?.availableProfiles ?? [];
 
-  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
+  const [instructorProfile, setInstructorProfile] = useState<InstructorProfileResponse | null>(null);
+  const [profileLoadError, setProfileLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status !== 'REJECTED') return;
+    if (status !== 'REJECTED' && status !== 'APPROVED') return;
     let cancelled = false;
-    api.get<{ rejectionReason: string | null }>('/api/v1/instructor-profile/me')
-      .then(({ data }) => {
-        if (!cancelled) setRejectionReason(data.rejectionReason ?? null);
-      })
-      .catch(() => {});
+    getMyInstructorProfile()
+      .then(data => { if (!cancelled) setInstructorProfile(data); })
+      .catch(() => { if (!cancelled) setProfileLoadError('Could not load your instructor profile details.'); });
     return () => { cancelled = true; };
   }, [status]);
 
@@ -242,98 +617,108 @@ function InstructorApplicationPanel() {
       <SettingsSection
         id="instructor-application-heading"
         heading="Instructor application"
-        description="Share your expertise with learners on Learnova."
       >
-        <form onSubmit={handleSubmit} noValidate className="mt-4 flex flex-col gap-4">
-          <p className="text-body-sm text-text-secondary">
-            Tell us about your background. Fields marked with * are required.
-          </p>
-
-          <FormField
-            label="Bio *"
-            htmlFor="instructor-bio"
-            error={fieldErrors.bio}
-            hint="Max 1000 characters."
-          >
-            <textarea
-              id="instructor-bio"
-              value={bio}
-              onChange={e => setBio(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Share your teaching background and what you specialize in."
-              aria-invalid={fieldErrors.bio ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.bio)}
-            />
-          </FormField>
-
-          <FormField
-            label="Expertise *"
-            htmlFor="instructor-expertise"
-            error={fieldErrors.expertise}
-            hint="Max 500 characters."
-          >
-            <Input
-              id="instructor-expertise"
-              value={expertise}
-              onChange={e => setExpertise(e.target.value)}
-              maxLength={500}
-              hasError={!!fieldErrors.expertise}
-              placeholder="e.g. JavaScript, React, Web Development"
-            />
-          </FormField>
-
-          <FormField
-            label="Experience"
-            htmlFor="instructor-experience"
-            error={fieldErrors.experience}
-            hint="Optional. Max 1000 characters."
-          >
-            <textarea
-              id="instructor-experience"
-              value={experience}
-              onChange={e => setExperience(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Describe your teaching or professional experience."
-              aria-invalid={fieldErrors.experience ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.experience)}
-            />
-          </FormField>
-
-          <FormField
-            label="Motivation"
-            htmlFor="instructor-motivation"
-            error={fieldErrors.motivation}
-            hint="Optional. Max 1000 characters."
-          >
-            <textarea
-              id="instructor-motivation"
-              value={motivation}
-              onChange={e => setMotivation(e.target.value)}
-              maxLength={1000}
-              rows={3}
-              placeholder="Why do you want to teach on Learnova?"
-              aria-invalid={fieldErrors.motivation ? true : undefined}
-              className={textareaInputClass(!!fieldErrors.motivation)}
-            />
-          </FormField>
-
+        <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)] mt-4">
           <div>
-            <Button
-              type="submit"
-              variant="secondary"
-              size="sm"
-              loading={isApplying}
-              aria-label="Submit instructor application"
-            >
-              Submit instructor application
-            </Button>
-            {applyError && (
-              <p className="text-caption text-error mt-1" role="alert">{applyError}</p>
-            )}
+            <p className="text-body-sm text-text-secondary">
+              Share your expertise with learners on Learnova.
+            </p>
+            <p className="text-body-sm text-text-secondary mt-2">
+              Tell us about your background. Fields marked with * are required.
+            </p>
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit} noValidate className="grid gap-4 md:grid-cols-2">
+            <FormField
+              label="Bio *"
+              htmlFor="instructor-bio"
+              error={fieldErrors.bio}
+              hint="Max 1000 characters."
+              className="md:col-span-2"
+            >
+              <textarea
+                id="instructor-bio"
+                value={bio}
+                onChange={e => setBio(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Share your teaching background and what you specialize in."
+                aria-invalid={fieldErrors.bio ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.bio)}
+              />
+            </FormField>
+
+            <FormField
+              label="Expertise *"
+              htmlFor="instructor-expertise"
+              error={fieldErrors.expertise}
+              hint="Max 500 characters."
+            >
+              <Input
+                id="instructor-expertise"
+                value={expertise}
+                onChange={e => setExpertise(e.target.value)}
+                maxLength={500}
+                hasError={!!fieldErrors.expertise}
+                placeholder="e.g. JavaScript, React, Web Development"
+              />
+            </FormField>
+
+            <FormField
+              label="Experience"
+              htmlFor="instructor-experience"
+              error={fieldErrors.experience}
+              hint="Optional. Max 1000 characters."
+            >
+              <textarea
+                id="instructor-experience"
+                value={experience}
+                onChange={e => setExperience(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Describe your teaching or professional experience."
+                aria-invalid={fieldErrors.experience ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.experience)}
+              />
+            </FormField>
+
+            <FormField
+              label="Motivation"
+              htmlFor="instructor-motivation"
+              error={fieldErrors.motivation}
+              hint="Optional. Max 1000 characters."
+              className="md:col-span-2"
+            >
+              <textarea
+                id="instructor-motivation"
+                value={motivation}
+                onChange={e => setMotivation(e.target.value)}
+                maxLength={1000}
+                rows={3}
+                placeholder="Why do you want to teach on Learnova?"
+                aria-invalid={fieldErrors.motivation ? true : undefined}
+                className={textareaInputClass(!!fieldErrors.motivation)}
+              />
+            </FormField>
+
+            <div className="md:col-span-2">
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  loading={isApplying}
+                  aria-label="Submit instructor application"
+                >
+                  Submit instructor application
+                </Button>
+              </div>
+              {applyError && (
+                <p className="text-caption text-error mt-1 text-right" role="alert">{applyError}</p>
+              )}
+            </div>
+          </form>
+        </div>
       </SettingsSection>
     );
   }
@@ -392,6 +777,20 @@ function InstructorApplicationPanel() {
             </p>
           )}
         </div>
+
+        {hasInstructorAccess && (
+          <>
+            {profileLoadError && (
+              <p className="text-body-sm text-error mt-4" role="alert">{profileLoadError}</p>
+            )}
+            {!profileLoadError && !instructorProfile && (
+              <p className="text-body-sm text-text-secondary mt-4">Loading instructor profile…</p>
+            )}
+            {instructorProfile && (
+              <InstructorProfileEditForm profile={instructorProfile} onSaved={setInstructorProfile} />
+            )}
+          </>
+        )}
       </SettingsSection>
     );
   }
@@ -410,10 +809,10 @@ function InstructorApplicationPanel() {
               Your application was not approved at this time.
             </p>
           </div>
-          {rejectionReason && (
+          {instructorProfile?.rejectionReason && (
             <div className="mt-3 rounded-md border border-border-default bg-surface-elevated p-3">
               <p className="text-caption font-medium text-text-muted">Reason</p>
-              <p className="text-body-sm text-text-secondary mt-1">{rejectionReason}</p>
+              <p className="text-body-sm text-text-secondary mt-1">{instructorProfile.rejectionReason}</p>
             </div>
           )}
           <p className="text-caption text-text-muted mt-3">
@@ -568,9 +967,9 @@ export default function SettingsPage() {
                 {user.email}
               </InfoRow>
             </dl>
-            <p className="text-caption text-text-muted mt-3">
-              Profile editing is not available yet.
-            </p>
+            <div className="mt-4 pt-4 border-t border-border-default">
+              <LearnerProfileSection />
+            </div>
           </SettingsSection>
 
           <SettingsSection
@@ -625,15 +1024,19 @@ export default function SettingsPage() {
             </dl>
           </SettingsSection>
 
-          {(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
-            <InstructorApplicationPanel />
-          )}
-
           <AdminAccessPanel />
 
           <AccountActionsPanel />
 
         </div>
+
+        {/* Instructor application — spans full grid width so the form is not confined to the narrow sidebar */}
+        {(!user.roles.includes('ROLE_ADMIN') || user.availableProfiles.includes('INSTRUCTOR')) && (
+          <div className="lg:col-span-2">
+            <InstructorApplicationPanel />
+          </div>
+        )}
+
       </div>
     </div>
   );

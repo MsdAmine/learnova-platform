@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player, instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking backend is complete (attempt creation, answer submission, scoring, result retrieval). Remaining gap is the learner quiz-taking frontend.
+Frontend integration: learner course player (with Lessons and Quizzes tabs), instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking is end-to-end complete: backend (attempt creation, answer submission, scoring, result retrieval) and frontend (quiz list, start/resume attempt, radio-based answer selection, submit, and result panel with per-question correctness).
 
 ## Backend Status
 
@@ -47,6 +47,11 @@ The backend is feature-complete for the current phase. These modules exist and a
   - Access control: enrollment must be ACTIVE or COMPLETED; CANCELLED → 404; DRAFT/ARCHIVED quiz → 404; non-enrolled → 404 (content enumeration protection)
   - New entities: `QuizAttempt`, `QuizAttemptAnswer`, `QuizAttemptStatus` (IN_PROGRESS, SUBMITTED); v1 supports one selected option per question
 - Wishlist: list, add course, remove course
+- Profile self-editing: authenticated users can view and update their own profile data
+  - `GET /api/v1/learner-profile/me` — returns the caller's learner profile
+  - `PATCH /api/v1/learner-profile/me` — updates `displayName`, `bio`, `profileImageUrl` for the caller's learner profile
+  - `PATCH /api/v1/instructor-profile/me` — updates `bio`, `expertise`, `experience`, `motivation` for the caller's instructor profile
+  - No profile id appears in any of these URLs; the profile is always resolved from the authenticated principal
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
 Do not recreate or re-implement any of the above. The backend foundation is done.
@@ -70,13 +75,14 @@ What is in place:
 - Learner dashboard and My Courses wired to real enrollment data
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
 - Design token system in tokens.css aligned with DESIGN.md
-- `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error
+- `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error; has two tabs — **Lessons** (existing behaviour) and **Quizzes**; Quizzes tab lists published quizzes for the enrolled course (lazy-loaded on first activation), allows starting or resuming an IN_PROGRESS attempt, native radio answer selection (one option per question), submit attempt, and a result panel showing score percentage, passed/not-passed badge, and per-question correct/incorrect feedback after submission; correct answers are never exposed before submission; uses `src/api/learnerQuizzes.ts`
 - `SavedCoursesPage` at `/dashboard/saved-courses` — learner dashboard page under the existing `ProtectedRoute` + `DashboardLayout`; uses `GET /api/v1/wishlist?size=200` and `DELETE /api/v1/wishlist/course/{courseId}`; reads the Spring `Page` `.content` field; renders saved course cards with category badge, level, title (links to `/courses/:courseId`), description, instructor name, and a Remove button; states: loading skeleton (3-card grid), empty state (→ `/courses` link), generic fetch error with retry, per-card remove-loading spinner, remove-404 stale-state reconciliation (treated as success), and inline per-card remove error; does not fetch enrollments; does not show enroll CTA, progress, duration, lesson count, price, rating, or certificate claims
 - Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`), `InstructorQuizzesPage` (`/instructor/courses/:courseId/quizzes`) — all wired to real backend; guarded by `InstructorRoute` (checks `isAuthenticated` + `availableProfiles` includes `INSTRUCTOR`); uses `InstructorLayout`; `InstructorCourseContentPage` exposes a "Manage quizzes" link that navigates to the quiz management page for the same course
   - `InstructorQuizzesPage` supports: list quizzes; create quiz (title, optional description, passing score %, optional section); edit quiz; expand quiz detail (lazy-loads questions + answer options via `GET /quizzes/{quizId}`); add/edit/delete questions (content, points, type: MULTIPLE\_CHOICE | TRUE\_FALSE); add/edit/delete answer options; mark/unmark options as correct; publish quiz with friendly inline validation messages (no questions, no options, no correct option); archive quiz (renders the quiz and its questions/options as read-only); loading skeleton; not-found and generic-error states with retry
 - Admin area: `AdminLayout`, `AdminInstructorApprovalsPage` (`/admin/instructor-approvals`) — wired to real backend; guarded by `AdminRoute`
-- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form), `src/api/instructorQuizzes.ts` (quiz/question/option CRUD, publish, archive, list, detail; exports `QuizResponse`, `QuizDetailResponse`, `QuestionResponse`, `AnswerOptionResponse`, `QuizStatus`, `QuestionType`, and all request payload types)
+- API clients implemented: `src/api/courseContent.ts` (learner content + lesson progress), `src/api/instructorCourseContent.ts` (section/lesson CRUD), `src/api/adminInstructorProfiles.ts` (pending list, approve, reject), `src/api/instructorCourses.ts` (course CRUD/publish/archive), `src/api/categories.ts` (category listing used in instructor course form), `src/api/instructorQuizzes.ts` (quiz/question/option CRUD, publish, archive, list, detail; exports `QuizResponse`, `QuizDetailResponse`, `QuestionResponse`, `AnswerOptionResponse`, `QuizStatus`, `QuestionType`, and all request payload types), `src/api/learnerQuizzes.ts` (learner quiz list, quiz detail, start/resume attempt, submit attempt, get attempt result; exports `LearnerQuizSummaryResponse`, `LearnerQuizDetailResponse`, `QuizAttemptResponse`, `QuizAttemptAnswerResultResponse`, `QuizAttemptSubmitRequest`, `QuizAttemptStatus`, `QuestionType`), `src/api/profile.ts` (get/update learner profile, update instructor profile)
 - `SettingsPage` instructor application panel: bio (required, max 1000 chars), expertise (required, max 500 chars), experience (optional), motivation (optional); on success re-fetches `/api/v1/auth/me` and refreshes `AuthContext`; surfaces null/pending/approved/rejected states; rejected state lazily fetches `/api/v1/instructor-profile/me` for `rejectionReason` and displays it inline; hidden for admin-only users (users with `ROLE_ADMIN` but without `INSTRUCTOR` in `availableProfiles`)
+- `SettingsPage` profile editing: learners can edit `displayName`, `bio`, and `profileImageUrl` via `GET`/`PATCH /api/v1/learner-profile/me`; instructors (when `INSTRUCTOR` is in `availableProfiles`) can edit `bio`, `expertise`, `experience`, and `motivation` via `PATCH /api/v1/instructor-profile/me`; uses `src/api/profile.ts`; the "Profile editing is not available yet" placeholder is removed
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
 
@@ -95,13 +101,17 @@ Still mocked or placeholder:
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
 - No auto-remove from wishlist after enrollment; wishlist and enrollment are independent at both the backend and frontend layers
-- No learner quiz-taking UI (backend learner quiz-taking is now complete; no frontend React pages for quiz attempts yet)
+- No attempt history UI; learners can start a new attempt but there is no list of past attempts or review of earlier results
+- No dedicated retake flow; starting the same quiz again creates a new attempt, but there is no retake CTA after viewing results
+- No timers or duration fields on quizzes
+- No quiz analytics or learner results dashboard
+- No certificate integration based on quiz passing
+- No multi-select (partial-credit) question type; v1 supports one selected option per question only
 - No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
 - No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)
 - No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
 - No admin user management beyond instructor approvals
 - No media upload; `thumbnailUrl` accepts a plain URL string only
-- Profile editing not available in Settings; name and email are displayed read-only
 
 ## Current Priority
 
