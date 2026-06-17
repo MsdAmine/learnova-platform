@@ -52,6 +52,7 @@ export interface QuizAttemptResponse {
   id: number;
   quizId: number;
   status: QuizAttemptStatus;
+  startedAt: string | null;
   earnedPoints: number | null;
   totalPoints: number | null;
   scorePercentage: number | null;
@@ -110,6 +111,13 @@ export async function submitQuizAttempt(
 export async function getQuizAttempt(attemptId: number): Promise<QuizAttemptResponse> {
   const { data } = await api.get<QuizAttemptResponse>(
     `/api/v1/learner/quiz-attempts/${attemptId}`,
+  );
+  return data;
+}
+
+export async function listQuizAttempts(quizId: number): Promise<QuizAttemptResponse[]> {
+  const { data } = await api.get<QuizAttemptResponse[]>(
+    `/api/v1/learner/quizzes/${quizId}/attempts`,
   );
   return data;
 }

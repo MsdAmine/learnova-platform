@@ -186,8 +186,33 @@ public class LearnerQuizService {
         quizAttemptRepository.save(attempt);
 
         return new QuizAttemptResponse(
-                attempt.getId(), quiz.getId(), QuizAttemptStatus.SUBMITTED,
+                attempt.getId(), quiz.getId(), QuizAttemptStatus.SUBMITTED, attempt.getStartedAt(),
                 earnedPoints, totalPoints, scorePercentage, passed, now, results);
+    }
+
+    @Transactional(readOnly = true)
+    public List<QuizAttemptResponse> listAttempts(Long userId, Long quizId) {
+        Quiz quiz = resolvePublishedQuiz(quizId);
+        LearnerProfile learnerProfile = resolveLearnerProfile(userId);
+        checkEnrollment(learnerProfile.getId(), quiz.getCourse().getId());
+
+        List<QuizAttempt> attempts = quizAttemptRepository
+                .findByLearnerProfileIdAndQuizIdOrderByStartedAtDesc(learnerProfile.getId(), quizId);
+
+        List<Long> attemptIds = attempts.stream().map(QuizAttempt::getId).toList();
+        Map<Long, List<QuizAttemptAnswerResultResponse>> resultsByAttempt = quizAttemptAnswerRepository
+                .findByAttemptIdIn(attemptIds)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        a -> a.getAttempt().getId(),
+                        Collectors.mapping(a -> new QuizAttemptAnswerResultResponse(
+                                a.getQuestion().getId(), a.getSelectedOption().getId(),
+                                a.getCorrect(), a.getEarnedPoints()),
+                                Collectors.toList())));
+
+        return attempts.stream()
+                .map(a -> toAttemptResponse(a, resultsByAttempt.getOrDefault(a.getId(), List.of())))
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -240,6 +265,7 @@ public class LearnerQuizService {
                 attempt.getId(),
                 attempt.getQuiz().getId(),
                 attempt.getStatus(),
+                attempt.getStartedAt(),
                 attempt.getEarnedPoints(),
                 attempt.getTotalPoints(),
                 attempt.getScorePercentage(),
