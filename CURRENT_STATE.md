@@ -96,7 +96,7 @@ Still mocked or placeholder:
 ## Known Gaps
 
 - No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
-- No certificate PDF generation or download (v1 issues a record with a verification code only; no PDF, no download link)
+- No certificate PDF generation (print/save-as-PDF via window.print() is available on the certificate view page; no server-side PDF generation)
 - No live sessions backend or frontend live session UI
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)

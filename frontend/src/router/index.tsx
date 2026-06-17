@@ -24,7 +24,8 @@ const DashboardLayout  = lazy(() => import('../features/dashboard/components/Das
 const LearnerDashboard = lazy(() => import('../features/dashboard/pages/LearnerDashboard'));
 const MyCoursesPage    = lazy(() => import('../features/dashboard/pages/MyCoursesPage'));
 const ProgressPage     = lazy(() => import('../features/dashboard/pages/ProgressPage'));
-const CertificatesPage = lazy(() => import('../features/dashboard/pages/CertificatesPage'));
+const CertificatesPage    = lazy(() => import('../features/dashboard/pages/CertificatesPage'));
+const CertificateViewPage = lazy(() => import('../features/dashboard/pages/CertificateViewPage'));
 const LiveSessionsPage = lazy(() => import('../features/dashboard/pages/LiveSessionsPage'));
 const SettingsPage     = lazy(() => import('../features/dashboard/pages/SettingsPage'));
 
@@ -181,6 +182,19 @@ const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        // Full-screen certificate view — ProtectedRoute but intentionally outside the
+        // /dashboard group so DashboardLayout (sidebar + topbar) is not rendered.
+        // A certificate is a presented document, not a dashboard panel.
+        path: '/dashboard/certificates/:certificateId',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={null}>
+              <CertificateViewPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
       },
       {
         // Instructor area — separate shell, not nested under learner DashboardLayout.
