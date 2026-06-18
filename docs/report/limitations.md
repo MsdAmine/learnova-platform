@@ -90,14 +90,18 @@ limitations:
 
 - Frontend automated tests are minimal and cover selected high-value flows
   only: `useProfileSwitch` success/failure, the learner dashboard's
-  certificate-section states, and the `learnerQuizzes` API client's
-  attempt-history contract (3 test files, 9 tests, via Vitest + React
-  Testing Library + jsdom — see `testing-summary.md`).
+  certificate-section states, the `learnerQuizzes` API client's
+  attempt-history contract, and the `CoursePlayer` quiz history UI extracted
+  into `QuizCard`/`AttemptHistory` (4 test files, 17 tests, via Vitest +
+  React Testing Library + jsdom — see `testing-summary.md`).
 - No broad frontend integration, visual, or accessibility automation suite
   exists yet.
-- The `CoursePlayer` quiz UI itself (retake/history rendering, answer
-  selection, result panel) remains untested at the component level; it is
-  covered only by manual browser QA.
+- The extracted quiz card and attempt-history pieces
+  (`frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx`)
+  are component-tested, but the full `CoursePlayer` route-level flow (tab
+  switching, data fetching, answer selection, submit, the Lessons tab, and
+  the certificate panel) remains manually QA'd, not automated. Do not
+  present `CoursePlayer` as having full route-level coverage.
 
 ## Dashboard
 

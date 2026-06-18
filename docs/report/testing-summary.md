@@ -104,7 +104,7 @@ The frontend (`frontend/`) has a minimal automated test harness using
   `@testing-library/jest-dom/vitest`).
 - **Scripts** — `npm run test` (`vitest run`, single pass) and
   `npm run test:watch` (`vitest`, watch mode).
-- **Test files and coverage** (3 files, 9 tests total):
+- **Test files and coverage** (4 files, 17 tests total):
   - `frontend/src/hooks/useProfileSwitch.test.tsx` — success path updates
     the active profile and navigates to `/instructor/courses`; failure path
     exposes an error and does not navigate or update the profile.
@@ -118,12 +118,31 @@ The frontend (`frontend/`) has a minimal automated test harness using
     correctness/score data; `SUBMITTED` attempts carry score, pass state,
     and per-question results; `getQuizAttempt` calls the correct endpoint
     path.
+  - `frontend/src/features/dashboard/components/courseQuiz/QuizCard.test.tsx`
+    (8 tests) — `QuizCard` and `AttemptHistory` were extracted from
+    `CoursePlayerPage` into
+    `frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx` to
+    make this UI directly testable. Covers: empty attempt-history state
+    ("No attempts yet."); an in-progress attempt shows "In progress" status
+    and a "Resume" action; a submitted attempt shows score/pass text (e.g.
+    "80% · Passed") and a "View result" action; attempts render in the exact
+    order passed via props (no implicit re-sorting); an in-progress attempt
+    never renders score, pass state, or correctness text; `QuizCard` renders
+    a "Retake quiz" action once the latest attempt is submitted; clicking
+    "Retake quiz" calls `onStart` with the quiz id; clicking "View result"
+    calls `onViewResult` with the attempt id.
+- **Test setup** — `frontend/src/test/setup.ts` now also runs
+  `afterEach(cleanup)` (from `@testing-library/react`) to unmount rendered
+  components between tests and prevent DOM leakage across test files.
 - **Latest verification run** — `npm run lint` passed, `npm run build`
-  passed, `npm run test` passed (3 files, 9 tests, 0 failures).
+  passed, `npm run test` passed (4 files, 17 tests, 0 failures).
 
 **Known frontend test gaps:**
-- No full `CoursePlayer` component/integration test (quiz retake/history
-  behavior in that page is not component-tested).
+- No full `CoursePlayer` route-level/integration test — tab switching, data
+  fetching, the Lessons tab, and the certificate panel are not tested at
+  that level. Only the quiz-history UI extracted into `QuizCard`/
+  `AttemptHistory` is component-tested (see above); the rest of
+  `CoursePlayerPage` remains manual-QA only.
 - No broad route-level or integration test suite.
 - No automated accessibility test suite.
 
@@ -149,6 +168,9 @@ lint, build, and manual browser QA:
 **Quiz retake and attempt-history UI — manual verification:**
 - `npm run lint` passed.
 - `npm run build` passed.
+- `npm run test` passed (4 files, 17 tests, 0 failures), including the 8
+  new `QuizCard.test.tsx` tests covering the extracted attempt-history and
+  retake UI (see "Frontend Automated Tests" above).
 - Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
   - No horizontal overflow on the Quizzes tab at the mobile (390×844) or
     tablet (768×1024) viewport.
@@ -156,9 +178,14 @@ lint, build, and manual browser QA:
     result" actions with a visible focus state.
   - Correct answers remain hidden before submission, including inside the
     attempt-history panel's `IN_PROGRESS` rows.
-- No automated frontend component test was added for this UI in this
-  change — these claims are manual QA only. The backend behavior it depends
-  on is covered by the `LearnerQuizIntegrationTest` additions above.
+  - Live quiz flow verified end-to-end: start, in-progress secrecy, submit,
+    result panel, retake, and attempt-history ordering/states.
+  - No console errors or warnings.
+- `QuizCard`/`AttemptHistory` (the extracted attempt-history and retake UI)
+  are now component-tested; the rest of `CoursePlayerPage` (tab switching,
+  data fetching, Lessons tab, certificate panel) remains manual-QA only —
+  see "Known frontend test gaps" above. The backend behavior the quiz UI
+  depends on is covered by the `LearnerQuizIntegrationTest` additions above.
 
 **Certificate issuance UI — manual verification:**
 - `npm run lint` passed.
@@ -295,11 +322,14 @@ and should not be presented as verified in the report:
 - **Quiz attempt-history pagination** — the attempt-history endpoint has no
   pagination; this is untested because there is nothing to paginate, not
   because coverage is missing.
-- **Quiz retake/attempt-history frontend UI** — no automated frontend
-  component test exists for the attempt-history panel or retake action in
-  `CoursePlayerPage`; covered by manual browser QA only. The `learnerQuizzes`
-  API client's attempt-history contract is covered by
-  `learnerQuizzes.test.ts` (see "Frontend Automated Tests" above).
+- **Quiz retake/attempt-history frontend UI** — the attempt-history panel
+  and retake action were extracted into `QuizCard`/`AttemptHistory`
+  (`frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx`) and
+  are now component-tested by `QuizCard.test.tsx` (see "Frontend Automated
+  Tests" above). The surrounding `CoursePlayerPage` (tab switching, data
+  fetching, start/submit flow) is not component-tested and remains covered
+  by manual browser QA only. The `learnerQuizzes` API client's
+  attempt-history contract is covered by `learnerQuizzes.test.ts`.
 - **Rich lesson body/media** — the course player's lesson content area is a
   placeholder panel; there is no video/rich-text rendering to test.
 - **Ordering/reordering** — sections, lessons, questions, and answer options

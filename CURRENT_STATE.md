@@ -60,7 +60,7 @@ Do not recreate or re-implement any of the above. The backend foundation is done
 
 ## Frontend Status
 
-A React + TypeScript + Vite frontend exists and is actively in development. It now has a minimal automated test harness (Vitest + React Testing Library + jsdom): 3 test files, 9 tests, run via `npm run test`. Coverage is selective — `useProfileSwitch` success/failure, the learner dashboard's certificate-section states, and the `learnerQuizzes` API client's attempt-history contract. There is no broad frontend integration suite yet, and the `CoursePlayer` quiz UI (retake/history behavior) is not component-tested. Browser QA remains important for visual/accessibility checks.
+A React + TypeScript + Vite frontend exists and is actively in development. It now has a minimal automated test harness (Vitest + React Testing Library + jsdom): 4 test files, 17 tests, run via `npm run test`. Coverage is selective — `useProfileSwitch` success/failure, the learner dashboard's certificate-section states, the `learnerQuizzes` API client's attempt-history contract, and the `CoursePlayer` quiz history UI extracted into `QuizCard`/`AttemptHistory` (`frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx`) — empty/in-progress/submitted attempt states, the Resume/View result/Retake actions, attempt ordering, and the no-correctness-leak rule for in-progress attempts. `frontend/src/test/setup.ts` now runs `afterEach(cleanup)` to prevent React Testing Library DOM leakage between tests. There is no broad frontend integration suite yet, and the full `CoursePlayer` route-level flow (tab switching, data fetching, lesson tab, certificate panel) remains untested at that level. Browser QA remains important for visual/accessibility checks.
 
 What is in place:
 

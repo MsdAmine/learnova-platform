@@ -95,11 +95,13 @@ These areas are intentionally **not** presented as complete:
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; no media upload pipeline exists.
 - **Frontend automated testing is minimal** — a Vitest + React Testing
-  Library + jsdom harness now exists (3 test files, 9 tests covering
-  `useProfileSwitch`, the dashboard's certificate section, and the
-  `learnerQuizzes` API client), but there is no broad frontend integration
-  suite, and lint/build/manual browser QA remain the primary verification
-  method for most UI. See `testing-summary.md`.
+  Library + jsdom harness now exists (4 test files, 17 tests covering
+  `useProfileSwitch`, the dashboard's certificate section, the
+  `learnerQuizzes` API client, and the `CoursePlayer` quiz history UI
+  extracted into `QuizCard`/`AttemptHistory`), but there is no broad
+  frontend integration suite — the full `CoursePlayer` route-level flow is
+  not component-tested — and lint/build/manual browser QA remain the
+  primary verification method for most UI. See `testing-summary.md`.
 - **Profile switch UI** — fully implemented; no remaining navigation-only
   caveat. All three entry points (the learner dashboard's instructor switch
   card, the instructor area's "back to learner" action, and `SettingsPage`'s
