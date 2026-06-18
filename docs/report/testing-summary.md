@@ -366,6 +366,22 @@ lint, build, and manual browser QA:
 - These manual QA claims are evidence for this specific change; they
   complement, and do not replace, the automated coverage listed above.
 
+**Instructor live-session mobile nav — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run test` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - 390×844: the new mobile-only instructor nav row (`md:hidden`) is visible
+    below the topbar and functional — both "Courses" and "Live sessions"
+    links work, active nav state is visible, and `/instructor/live-sessions`
+    is reachable via in-app navigation; no horizontal overflow.
+  - 768×1024: the mobile nav row is hidden at the `md` breakpoint and the
+    desktop nav row (`hidden md:flex`) is visible instead; no overflow.
+  - 1440×900: desktop nav unchanged.
+  - No new console errors from the instructor nav flows at any viewport.
+- Only `frontend/src/features/instructor/components/InstructorLayout.tsx`
+  was changed; no backend code and no certificate-related code was touched.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,

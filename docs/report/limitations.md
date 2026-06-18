@@ -31,10 +31,6 @@ code-backed limitations:
   session is a single one-off `LiveSession` row; nothing notifies learners
   before a session starts, and there is no UI to browse sessions that have
   already happened.
-- **Mobile instructor nav caveat.** `InstructorLayout`'s nav row (including
-  the "Live sessions" tab) is `hidden md:flex` — visible from tablet width
-  up only. On a mobile viewport, an instructor must navigate to
-  `/instructor/live-sessions` directly by URL.
 
 ## Certificates
 
