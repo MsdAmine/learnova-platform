@@ -327,7 +327,35 @@ not found, or not owned by the caller, returns `404` on the view page.
 
 ---
 
-## 10. Approved Instructor Switches Active Profile
+## 10. Instructor Schedules a Live Session; Learner Joins
+
+**Actor:** Approved Instructor (scheduling) and Enrolled Learner (joining)
+
+**Goal:** Run an instructor-led live session via Jitsi, restricted to learners enrolled in the course.
+
+**Main steps:**
+1. Instructor opens `/instructor/live-sessions` and clicks "Schedule live session", choosing one of their own courses, a title, optional description, start/end time, and optional max participants.
+2. Backend validates that the instructor owns the target course (`403` if not) and creates a `LiveSession` (`status = SCHEDULED`), generating a Jitsi room URL (`https://meet.jit.si/learnova-live-<secure-random>`).
+3. The new session appears in the instructor's own session list (`GET /api/v1/instructor/live-sessions`), with an "Open meeting link" action and a "Cancel session" action while `SCHEDULED`.
+4. A learner with an ACTIVE or COMPLETED enrollment in that course sees the session on `/dashboard/live-sessions` via `GET /api/v1/learner/live-sessions/upcoming`. This response intentionally omits `meetingUrl`/`meetingRoomName` — learners never see the meeting link before joining, and learners not enrolled in the course never see the session at all.
+5. Learner clicks "Join". Backend (`POST /api/v1/learner/live-sessions/{sessionId}/join`) validates the learner's enrollment (`404` if not enrolled) and the session's status (`409` if cancelled), records a `SessionAttendance` row idempotently (a duplicate join does not create a second row), and returns the Jitsi meeting URL.
+6. Frontend opens the returned URL in a new browser tab (`window.open(..., '_blank', 'noopener,noreferrer')`) — there is no iframe embedding and no Jitsi JWT/JaaS integration in v1.
+7. Instructor can cancel a `SCHEDULED` session at any time via `POST /api/v1/instructor/live-sessions/{sessionId}/cancel`, after which learner join attempts return `409`.
+
+**Backend endpoints:**
+- `POST /api/v1/instructor/courses/{courseId}/live-sessions` (INSTRUCTOR; ownership-checked)
+- `GET /api/v1/instructor/live-sessions` (INSTRUCTOR; own sessions)
+- `POST /api/v1/instructor/live-sessions/{sessionId}/cancel` (INSTRUCTOR; own session)
+- `GET /api/v1/learner/live-sessions/upcoming` (LEARNER; enrollment-filtered)
+- `POST /api/v1/learner/live-sessions/{sessionId}/join` (LEARNER; enrollment-gated; idempotent attendance)
+
+**Frontend routes:** `/instructor/live-sessions` (instructor schedule/list/cancel, under `InstructorLayout`), `/dashboard/live-sessions` (learner upcoming list + join, under `ProtectedRoute`)
+
+**Result:** A `LiveSession` row (`SCHEDULED` or `CANCELLED`) and, after a learner joins, a `SessionAttendance` row. The meeting itself is hosted entirely by Jitsi; the platform's responsibility ends at scheduling, access control, and attendance recording. There is no `/leave` endpoint, no recurring sessions, no reminders, and no past-session history view in v1. The instructor nav's "Live sessions" tab is hidden on mobile viewports (`hidden md:flex` in `InstructorLayout`); mobile instructors must navigate to `/instructor/live-sessions` directly.
+
+---
+
+## 11. Approved Instructor Switches Active Profile
 
 **Actor:** Approved Instructor (a user with `INSTRUCTOR` in `availableProfiles`)
 

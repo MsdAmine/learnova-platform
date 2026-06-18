@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the six flows most relevant to the PFA demo. Internal helper method
+for the seven flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -386,7 +386,88 @@ sequenceDiagram
 
 ---
 
-## 6. Approved Instructor Switches Active Profile
+## 6. Live Session Scheduling, Viewing, and Join
+
+```mermaid
+sequenceDiagram
+    actor Instructor
+    actor Learner
+    participant InstrPage as InstructorLiveSessionsPage
+    participant InstrCtrl as InstructorLiveSessionController
+    participant InstrSvc as InstructorLiveSessionService
+    participant LearnerPage as LiveSessionsPage
+    participant LearnerCtrl as LearnerLiveSessionController
+    participant LearnerSvc as LearnerLiveSessionService
+    participant DB as LiveSession/SessionAttendance persistence
+
+    Instructor->>InstrPage: Open "Schedule live session" form, submit course + title + times
+    InstrPage->>InstrCtrl: POST /api/v1/instructor/courses/{courseId}/live-sessions
+    InstrCtrl->>InstrSvc: createSession
+
+    alt Course not owned by caller
+        InstrSvc-->>InstrPage: 403 Forbidden
+    else Owned by caller
+        InstrSvc->>InstrSvc: generate secure Jitsi room (meet.jit.si/learnova-live-<random>)
+        InstrSvc->>DB: create LiveSession (status = SCHEDULED)
+        DB-->>InstrSvc: saved session
+        InstrSvc-->>InstrPage: 201 InstructorLiveSessionResponse (incl. meetingUrl)
+    end
+
+    Learner->>LearnerPage: Open /dashboard/live-sessions
+    LearnerPage->>LearnerCtrl: GET /api/v1/learner/live-sessions/upcoming
+    LearnerCtrl->>LearnerSvc: listUpcoming
+    LearnerSvc->>DB: find sessions for courses where learner enrollment is ACTIVE/COMPLETED
+    DB-->>LearnerSvc: matching sessions
+    LearnerSvc-->>LearnerPage: 200 LearnerLiveSessionResponse[] (no meetingUrl)
+    LearnerPage-->>Learner: render upcoming sessions list
+
+    Learner->>LearnerPage: Click "Join"
+    LearnerPage->>LearnerCtrl: POST /api/v1/learner/live-sessions/{sessionId}/join
+    LearnerCtrl->>LearnerSvc: joinSession
+
+    alt Not enrolled in the session's course
+        LearnerSvc-->>LearnerPage: 404 Not Found
+    else Session CANCELLED
+        LearnerSvc-->>LearnerPage: 409 Conflict
+    else Enrolled and session joinable
+        LearnerSvc->>DB: find existing SessionAttendance for (learner, session)
+        alt Attendance already recorded
+            DB-->>LearnerSvc: existing attendance (no-op)
+        else First join
+            LearnerSvc->>DB: create SessionAttendance
+            DB-->>LearnerSvc: saved attendance
+        end
+        LearnerSvc-->>LearnerPage: 200 JoinLiveSessionResponse (meetingUrl)
+        LearnerPage-->>Learner: window.open(meetingUrl, "_blank") — new tab, no iframe
+    end
+
+    Instructor->>InstrPage: Click "Cancel session" (confirm)
+    InstrPage->>InstrCtrl: POST /api/v1/instructor/live-sessions/{sessionId}/cancel
+    InstrCtrl->>InstrSvc: cancelSession
+    InstrSvc->>DB: set status = CANCELLED (own session only)
+    DB-->>InstrSvc: saved session
+    InstrSvc-->>InstrPage: 200 InstructorLiveSessionResponse (CANCELLED)
+```
+
+**Notes:**
+- **Meeting URL secrecy until join.** `LearnerLiveSessionResponse` never
+  includes `meetingUrl`/`meetingRoomName`; the URL is returned only by the
+  join endpoint, after enrollment and session-status checks pass.
+- **No iframe, no Jitsi auth.** The frontend opens the Jitsi URL in a new
+  browser tab. There is no Jitsi JWT/JaaS integration — the unguessable,
+  securely-generated room name is the only access control once the URL has
+  been issued.
+- **Idempotent attendance.** A duplicate join for the same (learner,
+  session) pair does not create a second `SessionAttendance` row.
+- **Ownership and enrollment gates mirror the rest of the API.** Instructor
+  mutations are ownership-checked (`403` for another instructor's course);
+  learner join is enrollment-gated (`404` for non-enrolled, `409` for a
+  cancelled session) — consistent with the enumeration-prevention and
+  access-control patterns used elsewhere in the platform.
+
+---
+
+## 7. Approved Instructor Switches Active Profile
 
 ```mermaid
 sequenceDiagram

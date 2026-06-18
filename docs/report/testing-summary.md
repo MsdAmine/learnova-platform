@@ -7,11 +7,12 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **27
+The backend test suite (`backend/src/test/java`) currently contains **28
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
-no external database is required.
+no external database is required. A full `./mvnw test` run currently reports
+**205 tests, 0 failures, 0 errors**.
 
 ### Test categories
 
@@ -69,6 +70,22 @@ no external database is required.
   checks on certificate retrieval, certificate code uniqueness, and
   unauthenticated access (`401`)
 
+**Live sessions** (1 class)
+- `LiveSessionIntegrationTest` — 10 tests covering: instructor can create a
+  session for their own course (verifies `status = SCHEDULED`,
+  `meetingProvider = JITSI`, a `meetingUrl` starting with
+  `https://meet.jit.si/`, and a non-empty `meetingRoomName`); instructor
+  cannot create a session for another instructor's course (`403`); learner
+  sees only sessions for enrolled courses (a second course's session is
+  excluded); a learner with no enrollments sees an empty upcoming-sessions
+  list; a learner cannot join a session for a course they are not enrolled
+  in (`404`); joining records attendance and returns the meeting URL;
+  duplicate join is idempotent (exactly one `SessionAttendance` row after
+  two joins); a cancelled session cannot be joined (`409`); an instructor
+  can cancel their own scheduled session (`status → CANCELLED`); and three
+  unauthenticated-request checks (create session, list upcoming sessions,
+  join session) all return `401`.
+
 **Application context** (1 class)
 - `LearnovaBackendApplicationTests`
 
@@ -85,8 +102,8 @@ that number changes as the suite evolves. To get the current count, run from
 Maven's Surefire summary at the end of the run reports the exact number of
 tests run, failures, and skips.
 
-**Quiz retake and attempt-history — backend test run:**
-- Full backend suite (`./mvnw test`): **193 tests, 0 failures, 0 errors.**
+**Quiz retake and attempt-history — backend test run (historical):**
+- Full backend suite (`./mvnw test`) at the time of that change: **193 tests, 0 failures, 0 errors.** (See the top of this section for the current total, which now includes `LiveSessionIntegrationTest`.)
 - `LearnerQuizIntegrationTest` additions specific to this feature: empty
   attempt history, retake creates a new attempt and history is ordered
   most-recent-first, attempt-history responses never leak `isCorrect`,
@@ -104,7 +121,7 @@ The frontend (`frontend/`) has a minimal automated test harness using
   `@testing-library/jest-dom/vitest`).
 - **Scripts** — `npm run test` (`vitest run`, single pass) and
   `npm run test:watch` (`vitest`, watch mode).
-- **Test files and coverage** (4 files, 17 tests total):
+- **Test files and coverage** (27 tests total):
   - `frontend/src/hooks/useProfileSwitch.test.tsx` — success path updates
     the active profile and navigates to `/instructor/courses`; failure path
     exposes an error and does not navigate or update the profile.
@@ -131,11 +148,25 @@ The frontend (`frontend/`) has a minimal automated test harness using
     a "Retake quiz" action once the latest attempt is submitted; clicking
     "Retake quiz" calls `onStart` with the quiz id; clicking "View result"
     calls `onViewResult` with the attempt id.
+  - `frontend/src/api/liveSessions.test.ts` — verifies the live-session API
+    client calls the correct endpoint paths and methods: learner
+    `listUpcomingLiveSessions()` (`GET /api/v1/learner/live-sessions/upcoming`)
+    and `joinLiveSession(sessionId)` (`POST /api/v1/learner/live-sessions/{sessionId}/join`);
+    instructor `getMyInstructorLiveSessions()` (`GET /api/v1/instructor/live-sessions`),
+    `createInstructorLiveSession(courseId, payload)`
+    (`POST /api/v1/instructor/courses/{courseId}/live-sessions`), and
+    `cancelInstructorLiveSession(sessionId)`
+    (`POST /api/v1/instructor/live-sessions/{sessionId}/cancel`).
+  - `frontend/src/features/dashboard/pages/LiveSessionsPage.test.tsx` —
+    covers the learner-facing live sessions page: loading skeleton, empty
+    state, rendering upcoming sessions, the join action opening the
+    returned Jitsi URL in a new tab, and the inline error path when join
+    fails.
 - **Test setup** — `frontend/src/test/setup.ts` now also runs
   `afterEach(cleanup)` (from `@testing-library/react`) to unmount rendered
   components between tests and prevent DOM leakage across test files.
 - **Latest verification run** — `npm run lint` passed, `npm run build`
-  passed, `npm run test` passed (4 files, 17 tests, 0 failures).
+  passed, `npm run test` passed (27 tests, 0 failures).
 
 **Known frontend test gaps:**
 - No full `CoursePlayer` route-level/integration test — tab switching, data
@@ -305,13 +336,47 @@ lint, build, and manual browser QA:
   manual QA only. No backend code was touched, and the certificate backend
   was not modified.
 
+**Live sessions — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run test` passed (27 tests, 0 failures), including
+  `liveSessions.test.ts` and `LiveSessionsPage.test.tsx` (see "Frontend
+  Automated Tests" above).
+- Backend: `./mvnw test` passed (205 tests, 0 failures, 0 errors), including
+  the 10 `LiveSessionIntegrationTest` scenarios (see "Backend Test Suite"
+  above).
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - Instructor schedule: an approved instructor on `/instructor/live-sessions`
+    can open the "Schedule live session" form, pick one of their own
+    courses, and successfully create a session.
+  - Learner sees and joins: an enrolled learner on `/dashboard/live-sessions`
+    sees the scheduled session and can click "Join", which opens the Jitsi
+    meeting URL in a new browser tab.
+  - Non-enrolled learner is blocked: a learner without an enrollment in the
+    session's course does not see the session in their upcoming list.
+  - Cancel flow: the instructor can cancel a `SCHEDULED` session from
+    `/instructor/live-sessions`, with inline confirmation; the session's
+    status updates to `CANCELLED`.
+  - No fake meeting links remain: the previous placeholder
+    `meet.learnova.app` / `recordings.learnova.app` links are gone from the
+    UI; all meeting URLs observed during QA were real `meet.jit.si` links
+    returned by the backend.
+  - No horizontal overflow at any of the three viewports on either the
+    learner or instructor live-sessions page.
+- These manual QA claims are evidence for this specific change; they
+  complement, and do not replace, the automated coverage listed above.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
 and should not be presented as verified in the report:
 
-- **Live sessions backend** — does not exist; `LiveSessionsPage` is a
-  frontend placeholder only.
+- **Live sessions** — backend covered by `LiveSessionIntegrationTest` (10
+  scenarios); frontend covered by `liveSessions.test.ts` and
+  `LiveSessionsPage.test.tsx` plus manual browser QA (see "Live sessions —
+  manual verification" above). `InstructorLiveSessionsPage` itself
+  (schedule form, cancel confirm) is not component-tested — covered by
+  manual browser QA only.
 - **Certificate issuance UI** — covered by manual browser QA only (see
   above); no automated frontend component test exists for the certificate
   panel or certificate pages.

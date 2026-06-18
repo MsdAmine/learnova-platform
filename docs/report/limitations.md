@@ -6,10 +6,35 @@ focused on what is implemented. Source: `CURRENT_STATE.md` "Known Gaps" and
 "Still mocked or placeholder" sections, cross-checked against the router and
 controllers.
 
-## Features owned elsewhere / explicitly out of scope here
+## Live Sessions
 
-- **Live sessions** — no backend exists. `LiveSessionsPage`
-  (`/dashboard/live-sessions`) is frontend placeholder/mock only.
+Live sessions are implemented end-to-end as a Jitsi-backed v1 (backend
+`livesession` module + `LiveSessionsPage`/`InstructorLiveSessionsPage` — see
+`core-workflows.md` §10 and `use-cases.md` UC-31–UC-35), with these real,
+code-backed limitations:
+
+- **No custom video infrastructure.** The platform generates and validates
+  access to a Jitsi room (`https://meet.jit.si/learnova-live-<secure-random>`);
+  it does not implement WebRTC, signaling, or media handling itself.
+- **No iframe embedding.** The frontend opens the Jitsi URL in a new browser
+  tab (`window.open(..., '_blank', 'noopener,noreferrer')`); the meeting is
+  not embedded inside the Learnova UI.
+- **No Jitsi authentication, JWT, or JaaS.** The meeting room is the public,
+  unauthenticated `meet.jit.si` service. Once a learner has received the
+  meeting URL from the join endpoint, the platform has no further control
+  over who else might join if the room name were guessed — the unguessable,
+  securely-random room name is the v1 security boundary, not a Jitsi-side
+  access control.
+- **No `/leave` endpoint.** Attendance is recorded on join only; there is no
+  corresponding leave/duration tracking.
+- **No recurring sessions, reminders, or past-session history view.** Each
+  session is a single one-off `LiveSession` row; nothing notifies learners
+  before a session starts, and there is no UI to browse sessions that have
+  already happened.
+- **Mobile instructor nav caveat.** `InstructorLayout`'s nav row (including
+  the "Live sessions" tab) is `hidden md:flex` — visible from tablet width
+  up only. On a mobile viewport, an instructor must navigate to
+  `/instructor/live-sessions` directly by URL.
 
 ## Certificates
 
@@ -91,9 +116,10 @@ limitations:
 - Frontend automated tests are minimal and cover selected high-value flows
   only: `useProfileSwitch` success/failure, the learner dashboard's
   certificate-section states, the `learnerQuizzes` API client's
-  attempt-history contract, and the `CoursePlayer` quiz history UI extracted
-  into `QuizCard`/`AttemptHistory` (4 test files, 17 tests, via Vitest +
-  React Testing Library + jsdom — see `testing-summary.md`).
+  attempt-history contract, the `CoursePlayer` quiz history UI extracted
+  into `QuizCard`/`AttemptHistory`, and the `liveSessions` API client /
+  `LiveSessionsPage` UI (27 tests total, via Vitest + React Testing Library +
+  jsdom — see `testing-summary.md`).
 - No broad frontend integration, visual, or accessibility automation suite
   exists yet.
 - The extracted quiz card and attempt-history pieces
@@ -105,9 +131,11 @@ limitations:
 
 ## Dashboard
 
-- The learner dashboard's fabricated "Upcoming Live Sessions" section and
-  hardcoded certificate list have been removed; the dashboard's Certificates
-  section now reads real data via `GET /api/v1/learner/certificates`.
+- The learner dashboard's previous fabricated "Upcoming Live Sessions"
+  section (a local placeholder, distinct from the now-implemented
+  `LiveSessionsPage` at `/dashboard/live-sessions`) and hardcoded certificate
+  list have been removed; the dashboard's Certificates section now reads
+  real data via `GET /api/v1/learner/certificates`.
 - `ProgressPage` shows enrollment-level progress only — no per-lesson
   breakdown view, and no weekly-activity or learning-time analytics module
   exists. Its fake weekly-activity strip (`WEEK_ACTIVITY`) has been removed;

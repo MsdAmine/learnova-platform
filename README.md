@@ -348,9 +348,22 @@ online-training-platform/
 
 ## Current Status
 
-Project documentation and architecture planning are in progress.
+The backend (Spring Boot modular monolith) and frontend (React + TypeScript)
+are both actively in development, with most core learner and instructor
+workflows wired end-to-end: authentication, the dual-profile system,
+instructor course/content/quiz authoring, learner enrollment, lesson
+progress, quiz-taking with scoring/retake/attempt history, wishlist,
+profile self-editing, certificate issuance and viewing, and live sessions
+(implemented as a Jitsi-backed v1 — instructor scheduling and cancellation
+for owned courses, enrollment-gated learner visibility, access-controlled
+join, and idempotent attendance recording). Notifications, Q&A, reviews,
+recommendations, file upload, recordings, and reminders remain planned (see
+the roadmap above) and are not yet implemented.
 
-See `CURRENT_STATE.md` for the current milestone and next tasks.
+See `CURRENT_STATE.md` for the exact current milestone, module-by-module
+backend/frontend status, and known gaps, and `docs/report/` (start at
+`docs/report/README.md`) for the full PFA report package — workflows, API
+reference, use cases, test evidence, and known limitations.
 
 ## License
 

@@ -119,6 +119,19 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER; own attempt only | Retrieve a submitted attempt's result with per-question correctness |
 | GET | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | List the caller's own attempts for a quiz, most-recent-first; `SUBMITTED` attempts include per-question results, `IN_PROGRESS` attempts never expose correctness; no pagination |
 
+## Live Sessions
+
+| Method | Path | Access | Purpose |
+|---|---|---|---|
+| POST | `/api/v1/instructor/courses/{courseId}/live-sessions` | INSTRUCTOR; ownership-checked (`403` for another instructor's course) | Schedule a session for an owned course; generates a Jitsi room (`https://meet.jit.si/learnova-live-<secure-random>`) and returns it in the response |
+| GET | `/api/v1/instructor/live-sessions` | INSTRUCTOR | List the caller's own sessions across all owned courses |
+| POST | `/api/v1/instructor/live-sessions/{sessionId}/cancel` | INSTRUCTOR; own session only | Cancel a `SCHEDULED` session (`status → CANCELLED`) |
+| GET | `/api/v1/learner/live-sessions/upcoming` | LEARNER | List upcoming sessions for courses where the caller has an ACTIVE or COMPLETED enrollment; response omits `meetingUrl`/`meetingRoomName` |
+| POST | `/api/v1/learner/live-sessions/{sessionId}/join` | LEARNER; enrollment-gated | Validate enrollment (`404` if not enrolled) and session status (`409` if cancelled), record attendance idempotently, and return the Jitsi meeting URL — **the only response that ever includes `meetingUrl`** |
+
+> v1 is Jitsi-only (`MeetingProvider.JITSI`). No `/leave` endpoint exists. No
+> recurring sessions, reminders, or past-session history endpoint exist.
+
 ## Certificates
 
 | Method | Path | Access | Purpose |
