@@ -60,7 +60,7 @@ Do not recreate or re-implement any of the above. The backend foundation is done
 
 ## Frontend Status
 
-A React + TypeScript + Vite frontend exists and is actively in development.
+A React + TypeScript + Vite frontend exists and is actively in development. It now has a minimal automated test harness (Vitest + React Testing Library + jsdom): 3 test files, 9 tests, run via `npm run test`. Coverage is selective — `useProfileSwitch` success/failure, the learner dashboard's certificate-section states, and the `learnerQuizzes` API client's attempt-history contract. There is no broad frontend integration suite yet, and the `CoursePlayer` quiz UI (retake/history behavior) is not component-tested. Browser QA remains important for visual/accessibility checks.
 
 What is in place:
 

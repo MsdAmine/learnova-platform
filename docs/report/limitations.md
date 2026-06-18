@@ -86,6 +86,19 @@ limitations:
 - No admin user-management capability beyond instructor approvals and
   category creation; there is no broader admin console.
 
+## Frontend automated testing
+
+- Frontend automated tests are minimal and cover selected high-value flows
+  only: `useProfileSwitch` success/failure, the learner dashboard's
+  certificate-section states, and the `learnerQuizzes` API client's
+  attempt-history contract (3 test files, 9 tests, via Vitest + React
+  Testing Library + jsdom — see `testing-summary.md`).
+- No broad frontend integration, visual, or accessibility automation suite
+  exists yet.
+- The `CoursePlayer` quiz UI itself (retake/history rendering, answer
+  selection, result panel) remains untested at the component level; it is
+  covered only by manual browser QA.
+
 ## Dashboard
 
 - The learner dashboard's fabricated "Upcoming Live Sessions" section and

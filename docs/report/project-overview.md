@@ -94,6 +94,12 @@ These areas are intentionally **not** presented as complete:
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; no media upload pipeline exists.
+- **Frontend automated testing is minimal** — a Vitest + React Testing
+  Library + jsdom harness now exists (3 test files, 9 tests covering
+  `useProfileSwitch`, the dashboard's certificate section, and the
+  `learnerQuizzes` API client), but there is no broad frontend integration
+  suite, and lint/build/manual browser QA remain the primary verification
+  method for most UI. See `testing-summary.md`.
 - **Profile switch UI** — fully implemented; no remaining navigation-only
   caveat. All three entry points (the learner dashboard's instructor switch
   card, the instructor area's "back to learner" action, and `SettingsPage`'s

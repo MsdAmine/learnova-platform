@@ -127,9 +127,13 @@ covering auth/security, course lifecycle, enrollment, lesson progress,
 instructor content authoring, instructor quiz read/authoring, learner quiz
 attempts, certificates, and profile editing. Exact current pass/fail counts are not stated
 here — run `./mvnw test` from `backend/` for the live number. The frontend
-has no automated test suite yet; verification is lint (`npm run lint`),
-build (`npm run build`), and manual browser QA. Full detail in
-`testing-summary.md`.
+now has a minimal automated test harness (Vitest + React Testing Library +
+jsdom): 3 test files, 9 tests, run via `npm run test` —
+`frontend/src/hooks/useProfileSwitch.test.tsx`,
+`frontend/src/features/dashboard/pages/LearnerDashboard.test.tsx`, and
+`frontend/src/api/learnerQuizzes.test.ts`. Beyond that, frontend
+verification is lint (`npm run lint`), build (`npm run build`), and manual
+browser QA. Full detail in `testing-summary.md`.
 
 ## Known Limitations Note
 
