@@ -7,12 +7,12 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **28
+The backend test suite (`backend/src/test/java`) currently contains **29
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
 no external database is required. A full `./mvnw test` run currently reports
-**205 tests, 0 failures, 0 errors**.
+**215 tests, 0 failures, 0 errors**.
 
 ### Test categories
 
@@ -86,6 +86,15 @@ no external database is required. A full `./mvnw test` run currently reports
   unauthenticated-request checks (create session, list upcoming sessions,
   join session) all return `401`.
 
+**Media upload** (1 class)
+- `MediaUploadIntegrationTest` — 10 tests covering: unauthenticated rejection
+  of the learner profile image upload; learner can upload their own profile
+  image; replacing a profile image deletes the previous Cloudinary public ID;
+  invalid MIME type rejected; oversized file rejected; empty file rejected;
+  an instructor can upload a thumbnail for their own course; cross-instructor
+  thumbnail upload returns `403`; unauthenticated thumbnail upload rejected.
+  Cloudinary itself is mocked — no real external calls are made.
+
 **Application context** (1 class)
 - `LearnovaBackendApplicationTests`
 
@@ -121,7 +130,7 @@ The frontend (`frontend/`) has a minimal automated test harness using
   `@testing-library/jest-dom/vitest`).
 - **Scripts** — `npm run test` (`vitest run`, single pass) and
   `npm run test:watch` (`vitest`, watch mode).
-- **Test files and coverage** (27 tests total):
+- **Test files and coverage** (35 tests total):
   - `frontend/src/hooks/useProfileSwitch.test.tsx` — success path updates
     the active profile and navigates to `/instructor/courses`; failure path
     exposes an error and does not navigate or update the profile.
@@ -162,11 +171,28 @@ The frontend (`frontend/`) has a minimal automated test harness using
     state, rendering upcoming sessions, the join action opening the
     returned Jitsi URL in a new tab, and the inline error path when join
     fails.
+  - `frontend/src/api/profile.test.ts` — verifies the learner profile image
+    upload API client posts to `POST /api/v1/learner-profile/me/image` as
+    multipart/form-data.
+  - `frontend/src/api/instructorCourses.test.ts` — verifies the course
+    thumbnail upload API client posts to
+    `POST /api/v1/instructor/courses/{courseId}/thumbnail` as
+    multipart/form-data.
+  - `frontend/src/features/dashboard/pages/SettingsPage.test.tsx` — covers
+    the learner profile photo uploader: successful upload updates the
+    preview, an invalid file type/size is rejected client-side with an
+    accessible error and no network call, and a failed upload surfaces an
+    inline accessible error.
+  - `frontend/src/features/instructor/pages/InstructorCoursesPage.test.tsx`
+    — covers the course thumbnail uploader in edit mode: successful upload
+    updates the preview, an invalid file type/size is rejected client-side
+    with an accessible error and no network call, and a failed upload
+    surfaces an inline accessible error.
 - **Test setup** — `frontend/src/test/setup.ts` now also runs
   `afterEach(cleanup)` (from `@testing-library/react`) to unmount rendered
   components between tests and prevent DOM leakage across test files.
 - **Latest verification run** — `npm run lint` passed, `npm run build`
-  passed, `npm run test` passed (27 tests, 0 failures).
+  passed, `npm run test` passed (35 tests, 0 failures).
 
 **Known frontend test gaps:**
 - No full `CoursePlayer` route-level/integration test — tab switching, data
@@ -382,6 +408,29 @@ lint, build, and manual browser QA:
 - Only `frontend/src/features/instructor/components/InstructorLayout.tsx`
   was changed; no backend code and no certificate-related code was touched.
 
+**Cloudinary media upload — manual verification:**
+- Backend: `./mvnw test` passed (215 tests, 0 failures, 0 errors), including
+  the 10 `MediaUploadIntegrationTest` scenarios (see "Backend Test Suite"
+  above; Cloudinary mocked, no real external calls).
+- Frontend: `npm run lint` passed, `npm run build` passed, `npm run test`
+  passed (35 tests, 0 failures), including `profile.test.ts`,
+  `instructorCourses.test.ts`, `SettingsPage.test.tsx`, and
+  `InstructorCoursesPage.test.tsx` (see "Frontend Automated Tests" above).
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - A valid image upload on the Settings photo uploader and the course
+    thumbnail uploader reaches the Cloudinary call and fails cleanly with a
+    `502` — this is expected, since only placeholder Cloudinary credentials
+    are configured in this environment; a live successful upload has not
+    been verified.
+  - An invalid file type and an oversized file are both rejected
+    client-side with an accessible error message and no network call made,
+    on both uploaders.
+  - Cross-instructor course thumbnail upload returns `403`.
+  - No horizontal overflow at any of the three viewports.
+  - No unexpected console errors.
+- Instructor profile image upload was not exercised because it does not
+  exist — `InstructorProfile` has no image URL field.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
@@ -413,6 +462,12 @@ and should not be presented as verified in the report:
   attempt-history contract is covered by `learnerQuizzes.test.ts`.
 - **Rich lesson body/media** — the course player's lesson content area is a
   placeholder panel; there is no video/rich-text rendering to test.
+- **Live Cloudinary upload success** — only placeholder Cloudinary
+  credentials are configured in this environment, so a successful real
+  upload (as opposed to a clean failure on the Cloudinary call) has not
+  been verified by either automated tests (Cloudinary is mocked) or manual
+  QA. Instructor profile image upload has no test coverage because it is
+  not implemented.
 - **Ordering/reordering** — sections, lessons, questions, and answer options
   have no explicit ordering or reorder capability; not applicable for
   testing.

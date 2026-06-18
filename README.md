@@ -356,9 +356,12 @@ progress, quiz-taking with scoring/retake/attempt history, wishlist,
 profile self-editing, certificate issuance and viewing, and live sessions
 (implemented as a Jitsi-backed v1 — instructor scheduling and cancellation
 for owned courses, enrollment-gated learner visibility, access-controlled
-join, and idempotent attendance recording). Notifications, Q&A, reviews,
-recommendations, file upload, recordings, and reminders remain planned (see
-the roadmap above) and are not yet implemented.
+join, and idempotent attendance recording), and Cloudinary-backed media
+upload (v1 — learner profile image and instructor course thumbnail only;
+backend-authenticated, no direct/unsigned frontend uploads). Notifications,
+Q&A, reviews, recommendations, instructor profile image upload, lesson
+attachments, certificate PDF storage, recordings, and reminders remain
+planned (see the roadmap above) and are not yet implemented.
 
 See `CURRENT_STATE.md` for the exact current milestone, module-by-module
 backend/frontend status, and known gaps, and `docs/report/` (start at

@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the seven flows most relevant to the PFA demo. Internal helper method
+for the nine flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -505,3 +505,96 @@ sequenceDiagram
 - **Single hook, three entry points.** `useProfileSwitch` (`src/hooks/useProfileSwitch.ts`) is shared by `DashboardLayout`'s sidebar switch card (learner → instructor), `InstructorLayout`'s topbar "Back to learner dashboard" action (instructor → learner), and `SettingsPage`'s "Go to teaching area" action in the approved-instructor application panel (learner → instructor); all three call the same `POST /api/v1/profile/switch` endpoint through this diagram's sequence.
 - **Backend is the authority.** The hook never flips `AuthContext.activeProfile` optimistically — it waits for a successful response before updating state and navigating, so a `403` (requested profile not in `availableProfiles`) leaves the UI exactly where it was, with an accessible error message.
 - **Route guards remain independent.** `InstructorRoute` still re-checks `availableProfiles` on every navigation to `/instructor/*`; the switch endpoint does not replace or short-circuit that check.
+
+---
+
+## 8. Learner Profile Image Upload
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Settings as SettingsPage
+    participant Ctrl as LearnerProfileController
+    participant Svc as LearnerProfileService
+    participant Validator as MediaValidator
+    participant Storage as CloudinaryMediaStorageService
+    participant DB as LearnerProfile persistence
+
+    Learner->>Settings: Select an image file
+    Settings->>Ctrl: POST /api/v1/learner-profile/me/image (multipart, field "file")
+    Ctrl->>Svc: uploadProfileImage(currentUser, file)
+    Svc->>Validator: validateImage(file, maxBytes)
+
+    alt Invalid MIME type, oversized, or empty file
+        Validator-->>Svc: reject
+        Svc-->>Settings: 4xx error
+        Settings-->>Learner: accessible inline error, preview unchanged
+    else Valid file
+        Svc->>Storage: uploadImage(file, PROFILE_IMAGES, "learner-{profileId}")
+        Storage-->>Svc: secureUrl, publicId
+        Svc->>DB: save profileImageUrl, profileImagePublicId
+        DB-->>Svc: saved profile
+
+        alt A previous profileImagePublicId existed
+            Svc->>Storage: delete(previousPublicId)
+            Note over Storage: deletion failure is logged and non-fatal — the new upload already succeeded
+        end
+
+        Svc-->>Settings: 200 LearnerProfileResponse (new profileImageUrl)
+        Settings-->>Learner: update photo preview
+    end
+```
+
+**Notes:**
+- **Validate before upload, delete after save.** `MediaValidator.validateImage` runs before any Cloudinary call; the previous Cloudinary asset is only deleted after the new URL/public ID is successfully persisted, so a failed deletion never leaves the profile pointing at a missing image.
+- **Self-scoped, no profile id in the request.** The target `LearnerProfile` is resolved from the authenticated principal, consistent with the rest of the self-edit endpoints.
+- **Placeholder credentials in this environment.** With real Cloudinary credentials not yet configured locally, a valid file reaches the `Storage.uploadImage` call and that call fails with a `502`; live successful upload is unverified pending real credentials.
+
+---
+
+## 9. Instructor Course Thumbnail Upload
+
+```mermaid
+sequenceDiagram
+    actor Instructor
+    participant Page as InstructorCoursesPage (edit mode)
+    participant Ctrl as CourseController
+    participant Svc as CourseService
+    participant Validator as MediaValidator
+    participant Storage as CloudinaryMediaStorageService
+    participant DB as Course persistence
+
+    Instructor->>Page: Select an image file for an existing course
+    Page->>Ctrl: POST /api/v1/instructor/courses/{courseId}/thumbnail (multipart, field "file")
+    Ctrl->>Svc: uploadThumbnail(currentUser, courseId, file)
+
+    alt Course not owned by caller
+        Svc-->>Page: 403 Forbidden
+    else Owned by caller
+        Svc->>Validator: validateImage(file, maxBytes)
+
+        alt Invalid MIME type, oversized, or empty file
+            Validator-->>Svc: reject
+            Svc-->>Page: 4xx error
+            Page-->>Instructor: accessible inline error, preview unchanged
+        else Valid file
+            Svc->>Storage: uploadImage(file, COURSE_THUMBNAILS, "course-{courseId}")
+            Storage-->>Svc: secureUrl, publicId
+            Svc->>DB: save thumbnailUrl, thumbnailPublicId
+            DB-->>Svc: saved course
+
+            alt A previous thumbnailPublicId existed
+                Svc->>Storage: delete(previousPublicId)
+                Note over Storage: deletion failure is logged and non-fatal
+            end
+
+            Svc-->>Page: 200 CourseResponse (new thumbnailUrl)
+            Page-->>Instructor: update thumbnail preview
+        end
+    end
+```
+
+**Notes:**
+- **Edit mode only.** This upload path exists only once a course (and its `courseId`) already exists; course creation remains URL-only for the thumbnail field.
+- **Ownership-gated, same pattern as other course mutations.** A non-owning instructor's upload attempt returns `403`, mirroring the ownership checks on `PATCH /api/v1/instructor/courses/{courseId}` and the section/lesson/quiz endpoints.
+- **Placeholder credentials in this environment.** As with the learner profile image flow, a valid upload reaches the Cloudinary call and fails cleanly with `502` until real credentials are configured.

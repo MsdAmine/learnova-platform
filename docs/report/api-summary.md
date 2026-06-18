@@ -26,6 +26,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | POST | `/api/v1/instructor-profile/request` | Authenticated | Submit an instructor profile request (status starts `PENDING`) |
 | GET | `/api/v1/instructor-profile/me` | Authenticated | Get the caller's own instructor profile |
 | PATCH | `/api/v1/instructor-profile/me` | INSTRUCTOR | Update `bio`, `expertise`, `experience`, `motivation` on the caller's own instructor profile (self-resolved, no id in URL) |
+| POST | `/api/v1/learner-profile/me/image` | Authenticated | Upload the caller's own learner profile image to Cloudinary (`multipart/form-data`, field name `file`); self-resolved, no id in URL |
 
 ## Instructor Approval (Admin)
 
@@ -78,6 +79,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | PATCH | `/api/v1/instructor/courses/{courseId}` | INSTRUCTOR; ownership-checked | Update course fields |
 | POST | `/api/v1/instructor/courses/{courseId}/publish` | INSTRUCTOR; ownership-checked | `DRAFT → PUBLISHED` |
 | POST | `/api/v1/instructor/courses/{courseId}/archive` | INSTRUCTOR; ownership-checked | `DRAFT`/`PUBLISHED → ARCHIVED` |
+| POST | `/api/v1/instructor/courses/{courseId}/thumbnail` | INSTRUCTOR; ownership-checked | Upload a course thumbnail to Cloudinary (`multipart/form-data`, field name `file`); `403` for another instructor's course |
 
 ## Instructor Content Builder
 

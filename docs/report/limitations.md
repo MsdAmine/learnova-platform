@@ -62,8 +62,24 @@ limitations:
 - No public syllabus/section previews, instructor bio endpoint, course
   duration, or lesson count on the public catalog/detail pages (no backend
   contract for any of these).
-- No media/file upload; `thumbnailUrl` and `profileImageUrl` are plain URL
-  strings with no upload pipeline.
+- Media upload exists as a Cloudinary-backed v1 (backend
+  `media` module: `MediaStorageService`/`CloudinaryMediaStorageService`/
+  `MediaValidator`) for two surfaces only: learner profile image
+  (`POST /api/v1/learner-profile/me/image`) and instructor course thumbnail
+  (`POST /api/v1/instructor/courses/{courseId}/thumbnail`), both
+  multipart/form-data with field name `file`. Credentials are backend-only —
+  no direct/unsigned frontend-to-Cloudinary upload exists.
+  - **Instructor profile image upload is not implemented** — `InstructorProfile`
+    has no image URL field.
+  - **Live, successful upload to real Cloudinary is unverified** in this
+    environment — only placeholder credentials exist locally, so an upload
+    reaches the Cloudinary API call and fails cleanly with a `502`; it has
+    not been exercised against a real account.
+  - Course thumbnail upload is wired in course **edit** mode only — create
+    mode remains URL-only since no `courseId` exists before the course is
+    created.
+  - No lesson attachments and no certificate PDF/media storage — these
+    remain plain-URL or non-existent as documented elsewhere in this file.
 - No question/answer-option or section/lesson ordering — items are always
   appended; there is no drag-reorder.
 

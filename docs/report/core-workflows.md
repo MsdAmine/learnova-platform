@@ -379,3 +379,74 @@ not found, or not owned by the caller, returns `404` on the view page.
 **Error handling:** A `403` from the backend (requested profile not available) is caught by `useProfileSwitch` and rendered as an inline, accessible (`role="alert"`) message in the triggering component (`DashboardLayout`, `InstructorLayout`, or `SettingsPage`); the user remains on the current page and no navigation occurs.
 
 **Result:** `AuthContext.activeProfile` reflects the backend-confirmed profile; the user lands on the matching area. All three UI entry points — `DashboardLayout`'s switch card, `InstructorLayout`'s back-to-learner action, and `SettingsPage`'s "Go to teaching area" action — are now backend-backed through the same `useProfileSwitch` hook.
+
+---
+
+## 12. Learner Uploads a Profile Image
+
+**Actor:** Authenticated Learner
+
+**Goal:** Replace the profile photo shown on their own learner profile.
+
+**Main steps:**
+1. Learner opens `/dashboard/settings` and selects an image file in the photo
+   uploader.
+2. Frontend validates the file client-side (type/size hints) before sending
+   it.
+3. Frontend submits the file as `multipart/form-data` (field name `file`) to
+   `POST /api/v1/learner-profile/me/image`; the target profile is always the
+   caller's own, resolved from the authenticated principal.
+4. Backend (`MediaValidator`) rejects an empty file, a disallowed content
+   type (only `image/jpeg`, `image/png`, `image/webp` are accepted), or a
+   file over the configured size limit with `400 Bad Request` before any
+   Cloudinary call is made.
+5. On a valid file, the backend uploads it to Cloudinary via
+   `CloudinaryMediaStorageService` and receives back a secure URL and a
+   public id.
+6. The backend stores the new image URL and `profileImagePublicId` on the
+   caller's `LearnerProfile`. If a previous `profileImagePublicId` existed,
+   the backend deletes that old Cloudinary asset; a deletion failure is
+   logged but does not fail the request, since the new upload already
+   succeeded.
+7. Frontend updates the photo preview from the response.
+
+**Backend endpoints:**
+- `POST /api/v1/learner-profile/me/image` (authenticated; self-resolved, no profile id in URL)
+
+**Frontend routes:** `/dashboard/settings`
+
+**Result:** `LearnerProfile.profileImageUrl` and `profileImagePublicId` updated; the old Cloudinary asset is cleaned up on replacement. As of this pass, real Cloudinary credentials are still pending in dev — the call to Cloudinary itself currently fails cleanly with a `502`, which is expected behavior until real credentials are configured, not a bug in this workflow.
+
+---
+
+## 13. Instructor Uploads a Course Thumbnail
+
+**Actor:** Approved Instructor (owner only)
+
+**Goal:** Replace the thumbnail image shown for one of their own courses.
+
+**Main steps:**
+1. Instructor opens `/instructor/courses` and edits an existing course
+   (EDIT mode only — create mode has no `courseId` yet, so it remains
+   URL-only).
+2. Instructor selects an image file in the thumbnail uploader.
+3. Frontend validates the file client-side (type/size hints) before sending
+   it.
+4. Frontend submits the file as `multipart/form-data` (field name `file`) to
+   `POST /api/v1/instructor/courses/{courseId}/thumbnail`.
+5. Backend verifies the caller owns the course (`403` for another
+   instructor's course), then runs the same `MediaValidator` checks as the
+   learner profile-image flow (empty file, disallowed MIME type, oversized
+   file → `400` before any Cloudinary call).
+6. On a valid file, the backend uploads it to Cloudinary and stores the
+   returned secure URL and `thumbnailPublicId` on the `Course`. If a
+   previous `thumbnailPublicId` existed, the backend deletes that old
+   Cloudinary asset; deletion failure is logged and non-fatal.
+7. Frontend updates the thumbnail preview from the response.
+
+**Backend endpoints:**
+- `POST /api/v1/instructor/courses/{courseId}/thumbnail` (INSTRUCTOR; ownership-checked)
+
+**Frontend routes:** `/instructor/courses` (EDIT mode)
+
+**Result:** `Course.thumbnailUrl` and `thumbnailPublicId` updated; old Cloudinary asset cleaned up on replacement. As with the learner profile-image flow, real Cloudinary credentials are still pending in dev, so the live call to Cloudinary currently fails cleanly with a `502`.
