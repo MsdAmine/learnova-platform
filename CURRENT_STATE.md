@@ -92,7 +92,7 @@ What is in place:
 Still mocked or placeholder:
 
 - `LiveSessionsPage` — frontend placeholder page; no backend exists for this feature. (The learner dashboard previously duplicated this as a local "Upcoming Live Sessions" placeholder section; that duplicate has been removed from the dashboard, but `LiveSessionsPage` itself remains a standalone mock page.)
-- `ProgressPage` shows enrollment-level progress only (no per-lesson breakdown display) and its weekly activity strip (`WEEK_ACTIVITY`) is a local placeholder with no backend source yet — the learner dashboard's own mocked sections (live sessions, certificates) have already been removed, per above
+- `ProgressPage` shows enrollment-level progress only (no per-lesson breakdown display); its fake weekly activity strip (`WEEK_ACTIVITY`) has been removed entirely — the page no longer renders any weekly-activity data, fake or real, since no learning-activity/analytics endpoint exists — the learner dashboard's own mocked sections (live sessions, certificates) have already been removed, per above
 - Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
 
 ## Known Gaps

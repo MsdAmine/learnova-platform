@@ -253,6 +253,31 @@ lint, build, and manual browser QA:
   by the existing `ProfileSwitchIntegrationTest`; no backend code was
   modified for this change.
 
+**Progress page mock-content cleanup — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run test` passed (3 files, 9 tests, 0 failures) — no test in this run
+  targets `ProgressPage` directly; the change removed a non-interactive
+  local data array (`WEEK_ACTIVITY`) and its rendering component
+  (`WeekStrip`), with no new logic to unit-test.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900), using
+  a learner account enrolled in one course (to exercise the non-empty page
+  state, not just the "no enrollments" empty panel):
+  - No horizontal overflow at any of the three viewports.
+  - No console errors at any of the three viewports.
+  - The weekly activity strip no longer renders — the page goes directly
+    from the real enrolled/in-progress/completed summary counts to the
+    real in-progress/completed/not-started course lists.
+  - Real enrollment data (summary counts and course lists) renders
+    correctly and unchanged at every viewport.
+- No replacement placeholder or "coming soon" panel was added — the section
+  was removed outright, consistent with how the dashboard's earlier
+  "Upcoming Live Sessions" and hardcoded certificate sections were handled
+  (see "Learner dashboard mock-content cleanup" above).
+- No dedicated automated `ProgressPage` test exists; these claims are
+  manual QA only. No backend code was touched, and the certificate backend
+  was not modified.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
@@ -280,6 +305,10 @@ and should not be presented as verified in the report:
 - **Ordering/reordering** — sections, lessons, questions, and answer options
   have no explicit ordering or reorder capability; not applicable for
   testing.
+- **Progress page** — no automated frontend component test exists for
+  `ProgressPage`; covered by manual browser QA only (see "Progress page
+  mock-content cleanup" above). There is no weekly-activity/learning-time
+  analytics module or backend endpoint to test against.
 - **Profile switcher UI** — `useProfileSwitch`'s success/failure behavior is
   covered by `useProfileSwitch.test.tsx` (see "Frontend Automated Tests"
   above); its three call sites (`DashboardLayout`'s switch card,

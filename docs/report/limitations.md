@@ -105,6 +105,8 @@ limitations:
   hardcoded certificate list have been removed; the dashboard's Certificates
   section now reads real data via `GET /api/v1/learner/certificates`.
 - `ProgressPage` shows enrollment-level progress only — no per-lesson
-  breakdown view. Its weekly-activity strip (`WEEK_ACTIVITY`) is a local
-  placeholder with no backend source yet — this is on `ProgressPage`, not
-  the learner dashboard.
+  breakdown view, and no weekly-activity or learning-time analytics module
+  exists. Its fake weekly-activity strip (`WEEK_ACTIVITY`) has been removed;
+  the page now shows only real enrollment-derived data (summary counts and
+  in-progress/completed/not-started course lists) and no fabricated
+  activity claims of any kind.
