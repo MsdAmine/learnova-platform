@@ -16,10 +16,13 @@ function InProgressRow({ course }: { course: Course }) {
     <li className="px-5 py-4">
       <div className="flex items-start justify-between gap-4 mb-2.5">
         <div className="min-w-0 flex-1">
-          <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
+          <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-1">
             {course.title}
           </h3>
-          <p className="text-caption text-text-secondary">{course.instructor}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="accent">In progress</Badge>
+            <p className="text-caption text-text-secondary">{course.instructor}</p>
+          </div>
         </div>
         <Link
           to={`/dashboard/courses/${course.id}`}

@@ -144,7 +144,7 @@ export default function LearnerDashboard() {
             Continue Learning
           </h2>
 
-          <div className="bg-surface border border-border-default rounded-lg overflow-hidden">
+          <div className="bg-surface border border-accent-border rounded-lg overflow-hidden">
             <div className="flex">
               <CourseThumb
                 course={continueCourse}

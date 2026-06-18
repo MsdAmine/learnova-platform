@@ -532,7 +532,7 @@ export default function InstructorLiveSessionsPage() {
               onRetry={handleRetry}
             />
           ) : sessions.length === 0 ? (
-            <div className="bg-surface border border-border-default rounded-lg px-6 py-12 text-center">
+            <div className="bg-surface border border-accent-border rounded-lg px-6 py-12 text-center">
               <p className="text-body-sm font-medium text-text-primary mb-1">
                 No live sessions scheduled
               </p>

@@ -186,7 +186,9 @@ export default function LiveSessionsPage() {
         />
       ) : sessions.length === 0 ? (
         <div className="bg-surface border border-border-default rounded-lg p-8 flex flex-col items-center text-center gap-3">
-          <Video size={28} className="text-text-muted" aria-hidden="true" />
+          <div className="w-11 h-11 rounded-full bg-accent-soft flex items-center justify-center" aria-hidden="true">
+            <Video size={20} className="text-accent-text" />
+          </div>
           <span className="text-body-sm font-semibold text-text-primary">
             No live sessions scheduled
           </span>

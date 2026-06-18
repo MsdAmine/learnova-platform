@@ -51,7 +51,9 @@ function levelLabel(level: CourseLevel): string {
 }
 
 function statusBadgeVariant(status: CourseStatus): BadgeVariant {
-  return status === 'PUBLISHED' ? 'salem' : 'default';
+  if (status === 'PUBLISHED') return 'salem';
+  if (status === 'DRAFT') return 'accent';
+  return 'default';
 }
 
 function isHttpStatus(err: unknown, status: number): boolean {
