@@ -24,6 +24,22 @@
   --color-azure: #3C57B8;       /* Scholar Blue — analytics, metrics, informational UI           */
 
 
+  /* ── Colors: Accent (purple/blue refresh — docs/design/brand-refresh-purple-blue-spec.md) ──
+     Restrained interactive-accent family. Never a filled-button color; never the
+     focus-ring color (Salem stays the sole focus signal). Used for active/selected
+     surfaces, info-leaning badges, and learning-context callouts only. */
+
+  --color-accent-primary:        #5B5FE3;  /* Indigo — active/selected state fills, icons, borders. Fails AA for small text on white; non-text or large/bold text only. */
+  --color-accent-primary-hover:  #4B4FC9;  /* Indigo hover — ~10% darker                                    */
+  --color-accent-primary-active: #3F42A8;  /* Indigo active/pressed — ~20% darker                           */
+  --color-accent-soft:           #EEF0FD;  /* Indigo-50 — tint background for accent badges, selected rows  */
+  --color-accent-border:         #C7CCF5;  /* Indigo-200 — border on accent-soft surfaces                   */
+  --color-accent-text:           #3F42A8;  /* On-accent-soft text — AA-verified (~7.2:1) against accent-soft */
+
+  --color-learning:      var(--color-azure);     /* Semantic alias — learning-metric contexts, shares Azure hue */
+  --color-learning-soft: var(--color-azure-50);  /* Semantic alias — reuses existing Azure tint, no new color  */
+
+
   /* ── Colors: Tertiary ────────────────────────────────────────────────────── */
 
   --color-coral: #FF7A59;       /* Alert Ember — warnings, high-priority notifications, streaks  */

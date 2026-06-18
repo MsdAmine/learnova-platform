@@ -31,6 +31,16 @@ const config: Config = {
         // Secondary / Tertiary
         'azure':     'var(--color-azure)',
         'azure-50':  'var(--color-azure-50)',
+
+        // Accent (purple/blue refresh) — docs/design/brand-refresh-purple-blue-spec.md
+        'accent-primary':        'var(--color-accent-primary)',
+        'accent-primary-hover':  'var(--color-accent-primary-hover)',
+        'accent-primary-active': 'var(--color-accent-primary-active)',
+        'accent-soft':           'var(--color-accent-soft)',
+        'accent-border':         'var(--color-accent-border)',
+        'accent-text':           'var(--color-accent-text)',
+        'learning':              'var(--color-learning)',
+        'learning-soft':         'var(--color-learning-soft)',
         'coral':     'var(--color-coral)',
         'coral-50':  'var(--color-coral-50)',
         'coral-700': 'var(--color-coral-700)',

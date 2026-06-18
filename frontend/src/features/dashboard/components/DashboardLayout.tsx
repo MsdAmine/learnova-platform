@@ -179,7 +179,7 @@ export default function DashboardLayout() {
                     'text-body-sm font-medium transition-colors duration-fast',
                     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
                     isActive
-                      ? 'bg-salem text-on-dark'
+                      ? 'bg-accent-soft text-accent-text'
                       : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary',
                   )
                 }
