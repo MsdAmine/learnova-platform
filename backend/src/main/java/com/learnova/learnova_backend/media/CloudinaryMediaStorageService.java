@@ -21,6 +21,11 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
 
     @Override
     public MediaUploadResult uploadImage(MultipartFile file, MediaFolder folder, String publicIdHint) {
+        if (isBlank(cloudinary.config.cloudName) || isBlank(cloudinary.config.apiKey) || isBlank(cloudinary.config.apiSecret)) {
+            log.error("Cloudinary upload rejected for folder {}: media storage is not configured", folder);
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Media storage is not configured");
+        }
+
         try {
             Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
                     "folder", folder.getPath(),
@@ -47,5 +52,9 @@ public class CloudinaryMediaStorageService implements MediaStorageService {
         } catch (IOException | RuntimeException e) {
             log.warn("Failed to delete Cloudinary asset {}: {}", publicId, e.getMessage());
         }
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }
