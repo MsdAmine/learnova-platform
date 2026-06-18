@@ -77,3 +77,16 @@ export async function archiveInstructorCourse(courseId: number): Promise<Instruc
   );
   return data;
 }
+
+export async function uploadCourseThumbnail(
+  courseId: number,
+  file: File,
+): Promise<InstructorCourseResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<InstructorCourseResponse>(
+    `/api/v1/instructor/courses/${courseId}/thumbnail`,
+    formData,
+  );
+  return data;
+}

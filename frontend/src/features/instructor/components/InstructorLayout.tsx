@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import { Bell, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useProfileSwitch } from '../../../hooks/useProfileSwitch';
@@ -58,6 +58,33 @@ export default function InstructorLayout() {
               Teaching
             </span>
           </div>
+
+          <nav className="hidden md:flex items-center gap-1 ml-2" aria-label="Instructor sections">
+            <NavLink
+              to="/instructor/courses"
+              className={({ isActive }) => cn(
+                'text-body-sm font-medium px-3 py-2 rounded-md min-h-[44px] flex items-center transition-colors duration-fast',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
+                isActive
+                  ? 'text-text-primary bg-surface-elevated'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated',
+              )}
+            >
+              Courses
+            </NavLink>
+            <NavLink
+              to="/instructor/live-sessions"
+              className={({ isActive }) => cn(
+                'text-body-sm font-medium px-3 py-2 rounded-md min-h-[44px] flex items-center transition-colors duration-fast',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
+                isActive
+                  ? 'text-text-primary bg-surface-elevated'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated',
+              )}
+            >
+              Live sessions
+            </NavLink>
+          </nav>
         </div>
 
         {/* Right: notifications + user chip */}
@@ -89,6 +116,37 @@ export default function InstructorLayout() {
           </div>
         </div>
       </header>
+
+      {/* ── Mobile section nav ─────────────────────────────────────────────── */}
+      <nav
+        className="md:hidden flex items-center gap-1 px-4 py-1.5 border-b border-border-default bg-surface flex-shrink-0 overflow-x-auto"
+        aria-label="Instructor sections"
+      >
+        <NavLink
+          to="/instructor/courses"
+          className={({ isActive }) => cn(
+            'text-body-sm font-medium px-3 py-2 rounded-md min-h-[44px] flex items-center transition-colors duration-fast flex-shrink-0',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
+            isActive
+              ? 'text-text-primary bg-surface-elevated'
+              : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated',
+          )}
+        >
+          Courses
+        </NavLink>
+        <NavLink
+          to="/instructor/live-sessions"
+          className={({ isActive }) => cn(
+            'text-body-sm font-medium px-3 py-2 rounded-md min-h-[44px] flex items-center transition-colors duration-fast flex-shrink-0',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
+            isActive
+              ? 'text-text-primary bg-surface-elevated'
+              : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated',
+          )}
+        >
+          Live sessions
+        </NavLink>
+      </nav>
 
       {switchError && (
         <p className="text-caption text-error px-4 md:px-6 py-2 border-b border-border-default" role="alert">

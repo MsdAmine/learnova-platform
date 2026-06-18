@@ -53,7 +53,7 @@ function pluralize(n: number, singular: string, plural: string): string {
 function quizBadgeVariant(status: QuizStatus) {
   if (status === 'PUBLISHED') return 'salem' as const;
   if (status === 'ARCHIVED') return 'coral' as const;
-  return 'default' as const;
+  return 'accent' as const;
 }
 
 function quizStatusLabel(status: QuizStatus): string {

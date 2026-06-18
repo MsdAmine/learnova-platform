@@ -280,7 +280,7 @@ export default function AdminInstructorApprovalsPage() {
                       <p className="text-body-sm font-semibold text-text-primary line-clamp-1">
                         {applicantName}
                       </p>
-                      <Badge variant="default">Pending</Badge>
+                      <Badge variant="accent">Pending</Badge>
                     </div>
 
                     {/* Meta line: email + request date */}

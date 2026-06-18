@@ -41,6 +41,9 @@ public class LearnerProfile {
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
+    @Column(name = "profile_image_public_id", length = 255)
+    private String profileImagePublicId;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

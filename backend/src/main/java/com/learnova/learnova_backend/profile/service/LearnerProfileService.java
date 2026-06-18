@@ -1,5 +1,9 @@
 package com.learnova.learnova_backend.profile.service;
 
+import com.learnova.learnova_backend.media.MediaFolder;
+import com.learnova.learnova_backend.media.MediaStorageService;
+import com.learnova.learnova_backend.media.MediaUploadResult;
+import com.learnova.learnova_backend.media.MediaValidator;
 import com.learnova.learnova_backend.profile.dto.LearnerProfileResponse;
 import com.learnova.learnova_backend.profile.dto.LearnerProfileUpdateRequest;
 import com.learnova.learnova_backend.profile.entity.LearnerProfile;
@@ -10,13 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class LearnerProfileService {
 
+    private static final long MAX_PROFILE_IMAGE_BYTES = 2L * 1024 * 1024;
+
     private final LearnerProfileRepository learnerProfileRepository;
+    private final MediaStorageService mediaStorageService;
 
     public LearnerProfile createDefaultProfileFor(User user) {
         if (learnerProfileRepository.existsByUserId(user.getId())) {
@@ -70,6 +78,33 @@ public class LearnerProfileService {
         }
 
         LearnerProfile saved = learnerProfileRepository.save(profile);
+        return toResponse(saved);
+    }
+
+    @Transactional
+    public LearnerProfileResponse uploadProfileImage(CustomUserDetails currentUser, MultipartFile file) {
+        LearnerProfile profile = learnerProfileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Learner profile not found"
+                ));
+
+        MediaValidator.validateImage(file, MAX_PROFILE_IMAGE_BYTES);
+
+        String previousPublicId = profile.getProfileImagePublicId();
+
+        MediaUploadResult result = mediaStorageService.uploadImage(
+                file, MediaFolder.PROFILE_IMAGES, "learner-" + profile.getId());
+
+        profile.setProfileImageUrl(result.secureUrl());
+        profile.setProfileImagePublicId(result.publicId());
+
+        LearnerProfile saved = learnerProfileRepository.save(profile);
+
+        if (previousPublicId != null && !previousPublicId.equals(result.publicId())) {
+            mediaStorageService.delete(previousPublicId);
+        }
+
         return toResponse(saved);
     }
 

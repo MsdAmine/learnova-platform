@@ -98,7 +98,7 @@ export function CourseCatalogCard({
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2">
           {course.categoryName && (
-            <Badge variant="default">{course.categoryName}</Badge>
+            <Badge variant="accent">{course.categoryName}</Badge>
           )}
           <span className="text-caption text-text-muted">
             {LEVEL_LABELS[course.level] ?? course.level}

@@ -17,7 +17,7 @@ model where one account can act as both learner and instructor (see
 1. **[project-overview.md](./project-overview.md)** — start here for the big picture
 2. **[class-diagram.md](./class-diagram.md)** — the persistent domain model
 3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the six flagship flows
-4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all ten implemented workflows
+4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all eleven implemented workflows
 5. **[api-summary.md](./api-summary.md)** — the full REST surface, grouped by module
 6. **[testing-summary.md](./testing-summary.md)** — backend test coverage and frontend verification style
 7. **[limitations.md](./limitations.md)** — known gaps, read last so they land with full context
@@ -28,8 +28,8 @@ model where one account can act as both learner and instructor (see
 |---|---|
 | `project-overview.md` | Objective, target users, modules, implemented workflows, limitations summary, architecture summary |
 | `class-diagram.md` | Mermaid UML class diagrams of the JPA domain model (main model + quiz/assessment model) and enum reference |
-| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, quiz attempt/scoring, quiz retake/attempt history, certificate issuance, and profile switching |
-| `core-workflows.md` | Actor/goal/steps/endpoints/routes/result for all ten implemented end-to-end workflows |
+| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, quiz attempt/scoring, quiz retake/attempt history, certificate issuance, live session scheduling/join, and profile switching |
+| `core-workflows.md` | Actor/goal/steps/endpoints/routes/result for all eleven implemented end-to-end workflows |
 | `api-summary.md` | REST endpoint reference grouped by module (method, path, access level, purpose), sourced from controllers |
 | `testing-summary.md` | Backend test suite breakdown by category, frontend verification style, untested/placeholder areas |
 | `limitations.md` | Consolidated list of known gaps and out-of-scope features |
@@ -42,9 +42,10 @@ model where one account can act as both learner and instructor (see
 - **class-diagram.md** answers "how is the data modeled" — entities,
   relationships, and enums, taken directly from the JPA entity classes.
 - **sequence-diagrams.md** answers "how do the pieces actually talk to each
-  other" for the six flows most relevant to a live demo: instructor
+  other" for the seven flows most relevant to a live demo: instructor
   approval, enrollment + lesson progress, quiz scoring, quiz retake/attempt
-  history, certificate issuance, and profile switching.
+  history, certificate issuance, live session scheduling/join, and profile
+  switching.
 - **core-workflows.md** is the demo script — each workflow lists the exact
   endpoints and frontend routes involved, suitable for narrating a live
   walkthrough.
@@ -65,14 +66,18 @@ and progress tracking, learner quiz-taking with automatic scoring plus
 retake and full attempt history, wishlist / saved courses, profile
 self-editing for both learner and instructor profiles, learner
 certificate issuance + viewing (manually triggered from the course player
-once a course reaches 100% progress), and approved-instructor profile
+once a course reaches 100% progress), live sessions (Jitsi-backed v1:
+instructor scheduling/list/cancel for owned courses, enrollment-gated
+learner visibility and join, idempotent attendance recording), and
+approved-instructor profile
 switching (`POST /api/v1/profile/switch`, called from `DashboardLayout`'s
 switch card, `InstructorLayout`'s "back to learner" action, and
-`SettingsPage`'s "Go to teaching area" action — see `core-workflows.md` §10).
+`SettingsPage`'s "Go to teaching area" action — see `core-workflows.md` §11).
 
 **Not implemented / explicitly out of scope for this codebase:**
-- **Live sessions** — no backend exists; the frontend page is a
-  placeholder/mock only.
+- **Live sessions v1 limitations** — no `/leave` endpoint, no recurring
+  sessions, no reminders, no past-session history view, no iframe
+  embedding (Jitsi opens in a new browser tab), and no Jitsi JWT/JaaS.
 - **Lesson video/rich content** — the course player's lesson content area is
   a placeholder panel; no video or rich-body rendering exists.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
@@ -96,6 +101,7 @@ See `limitations.md` for the complete, categorized list.
 | Learner quiz attempt and scoring | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner quiz retake and attempt history | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner certificate issuance | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
+| Live session scheduling, viewing, and join | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Approved-instructor profile switching | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 
 All diagrams render directly from standard Mermaid syntax — no external
@@ -122,25 +128,29 @@ suite, see `testing-summary.md`).
 
 ## Testing Evidence Summary
 
-The backend test suite (`backend/src/test/java`) contains 27 test classes
+The backend test suite (`backend/src/test/java`) contains 28 test classes
 covering auth/security, course lifecycle, enrollment, lesson progress,
 instructor content authoring, instructor quiz read/authoring, learner quiz
-attempts, certificates, and profile editing. Exact current pass/fail counts are not stated
-here — run `./mvnw test` from `backend/` for the live number. The frontend
-now has a minimal automated test harness (Vitest + React Testing Library +
-jsdom): 4 test files, 17 tests, run via `npm run test` —
+attempts, certificates, live sessions, and profile editing. A full
+`./mvnw test` run currently reports 205 tests, 0 failures, 0 errors. The
+frontend now has a minimal automated test harness (Vitest + React Testing
+Library + jsdom): 27 tests, run via `npm run test` —
 `frontend/src/hooks/useProfileSwitch.test.tsx`,
 `frontend/src/features/dashboard/pages/LearnerDashboard.test.tsx`,
-`frontend/src/api/learnerQuizzes.test.ts`, and
+`frontend/src/api/learnerQuizzes.test.ts`,
 `frontend/src/features/dashboard/components/courseQuiz/QuizCard.test.tsx`
-(the extracted `CoursePlayer` quiz history UI). Beyond that, frontend
-verification is lint (`npm run lint`), build (`npm run build`), and manual
-browser QA. Full detail in `testing-summary.md`.
+(the extracted `CoursePlayer` quiz history UI), `frontend/src/api/liveSessions.test.ts`,
+and `frontend/src/features/dashboard/pages/LiveSessionsPage.test.tsx`. Beyond
+that, frontend verification is lint (`npm run lint`), build (`npm run build`),
+and manual browser QA. Full detail in `testing-summary.md`.
 
 ## Known Limitations Note
 
-Live sessions have no backend in this codebase and must not be presented as
-implemented. Certificates are implemented but issuance is manual (triggered
+Live sessions are implemented as a Jitsi-backed v1 (scheduling,
+access-controlled join, idempotent attendance) and must not be presented as
+having recordings, reminders, recurring sessions, a `/leave` endpoint, past-
+session history, iframe embedding, or Jitsi authentication/JWT/JaaS — none
+of these exist. Certificates are implemented but issuance is manual (triggered
 from the course player), not automatic, and offers only browser print —
 no PDF generation, sharing, QR code, or revocation. Quiz attempt history and
 retake are implemented but the attempt-history endpoint has no pagination.

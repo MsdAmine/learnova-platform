@@ -56,6 +56,13 @@ export async function updateMyLearnerProfile(
   return data;
 }
 
+export async function uploadLearnerProfileImage(file: File): Promise<LearnerProfileResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<LearnerProfileResponse>('/api/v1/learner-profile/me/image', formData);
+  return data;
+}
+
 export async function getMyInstructorProfile(): Promise<InstructorProfileResponse> {
   const { data } = await api.get<InstructorProfileResponse>('/api/v1/instructor-profile/me');
   return data;

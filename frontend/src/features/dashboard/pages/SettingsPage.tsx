@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type ReactNode, type FormEvent, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
@@ -7,6 +7,7 @@ import api from '../../../api/axios';
 import {
   getMyLearnerProfile,
   updateMyLearnerProfile,
+  uploadLearnerProfileImage,
   getMyInstructorProfile,
   updateMyInstructorProfile,
   type LearnerProfileResponse,
@@ -15,7 +16,34 @@ import {
 import { Button } from '../../../components/ui/Button';
 import { Badge, type BadgeVariant } from '../../../components/ui/Badge';
 import { FormField, Input } from '../../../components/ui/Input';
+import { Avatar } from '../../../components/ui/Avatar';
 import type { ProfileType } from '../../../types/profile';
+
+// ─── Image upload helpers ──────────────────────────────────────────────────────
+
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+function validateImageFile(file: File, maxBytes: number): string | null {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return 'Please choose a JPG, PNG, or WEBP image.';
+  }
+  if (file.size > maxBytes) {
+    return `Image must be ${Math.round(maxBytes / (1024 * 1024))}MB or smaller.`;
+  }
+  return null;
+}
+
+function extractErrorMessage(err: unknown, fallback: string): string {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'response' in err &&
+    typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+  ) {
+    return (err as { response: { data: { message: string } } }).response.data.message;
+  }
+  return fallback;
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -180,6 +208,8 @@ interface LearnerProfileFormErrors {
   profileImageUrl?: string;
 }
 
+const MAX_PROFILE_IMAGE_BYTES = 2 * 1024 * 1024;
+
 function LearnerProfileSection() {
   const [profile, setProfile] = useState<LearnerProfileResponse | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -190,6 +220,9 @@ function LearnerProfileSection() {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -248,6 +281,60 @@ function LearnerProfileSection() {
     }
   }
 
+  async function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const hintError = validateImageFile(file, MAX_PROFILE_IMAGE_BYTES);
+    if (hintError) {
+      setImageUploadError(hintError);
+      return;
+    }
+
+    setImageUploadError(null);
+    setIsUploadingImage(true);
+    try {
+      const updated = await uploadLearnerProfileImage(file);
+      setProfile(updated);
+    } catch (err) {
+      setImageUploadError(extractErrorMessage(err, 'We could not upload your photo. Please try again.'));
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
+  function imageUploader(profileForPreview: LearnerProfileResponse) {
+    return (
+      <div className="flex items-center gap-3 mt-4">
+        <Avatar src={profileForPreview.profileImageUrl ?? undefined} name={profileForPreview.displayName} size={56} />
+        <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            aria-label="Choose profile image"
+            onChange={handleImageChange}
+          />
+          <Button
+            variant="secondary"
+            size="sm"
+            loading={isUploadingImage}
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Upload profile photo"
+          >
+            Upload photo
+          </Button>
+          <p className="text-caption text-text-muted mt-1">JPG, PNG, or WEBP. Max 2MB.</p>
+          {imageUploadError && (
+            <p className="text-caption text-error mt-1" role="alert">{imageUploadError}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (loadError) {
     return <p className="text-body-sm text-error mt-3" role="alert">{loadError}</p>;
   }
@@ -259,7 +346,8 @@ function LearnerProfileSection() {
   if (!isEditing) {
     return (
       <div className="mt-4">
-        <dl className="divide-y divide-border-default">
+        {imageUploader(profile)}
+        <dl className="divide-y divide-border-default mt-4">
           <InfoRow label="Display name">{profile.displayName}</InfoRow>
           <InfoRow label="Bio">{profile.bio || 'Not set'}</InfoRow>
           <InfoRow label="Profile image URL">{profile.profileImageUrl || 'Not set'}</InfoRow>
@@ -275,6 +363,7 @@ function LearnerProfileSection() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="mt-4 grid gap-4">
+      {imageUploader(profile)}
       <FormField
         label="Display name *"
         htmlFor="learner-display-name"

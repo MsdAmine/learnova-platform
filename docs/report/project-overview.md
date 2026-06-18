@@ -52,6 +52,8 @@ implemented; there is no broader user-management console.
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
 | `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
+| `livesession` | Live session scheduling (instructor, ownership-checked), enrollment-gated learner visibility, access-controlled join, idempotent attendance recording — powered by generated Jitsi room URLs |
+| `media` | Cloudinary-backed file upload abstraction (`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`) for learner profile images and course thumbnails |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
 
 ## Implemented Workflows
@@ -77,14 +79,27 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Approved-instructor profile switching between the learner and instructor
   areas from all three UI entry points (dashboard switch card, instructor
   layout back-to-learner action, and Settings page), backed by
-  `POST /api/v1/profile/switch` (see `core-workflows.md` §10)
+  `POST /api/v1/profile/switch` (see `core-workflows.md` §11)
+- Live sessions (v1): instructor scheduling for owned courses, instructor
+  listing/cancellation, enrollment-gated learner visibility of upcoming
+  sessions, and access-controlled join with idempotent attendance recording
+  — powered by generated Jitsi meeting URLs opened in a new browser tab (see
+  `core-workflows.md` §10)
+- Cloudinary-backed media upload (v1): learner profile image upload from
+  Settings, and instructor course thumbnail upload from course edit mode —
+  both backend-authenticated multipart uploads validated for MIME type,
+  size, and non-empty content, with the prior Cloudinary asset deleted on
+  replacement (see `core-workflows.md` §12–13)
 
 ## Current Limitations
 
 These areas are intentionally **not** presented as complete:
 
-- **Live sessions** — no backend exists. `LiveSessionsPage` is a frontend
-  placeholder/mock.
+- **Live sessions (v1 scope only)** — implemented as scheduling +
+  access-controlled join + attendance via generated Jitsi URLs opened in a
+  new browser tab. There is no iframe embedding, no Jitsi JWT/JaaS, no
+  `/leave` endpoint, no recurring sessions, no reminders, and no
+  past-session history view. See `limitations.md` for the full list.
 - **Certificate issuance is manual, not automatic**, and offers only a
   browser print/save-as-PDF option — no server-generated PDF, sharing, QR
   code, or revocation flow exists. See `limitations.md` for the full list.
@@ -92,14 +107,19 @@ These areas are intentionally **not** presented as complete:
   placeholder panel; there is no rich text, video, or media rendering.
 - **Content ordering** — sections, lessons, questions, and answer options are
   always appended; there is no drag-reorder or explicit ordering field.
-- **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
-  strings only; no media upload pipeline exists.
+- **File upload** — Cloudinary-backed v1 exists for learner profile images
+  and course thumbnails (edit mode only) only; instructor profile image
+  upload is not implemented (`InstructorProfile` has no image URL field),
+  lesson attachments and certificate media/PDF storage do not exist, and
+  no direct/unsigned frontend-to-Cloudinary upload is used. Live, successful
+  upload against real Cloudinary credentials is unverified in this
+  environment (placeholder credentials only).
 - **Frontend automated testing is minimal** — a Vitest + React Testing
-  Library + jsdom harness now exists (4 test files, 17 tests covering
-  `useProfileSwitch`, the dashboard's certificate section, the
-  `learnerQuizzes` API client, and the `CoursePlayer` quiz history UI
-  extracted into `QuizCard`/`AttemptHistory`), but there is no broad
-  frontend integration suite — the full `CoursePlayer` route-level flow is
+  Library + jsdom harness now exists (27 tests covering `useProfileSwitch`,
+  the dashboard's certificate section, the `learnerQuizzes` API client, the
+  `CoursePlayer` quiz history UI extracted into `QuizCard`/`AttemptHistory`,
+  and the `liveSessions` API client / `LiveSessionsPage` UI), but there is no
+  broad frontend integration suite — the full `CoursePlayer` route-level flow is
   not component-tested — and lint/build/manual browser QA remain the
   primary verification method for most UI. See `testing-summary.md`.
 - **Profile switch UI** — fully implemented; no remaining navigation-only

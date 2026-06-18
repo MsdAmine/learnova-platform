@@ -7,6 +7,10 @@ import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressResponse;
 import com.learnova.learnova_backend.course.dto.CourseProgressResponse;
+import com.learnova.learnova_backend.media.MediaFolder;
+import com.learnova.learnova_backend.media.MediaStorageService;
+import com.learnova.learnova_backend.media.MediaUploadResult;
+import com.learnova.learnova_backend.media.MediaValidator;
 import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.entity.Lesson;
@@ -32,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -41,10 +46,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CourseService {
 
+        private static final long MAX_THUMBNAIL_BYTES = 5L * 1024 * 1024;
+
         private final CourseRepository courseRepository;
         private final CategoryRepository categoryRepository;
         private final InstructorProfileRepository instructorProfileRepository;
         private final WishlistItemRepository wishlistRepository;
+        private final MediaStorageService mediaStorageService;
 
         // Nouvelles dépendances requises pour l'Issue #58 & #59
         private final LessonRepository lessonRepository;
@@ -405,6 +413,30 @@ public class CourseService {
 
                 course.setStatus(CourseStatus.ARCHIVED);
                 return toResponse(courseRepository.save(course));
+        }
+
+        @Transactional
+        public CourseResponse uploadThumbnail(CustomUserDetails currentUser, Long courseId, MultipartFile file) {
+                InstructorProfile instructorProfile = resolveApprovedInstructorProfile(currentUser);
+                Course course = resolveOwnedCourse(instructorProfile, courseId);
+
+                MediaValidator.validateImage(file, MAX_THUMBNAIL_BYTES);
+
+                String previousPublicId = course.getThumbnailPublicId();
+
+                MediaUploadResult result = mediaStorageService.uploadImage(
+                                file, MediaFolder.COURSE_THUMBNAILS, "course-" + course.getId());
+
+                course.setThumbnailUrl(result.secureUrl());
+                course.setThumbnailPublicId(result.publicId());
+
+                Course saved = courseRepository.save(course);
+
+                if (previousPublicId != null && !previousPublicId.equals(result.publicId())) {
+                        mediaStorageService.delete(previousPublicId);
+                }
+
+                return toResponse(saved);
         }
 
         private InstructorProfile resolveApprovedInstructorProfile(CustomUserDetails currentUser) {

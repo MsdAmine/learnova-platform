@@ -4,6 +4,16 @@
 
 Proposed
 
+**As-built v1 note:** A first implementation following this decision now
+exists on the `feat/cloudinary-media-upload` branch: a backend-authenticated
+`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`
+abstraction under `backend/src/main/java/.../media`, covering learner profile
+image upload and instructor course thumbnail upload only. Lesson attachments
+and certificate PDF storage from the "Decision" section above are not yet
+implemented. No direct/unsigned frontend-to-Cloudinary upload was used —
+uploads go through the backend. See `docs/report/core-workflows.md` and
+`docs/report/limitations.md` for the current, code-backed scope.
+
 ## Context
 
 The Online Training Platform requires file and media storage for several features, including:

@@ -7,11 +7,12 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **27
+The backend test suite (`backend/src/test/java`) currently contains **29
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
-no external database is required.
+no external database is required. A full `./mvnw test` run currently reports
+**215 tests, 0 failures, 0 errors**.
 
 ### Test categories
 
@@ -69,6 +70,31 @@ no external database is required.
   checks on certificate retrieval, certificate code uniqueness, and
   unauthenticated access (`401`)
 
+**Live sessions** (1 class)
+- `LiveSessionIntegrationTest` — 10 tests covering: instructor can create a
+  session for their own course (verifies `status = SCHEDULED`,
+  `meetingProvider = JITSI`, a `meetingUrl` starting with
+  `https://meet.jit.si/`, and a non-empty `meetingRoomName`); instructor
+  cannot create a session for another instructor's course (`403`); learner
+  sees only sessions for enrolled courses (a second course's session is
+  excluded); a learner with no enrollments sees an empty upcoming-sessions
+  list; a learner cannot join a session for a course they are not enrolled
+  in (`404`); joining records attendance and returns the meeting URL;
+  duplicate join is idempotent (exactly one `SessionAttendance` row after
+  two joins); a cancelled session cannot be joined (`409`); an instructor
+  can cancel their own scheduled session (`status → CANCELLED`); and three
+  unauthenticated-request checks (create session, list upcoming sessions,
+  join session) all return `401`.
+
+**Media upload** (1 class)
+- `MediaUploadIntegrationTest` — 10 tests covering: unauthenticated rejection
+  of the learner profile image upload; learner can upload their own profile
+  image; replacing a profile image deletes the previous Cloudinary public ID;
+  invalid MIME type rejected; oversized file rejected; empty file rejected;
+  an instructor can upload a thumbnail for their own course; cross-instructor
+  thumbnail upload returns `403`; unauthenticated thumbnail upload rejected.
+  Cloudinary itself is mocked — no real external calls are made.
+
 **Application context** (1 class)
 - `LearnovaBackendApplicationTests`
 
@@ -85,8 +111,8 @@ that number changes as the suite evolves. To get the current count, run from
 Maven's Surefire summary at the end of the run reports the exact number of
 tests run, failures, and skips.
 
-**Quiz retake and attempt-history — backend test run:**
-- Full backend suite (`./mvnw test`): **193 tests, 0 failures, 0 errors.**
+**Quiz retake and attempt-history — backend test run (historical):**
+- Full backend suite (`./mvnw test`) at the time of that change: **193 tests, 0 failures, 0 errors.** (See the top of this section for the current total, which now includes `LiveSessionIntegrationTest`.)
 - `LearnerQuizIntegrationTest` additions specific to this feature: empty
   attempt history, retake creates a new attempt and history is ordered
   most-recent-first, attempt-history responses never leak `isCorrect`,
@@ -104,7 +130,7 @@ The frontend (`frontend/`) has a minimal automated test harness using
   `@testing-library/jest-dom/vitest`).
 - **Scripts** — `npm run test` (`vitest run`, single pass) and
   `npm run test:watch` (`vitest`, watch mode).
-- **Test files and coverage** (4 files, 17 tests total):
+- **Test files and coverage** (35 tests total):
   - `frontend/src/hooks/useProfileSwitch.test.tsx` — success path updates
     the active profile and navigates to `/instructor/courses`; failure path
     exposes an error and does not navigate or update the profile.
@@ -131,11 +157,42 @@ The frontend (`frontend/`) has a minimal automated test harness using
     a "Retake quiz" action once the latest attempt is submitted; clicking
     "Retake quiz" calls `onStart` with the quiz id; clicking "View result"
     calls `onViewResult` with the attempt id.
+  - `frontend/src/api/liveSessions.test.ts` — verifies the live-session API
+    client calls the correct endpoint paths and methods: learner
+    `listUpcomingLiveSessions()` (`GET /api/v1/learner/live-sessions/upcoming`)
+    and `joinLiveSession(sessionId)` (`POST /api/v1/learner/live-sessions/{sessionId}/join`);
+    instructor `getMyInstructorLiveSessions()` (`GET /api/v1/instructor/live-sessions`),
+    `createInstructorLiveSession(courseId, payload)`
+    (`POST /api/v1/instructor/courses/{courseId}/live-sessions`), and
+    `cancelInstructorLiveSession(sessionId)`
+    (`POST /api/v1/instructor/live-sessions/{sessionId}/cancel`).
+  - `frontend/src/features/dashboard/pages/LiveSessionsPage.test.tsx` —
+    covers the learner-facing live sessions page: loading skeleton, empty
+    state, rendering upcoming sessions, the join action opening the
+    returned Jitsi URL in a new tab, and the inline error path when join
+    fails.
+  - `frontend/src/api/profile.test.ts` — verifies the learner profile image
+    upload API client posts to `POST /api/v1/learner-profile/me/image` as
+    multipart/form-data.
+  - `frontend/src/api/instructorCourses.test.ts` — verifies the course
+    thumbnail upload API client posts to
+    `POST /api/v1/instructor/courses/{courseId}/thumbnail` as
+    multipart/form-data.
+  - `frontend/src/features/dashboard/pages/SettingsPage.test.tsx` — covers
+    the learner profile photo uploader: successful upload updates the
+    preview, an invalid file type/size is rejected client-side with an
+    accessible error and no network call, and a failed upload surfaces an
+    inline accessible error.
+  - `frontend/src/features/instructor/pages/InstructorCoursesPage.test.tsx`
+    — covers the course thumbnail uploader in edit mode: successful upload
+    updates the preview, an invalid file type/size is rejected client-side
+    with an accessible error and no network call, and a failed upload
+    surfaces an inline accessible error.
 - **Test setup** — `frontend/src/test/setup.ts` now also runs
   `afterEach(cleanup)` (from `@testing-library/react`) to unmount rendered
   components between tests and prevent DOM leakage across test files.
 - **Latest verification run** — `npm run lint` passed, `npm run build`
-  passed, `npm run test` passed (4 files, 17 tests, 0 failures).
+  passed, `npm run test` passed (35 tests, 0 failures).
 
 **Known frontend test gaps:**
 - No full `CoursePlayer` route-level/integration test — tab switching, data
@@ -305,13 +362,86 @@ lint, build, and manual browser QA:
   manual QA only. No backend code was touched, and the certificate backend
   was not modified.
 
+**Live sessions — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run test` passed (27 tests, 0 failures), including
+  `liveSessions.test.ts` and `LiveSessionsPage.test.tsx` (see "Frontend
+  Automated Tests" above).
+- Backend: `./mvnw test` passed (205 tests, 0 failures, 0 errors), including
+  the 10 `LiveSessionIntegrationTest` scenarios (see "Backend Test Suite"
+  above).
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - Instructor schedule: an approved instructor on `/instructor/live-sessions`
+    can open the "Schedule live session" form, pick one of their own
+    courses, and successfully create a session.
+  - Learner sees and joins: an enrolled learner on `/dashboard/live-sessions`
+    sees the scheduled session and can click "Join", which opens the Jitsi
+    meeting URL in a new browser tab.
+  - Non-enrolled learner is blocked: a learner without an enrollment in the
+    session's course does not see the session in their upcoming list.
+  - Cancel flow: the instructor can cancel a `SCHEDULED` session from
+    `/instructor/live-sessions`, with inline confirmation; the session's
+    status updates to `CANCELLED`.
+  - No fake meeting links remain: the previous placeholder
+    `meet.learnova.app` / `recordings.learnova.app` links are gone from the
+    UI; all meeting URLs observed during QA were real `meet.jit.si` links
+    returned by the backend.
+  - No horizontal overflow at any of the three viewports on either the
+    learner or instructor live-sessions page.
+- These manual QA claims are evidence for this specific change; they
+  complement, and do not replace, the automated coverage listed above.
+
+**Instructor live-session mobile nav — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- `npm run test` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - 390×844: the new mobile-only instructor nav row (`md:hidden`) is visible
+    below the topbar and functional — both "Courses" and "Live sessions"
+    links work, active nav state is visible, and `/instructor/live-sessions`
+    is reachable via in-app navigation; no horizontal overflow.
+  - 768×1024: the mobile nav row is hidden at the `md` breakpoint and the
+    desktop nav row (`hidden md:flex`) is visible instead; no overflow.
+  - 1440×900: desktop nav unchanged.
+  - No new console errors from the instructor nav flows at any viewport.
+- Only `frontend/src/features/instructor/components/InstructorLayout.tsx`
+  was changed; no backend code and no certificate-related code was touched.
+
+**Cloudinary media upload — manual verification:**
+- Backend: `./mvnw test` passed (215 tests, 0 failures, 0 errors), including
+  the 10 `MediaUploadIntegrationTest` scenarios (see "Backend Test Suite"
+  above; Cloudinary mocked, no real external calls).
+- Frontend: `npm run lint` passed, `npm run build` passed, `npm run test`
+  passed (35 tests, 0 failures), including `profile.test.ts`,
+  `instructorCourses.test.ts`, `SettingsPage.test.tsx`, and
+  `InstructorCoursesPage.test.tsx` (see "Frontend Automated Tests" above).
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - A valid image upload on the Settings photo uploader and the course
+    thumbnail uploader reaches the Cloudinary call and fails cleanly with a
+    `502` — this is expected, since only placeholder Cloudinary credentials
+    are configured in this environment; a live successful upload has not
+    been verified.
+  - An invalid file type and an oversized file are both rejected
+    client-side with an accessible error message and no network call made,
+    on both uploaders.
+  - Cross-instructor course thumbnail upload returns `403`.
+  - No horizontal overflow at any of the three viewports.
+  - No unexpected console errors.
+- Instructor profile image upload was not exercised because it does not
+  exist — `InstructorProfile` has no image URL field.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
 and should not be presented as verified in the report:
 
-- **Live sessions backend** — does not exist; `LiveSessionsPage` is a
-  frontend placeholder only.
+- **Live sessions** — backend covered by `LiveSessionIntegrationTest` (10
+  scenarios); frontend covered by `liveSessions.test.ts` and
+  `LiveSessionsPage.test.tsx` plus manual browser QA (see "Live sessions —
+  manual verification" above). `InstructorLiveSessionsPage` itself
+  (schedule form, cancel confirm) is not component-tested — covered by
+  manual browser QA only.
 - **Certificate issuance UI** — covered by manual browser QA only (see
   above); no automated frontend component test exists for the certificate
   panel or certificate pages.
@@ -332,6 +462,12 @@ and should not be presented as verified in the report:
   attempt-history contract is covered by `learnerQuizzes.test.ts`.
 - **Rich lesson body/media** — the course player's lesson content area is a
   placeholder panel; there is no video/rich-text rendering to test.
+- **Live Cloudinary upload success** — only placeholder Cloudinary
+  credentials are configured in this environment, so a successful real
+  upload (as opposed to a clean failure on the Cloudinary call) has not
+  been verified by either automated tests (Cloudinary is mocked) or manual
+  QA. Instructor profile image upload has no test coverage because it is
+  not implemented.
 - **Ordering/reordering** — sections, lessons, questions, and answer options
   have no explicit ordering or reorder capability; not applicable for
   testing.

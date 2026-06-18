@@ -7,11 +7,12 @@ function resolveApiBaseUrl() {
     return configuredBaseUrl.replace(/\/+$/, '').replace(/\/api\/v1$/, '');
 }
 
+// No default Content-Type header: axios sets 'application/json' automatically
+// for plain-object request bodies, and clears it for FormData so the browser
+// can attach the correct multipart boundary. A hard-coded default here would
+// leak into multipart upload requests and break them server-side.
 const api = axios.create({
     baseURL: resolveApiBaseUrl(),
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 api.interceptors.request.use((config) => {

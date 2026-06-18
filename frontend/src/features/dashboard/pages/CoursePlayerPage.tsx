@@ -233,7 +233,7 @@ function CourseOutline({
                         'text-body-sm motion-safe:transition-colors duration-fast',
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
                         isSelected
-                          ? 'bg-salem-50 text-salem font-medium'
+                          ? 'bg-accent-soft text-accent-text font-medium'
                           : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary',
                       )}
                     >
@@ -1060,7 +1060,7 @@ export default function CoursePlayerPage() {
                 'motion-safe:transition-colors duration-fast',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
                 selected
-                  ? 'border-salem text-salem'
+                  ? 'border-accent-primary text-accent-text'
                   : 'border-transparent text-text-secondary hover:text-text-primary',
               )}
             >

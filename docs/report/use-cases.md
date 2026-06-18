@@ -9,10 +9,14 @@ Every use case below is checked against `backend/src/main/java` controllers,
 `frontend/src/router/index.tsx`, and the existing `docs/report/` package.
 **Implemented** use cases are wired end-to-end (backend endpoint + frontend
 screen). **Planned / not fully implemented** use cases are marked explicitly
-and must not be presented as complete in the report or demo. Live-session,
-rich lesson media, quiz analytics, and broader admin user-management
-capability are not claimed as complete — none of these exist in this
-codebase per `limitations.md`. Quiz attempt history and retake **are**
+and must not be presented as complete in the report or demo. Rich lesson
+media, quiz analytics, and broader admin user-management capability are not
+claimed as complete — none of these exist in this codebase per
+`limitations.md`. **Live sessions** (UC-31 through UC-35) are now
+implemented as a Jitsi-backed v1 — scheduling, ownership-checked instructor
+management, enrollment-gated learner visibility, access-controlled join, and
+idempotent attendance recording — with no `/leave` endpoint, no recurring
+sessions, no reminders, and no past-session history view. Quiz attempt history and retake **are**
 implemented (see UC-10, UC-11, UC-29, UC-30) — correct answers remain
 hidden before submission in every case. **Certificates** are now implemented
 end-to-end: a real certificate backend module (`certificate/controller`,
@@ -26,6 +30,13 @@ switching** (UC-17, UC-27) is implemented end-to-end across every UI entry
 point: the learner dashboard's instructor switch card, the instructor area's
 "back to learner" action, and `SettingsPage`'s "Go to teaching area" action
 all call `POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts`.
+**Media upload** (UC-36, UC-37) is implemented as a Cloudinary-backed v1 for
+two surfaces only — learner profile image and instructor course thumbnail
+(edit mode only) — via a backend `media` module
+(`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`).
+Instructor profile image upload, lesson attachments, certificate media/PDF
+storage, and any direct/unsigned frontend-to-Cloudinary upload remain
+out of scope; see `limitations.md`.
 
 ---
 
@@ -95,6 +106,13 @@ graph TB
     UC28((View/Issue Certificate))
     UC29((View Quiz Attempt History))
     UC30((Retake Quiz))
+    UC31((Schedule Live Session))
+    UC32((View Own Live Sessions))
+    UC33((Cancel Live Session))
+    UC34((View Upcoming Live Sessions))
+    UC35((Join Live Session))
+    UC36((Upload Profile Image))
+    UC37((Upload Course Thumbnail))
 
     Guest --> UC1
     Guest --> UC2
@@ -115,10 +133,14 @@ graph TB
     Learner --> UC28
     Learner --> UC29
     Learner --> UC30
+    Learner --> UC34
+    Learner --> UC35
+    Learner --> UC36
 
     Applicant --> UC14
 
     Instructor --> UC17
+    Instructor --> UC37
     Instructor --> UC18
     Instructor --> UC19
     Instructor --> UC20
@@ -131,6 +153,9 @@ graph TB
     Instructor --> UC27
     Instructor --> UC5
     Instructor --> UC8
+    Instructor --> UC31
+    Instructor --> UC32
+    Instructor --> UC33
 
     Admin --> UC15
     Admin --> UC16
@@ -143,6 +168,9 @@ graph TB
     UC13 -.precedes.-> UC14
     UC15 -.precedes.-> UC17
     UC9 -.precedes.-> UC28
+    UC31 -.precedes.-> UC34
+    UC34 -.precedes.-> UC35
+    UC32 -.includes.-> UC33
 ```
 
 `★ Insight ─────────────────────────────────────`
@@ -683,6 +711,126 @@ replaces "Learner" capabilities — it's additive.
 
 ---
 
+### UC-31: Schedule Live Session
+- **Status:** Implemented (v1)
+- **Primary actor:** Approved Instructor (owner only)
+- **Goal:** Schedule an instructor-led live session for one of their own courses.
+- **Preconditions:** Caller owns the target course.
+- **Main success flow:**
+  1. Instructor opens `/instructor/live-sessions`, clicks "Schedule live session", and submits course, title, optional description, start time, end time, and optional max participants.
+  2. Backend (`POST /api/v1/instructor/courses/{courseId}/live-sessions`) validates course ownership and creates a `LiveSession` (`status = SCHEDULED`), generating a Jitsi room URL (`https://meet.jit.si/learnova-live-<secure-random>`).
+- **Alternative/error flows:** Scheduling for a course owned by another instructor → `403`. Validation errors (missing title/times, end before start) surfaced inline.
+- **Postconditions:** A `LiveSession` row with `meetingProvider = JITSI`, a generated `meetingUrl`/`meetingRoomName`, and `status = SCHEDULED`.
+- **Frontend routes:** `/instructor/live-sessions` (under `InstructorRoute`)
+- **Backend endpoints:** `POST /api/v1/instructor/courses/{courseId}/live-sessions`
+- **Entities/tables:** `LiveSession`, `Course`, `InstructorProfile`
+
+---
+
+### UC-32: View Own Live Sessions
+- **Status:** Implemented (v1)
+- **Primary actor:** Approved Instructor
+- **Goal:** Review all live sessions scheduled across the instructor's own courses.
+- **Preconditions:** Authenticated approved instructor.
+- **Main success flow:**
+  1. Instructor opens `/instructor/live-sessions`.
+  2. Frontend calls `GET /api/v1/instructor/live-sessions`, rendering session cards (title, course, time range, status badge, "Open meeting link").
+- **Alternative/error flows:** Fetch error → retry panel. Empty list → empty state with a "Schedule live session" CTA.
+- **Postconditions:** None (read-only).
+- **Frontend routes:** `/instructor/live-sessions`
+- **Backend endpoints:** `GET /api/v1/instructor/live-sessions`
+- **Entities/tables:** `LiveSession`
+
+---
+
+### UC-33: Cancel Live Session
+- **Status:** Implemented (v1)
+- **Primary actor:** Approved Instructor (owner only)
+- **Goal:** Cancel a previously scheduled session.
+- **Preconditions:** Session belongs to the caller and is `SCHEDULED`.
+- **Main success flow:**
+  1. Instructor clicks "Cancel session" on a `SCHEDULED` session row, confirms inline ("Cancel this session?").
+  2. Backend (`POST /api/v1/instructor/live-sessions/{sessionId}/cancel`) transitions `status → CANCELLED`.
+- **Alternative/error flows:** Cancel request failure → inline row error, status unchanged.
+- **Postconditions:** `LiveSession.status = CANCELLED` — learner join attempts subsequently return `409` (see UC-35).
+- **Frontend routes:** `/instructor/live-sessions`
+- **Backend endpoints:** `POST /api/v1/instructor/live-sessions/{sessionId}/cancel`
+- **Entities/tables:** `LiveSession`
+
+---
+
+### UC-34: View Upcoming Live Sessions (Learner)
+- **Status:** Implemented (v1)
+- **Primary actor:** Enrolled Learner
+- **Goal:** See upcoming live sessions for courses the learner is enrolled in.
+- **Preconditions:** Authenticated learner; enrollment `ACTIVE` or `COMPLETED` for at least one course with a scheduled session, to see any results.
+- **Main success flow:**
+  1. Learner opens `/dashboard/live-sessions`.
+  2. Frontend calls `GET /api/v1/learner/live-sessions/upcoming`; backend filters to sessions for courses where the caller has an `ACTIVE`/`COMPLETED` enrollment.
+  3. Each row shows date/time, title, course, instructor name, and a "Join" action. **The response never includes `meetingUrl`/`meetingRoomName`** — the link is only obtained via the join endpoint (UC-35).
+- **Alternative/error flows:** No enrollments / no scheduled sessions → empty state. Fetch error → retry panel.
+- **Postconditions:** None (read-only). A learner not enrolled in a course never sees that course's sessions here.
+- **Frontend routes:** `/dashboard/live-sessions` (under `ProtectedRoute`)
+- **Backend endpoints:** `GET /api/v1/learner/live-sessions/upcoming`
+- **Entities/tables:** `LiveSession`, `Enrollment`
+
+---
+
+### UC-35: Join Live Session
+- **Status:** Implemented (v1)
+- **Primary actor:** Enrolled Learner
+- **Goal:** Join the Jitsi meeting for an upcoming session.
+- **Preconditions:** Learner has an `ACTIVE`/`COMPLETED` enrollment for the session's course; session is not `CANCELLED`.
+- **Main success flow:**
+  1. Learner clicks "Join" on a session row.
+  2. Backend (`POST /api/v1/learner/live-sessions/{sessionId}/join`) validates enrollment and session status, records a `SessionAttendance` row (idempotent — a duplicate join for the same learner/session does not create a second row), and returns the Jitsi `meetingUrl`.
+  3. Frontend opens the URL in a new browser tab (`window.open(..., '_blank', 'noopener,noreferrer')`) — no iframe embedding.
+- **Alternative/error flows:** Not enrolled in the session's course → `404`. Session `CANCELLED` → `409`, inline error shown on the row. Repeated joins are safe (idempotent attendance).
+- **Postconditions:** A `SessionAttendance` row for (learner, session) created on first join; unchanged on subsequent joins.
+- **Frontend routes:** `/dashboard/live-sessions`
+- **Backend endpoints:** `POST /api/v1/learner/live-sessions/{sessionId}/join`
+- **Entities/tables:** `SessionAttendance`, `LiveSession`, `Enrollment`
+
+---
+
+### UC-36: Upload Learner Profile Image
+- **Status:** Implemented (v1)
+- **Primary actor:** Learner
+- **Goal:** Replace the profile photo shown on the learner's own profile.
+- **Preconditions:** Authenticated.
+- **Main success flow:**
+  1. Learner opens `/dashboard/settings` and selects an image file in the photo uploader.
+  2. Frontend submits the file via `POST /api/v1/learner-profile/me/image` (multipart/form-data, field name `file`).
+  3. Backend validates MIME type, size, and non-empty content (`MediaValidator`), uploads the file to Cloudinary via `MediaStorageService`/`CloudinaryMediaStorageService`, and stores the returned secure URL on `LearnerProfile.profileImageUrl` plus the Cloudinary public ID on `LearnerProfile.profileImagePublicId`.
+  4. If a previous `profileImagePublicId` existed, the backend deletes the old Cloudinary asset after the new upload succeeds.
+  5. Frontend updates the photo preview with the new image.
+- **Alternative/error flows:** Invalid MIME type, oversized file, or empty file → rejected client-side with an accessible error and no network call, and rejected server-side regardless. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal (the new upload already succeeded). In the current environment, Cloudinary credentials are placeholders, so a valid upload reaches the Cloudinary call and fails cleanly with a `502` — live success is unverified pending real credentials.
+- **Postconditions:** `LearnerProfile.profileImageUrl`/`profileImagePublicId` updated on success.
+- **Frontend routes:** `/dashboard/settings`
+- **Backend endpoints:** `POST /api/v1/learner-profile/me/image`
+- **Entities/tables:** `LearnerProfile`
+
+---
+
+### UC-37: Upload Course Thumbnail
+- **Status:** Implemented (v1)
+- **Primary actor:** Approved Instructor (owner only)
+- **Goal:** Replace the thumbnail image for an existing course.
+- **Preconditions:** Caller owns the course; course already exists (edit mode only — create mode has no `courseId` yet, so it remains URL-only).
+- **Main success flow:**
+  1. Instructor opens `/instructor/courses` in edit mode for an existing course and selects an image file in the thumbnail uploader.
+  2. Frontend submits the file via `POST /api/v1/instructor/courses/{courseId}/thumbnail` (multipart/form-data, field name `file`).
+  3. Backend checks course ownership, validates the file (`MediaValidator`), uploads to Cloudinary, and stores the secure URL on `Course.thumbnailUrl` plus the public ID on `Course.thumbnailPublicId`.
+  4. If a previous `thumbnailPublicId` existed, the backend deletes the old Cloudinary asset after the new upload succeeds.
+  5. Frontend updates the thumbnail preview with the new image.
+- **Alternative/error flows:** Cross-instructor upload attempt (non-owner) → `403`. Invalid MIME type, oversized, or empty file → rejected client-side and server-side. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal. Placeholder Cloudinary credentials in the current environment mean a valid upload reaches the Cloudinary call and fails cleanly with `502` — live success is unverified pending real credentials.
+- **Postconditions:** `Course.thumbnailUrl`/`thumbnailPublicId` updated on success.
+- **Frontend routes:** `/instructor/courses` (edit mode)
+- **Backend endpoints:** `POST /api/v1/instructor/courses/{courseId}/thumbnail`
+- **Entities/tables:** `Course`
+
+---
+
 ## 4. Priority List
 
 ### Essential for demo
@@ -718,14 +866,23 @@ replaces "Learner" capabilities — it's additive.
 - UC-28 View/Issue Certificate — demo by completing a course's lessons in the player, then issuing the certificate from the certificate panel that appears at 100% progress
 - UC-29 View Quiz Attempt History
 - UC-30 Retake Quiz
+- UC-31 Schedule Live Session
+- UC-32 View Own Live Sessions
+- UC-33 Cancel Live Session
+- UC-34 View Upcoming Live Sessions (Learner)
+- UC-35 Join Live Session
+- UC-36 Upload Learner Profile Image
+- UC-37 Upload Course Thumbnail
 
 ### Planned / future extension
+- Instructor profile image upload (no image URL field on `InstructorProfile`)
+- Live, successful Cloudinary upload verification (only placeholder credentials are configured in this environment)
 - Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
 - Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28), plus PDF download/sharing beyond the existing browser print
-- Live sessions (no backend exists; frontend page is a placeholder)
+- Live session `/leave` endpoint, recurring sessions, reminders, and a past-session history view (none exist in v1; see UC-31–UC-35)
 - Catalog-card wishlist controls (currently the wishlist action exists only on course detail and saved-courses pages)
 - Broader admin user management beyond instructor approvals and category creation
 

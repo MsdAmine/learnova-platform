@@ -12,9 +12,12 @@ import { cn } from '../../lib/cn';
 // coral    → warning / notification (Alert Ember) — status-bearing only
 // anzac    → achievement / completion (Earned Amber) — achievement-only
 // azure    → informational / analytics (Scholar Blue) — data context only
+// accent   → in-progress / pending / info state (Indigo) — purple/blue refresh,
+//            docs/design/brand-refresh-purple-blue-spec.md. Distinct from azure
+//            (analytics) and salem (success); never used for achievement states.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type BadgeVariant = 'default' | 'salem' | 'coral' | 'anzac' | 'azure';
+export type BadgeVariant = 'default' | 'salem' | 'coral' | 'anzac' | 'azure' | 'accent';
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -26,6 +29,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   coral:   'bg-coral-50 text-coral-700',
   anzac:   'bg-anzac-50 text-anzac-700',
   azure:   'bg-azure-50 text-azure',
+  accent:  'bg-accent-soft text-accent-text',
 };
 
 export function Badge({ variant = 'default', className, ref, ...props }: BadgeProps & { ref?: Ref<HTMLSpanElement> }) {
