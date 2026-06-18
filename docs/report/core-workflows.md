@@ -174,30 +174,46 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Main steps:**
 1. Learner opens the Quizzes tab in the course player; published quizzes for
    the course are lazy-loaded on first activation.
-2. Learner starts an attempt (or resumes an existing `IN_PROGRESS` one —
+2. Once the quiz list loads, the frontend fetches each quiz's attempt
+   history (`GET /api/v1/learner/quizzes/{quizId}/attempts`, most-recent-first)
+   in parallel; a failed per-quiz fetch degrades silently — that card's
+   history panel just stays empty rather than blocking the tab.
+3. Each quiz card shows its current status (not started / in progress /
+   passed / not passed) and latest score when available.
+4. Learner starts an attempt (or resumes an existing `IN_PROGRESS` one —
    this call is idempotent).
-3. Learner selects one answer option per question via radio controls.
+5. Learner selects one answer option per question via radio controls.
    **Correct answers are never exposed before submission** — the learner-safe
-   question/option DTOs carry no `isCorrect` field.
-4. Submit is enabled only once every question has a selection.
-5. Backend validates the submission (all questions answered, no duplicate
+   question/option DTOs carry no `isCorrect` field, and `IN_PROGRESS`
+   attempts in the history list never expose answer correctness either.
+6. Submit is enabled only once every question has a selection.
+7. Backend validates the submission (all questions answered, no duplicate
    answers, options belong to their questions), computes
    `scorePercentage = floor(earnedPoints * 100 / totalPoints)`, and sets
    `passed = scorePercentage >= quiz.passingScore`.
-6. A second submit attempt on an already-`SUBMITTED` attempt returns `409`;
+8. A second submit attempt on an already-`SUBMITTED` attempt returns `409`;
    the frontend then fetches the stored result instead.
-7. Result panel shows score percentage, passed/not-passed badge, and
+9. Result panel shows score percentage, passed/not-passed badge, and
    per-question correct/incorrect feedback.
+10. Learner can click "Retake quiz" after viewing a submitted result — this
+    calls the same start/resume endpoint, which creates a brand-new
+    `QuizAttempt` since the previous one is no longer `IN_PROGRESS`. The
+    earlier `SUBMITTED` attempt is never overwritten.
+11. The collapsible attempt-history panel lists every past attempt (number,
+    date, status, score where applicable) with "Resume" for `IN_PROGRESS`
+    attempts and "View result" for `SUBMITTED` ones — old submitted attempts
+    remain viewable after a retake.
 
 **Backend endpoints:**
 - `GET /api/v1/learner/courses/{courseId}/quizzes`, `GET /api/v1/learner/quizzes/{quizId}`
 - `POST /api/v1/learner/quizzes/{quizId}/attempts`
 - `POST /api/v1/learner/quiz-attempts/{attemptId}/submit`
 - `GET /api/v1/learner/quiz-attempts/{attemptId}`
+- `GET /api/v1/learner/quizzes/{quizId}/attempts`
 
 **Frontend routes:** `/dashboard/courses/:courseId` (Quizzes tab)
 
-**Result:** A `SUBMITTED` `QuizAttempt` with computed score and per-question correctness. There is no attempt-history list and no dedicated retake flow — starting the quiz again simply creates a new attempt.
+**Result:** A `SUBMITTED` `QuizAttempt` with computed score and per-question correctness, plus a retake path and a full attempt-history list per quiz. There is no pagination on the attempt-history endpoint — it returns the full list for the quiz.
 
 **Evidence:** `assets/screenshots/04-course-player-quiz-result.png` (demo/report screenshot, not an automated test)
 
@@ -261,3 +277,77 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Result:** Updated `LearnerProfile` and/or `InstructorProfile` fields, scoped strictly to the authenticated user's own record.
 
 **Evidence:** `assets/screenshots/mobile-settings.png` (mobile viewport) (demo/report screenshot, not an automated test)
+
+---
+
+## 9. Learner Issues and Views a Course Completion Certificate
+
+**Actor:** Enrolled Learner (own certificates only)
+
+**Goal:** Obtain a certificate of completion once a course is finished, and view it later.
+
+**Main steps:**
+1. Learner completes every lesson in an enrolled course (see workflow 5);
+   `Enrollment.progressPercentage` reaches 100%.
+2. The course player (`CoursePlayerPage`) renders a certificate panel once
+   `progressPercentage === 100`. The panel checks `GET
+   /api/v1/learner/certificates` to see whether a certificate for this course
+   already exists.
+3. If none exists, the learner clicks "Issue certificate", which calls
+   `POST /api/v1/learner/certificates/course/{courseId}/issue`. The backend
+   validates `Enrollment.status = COMPLETED` and creates a `Certificate` row
+   (idempotent: a repeat call returns the existing certificate with `200`
+   instead of creating a duplicate).
+4. On success, the panel shows a "View certificate" link to
+   `/dashboard/certificates/:certificateId`.
+5. The same certificate is also reachable later from `/dashboard/certificates`
+   (the certificates list page), which calls `GET
+   /api/v1/learner/certificates` and links each card to its certificate view.
+6. The learner dashboard (`/dashboard`) also reads `GET
+   /api/v1/learner/certificates` directly and renders a Certificates section
+   with the same loading/error/empty states; each card on the dashboard links
+   to the same `/dashboard/certificates/:certificateId` view route.
+7. `CertificateViewPage` calls `GET
+   /api/v1/learner/certificates/{certificateId}` and renders a full-screen,
+   printable certificate document with a "Print / Save as PDF" button
+   (browser `window.print()` — no server-side PDF generation).
+
+**Error handling:** Issuing for a non-`COMPLETED` enrollment returns `409`,
+surfaced in the panel as an accessible (`role="alert"`) message. A certificate
+not found, or not owned by the caller, returns `404` on the view page.
+
+**Backend endpoints:**
+- `POST /api/v1/learner/certificates/course/{courseId}/issue` (LEARNER; self-scoped; idempotent)
+- `GET /api/v1/learner/certificates` (LEARNER; self-scoped)
+- `GET /api/v1/learner/certificates/{certificateId}` (LEARNER; self-scoped)
+
+**Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard` (Certificates section on the learner dashboard), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
+
+**Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. The certificate backend itself was not changed by this workflow's UI integration.
+
+---
+
+## 10. Approved Instructor Switches Active Profile
+
+**Actor:** Approved Instructor (a user with `INSTRUCTOR` in `availableProfiles`)
+
+**Goal:** Toggle the active profile between `LEARNER` and `INSTRUCTOR` and land on the corresponding area, with the backend as the source of truth for which profile is active.
+
+**Main steps:**
+1. On `/dashboard`, `DashboardLayout`'s sidebar renders a profile-switch card for approved instructors only (`showProfileSwitchCard = isApprovedInstructor`).
+2. The instructor clicks "Switch to instructor". The button calls `useProfileSwitch().switchTo('INSTRUCTOR')` (`src/hooks/useProfileSwitch.ts`).
+3. The hook calls `switchActiveProfile('INSTRUCTOR')` (`src/api/profile.ts`), which performs `POST /api/v1/profile/switch` with `{ profileType: 'INSTRUCTOR' }`.
+4. Backend (`ProfileSwitchController` → `ProfileSwitchService`) validates the request via `ProfileAccessService.canUseProfile()` and returns `{ activeProfile, availableProfiles }` on success, or `403` if the profile is not available to the caller.
+5. On success, the hook updates `AuthContext`'s active profile and navigates to `/instructor/courses` (mapped via `PROFILE_ROUTE`).
+6. `InstructorRoute` independently re-checks `isAuthenticated` + `availableProfiles` includes `'INSTRUCTOR'` before rendering the instructor shell — the switch call does not bypass this guard.
+7. To switch back, the instructor clicks "Back to learner dashboard" in `InstructorLayout`'s topbar, which calls the same hook with `'LEARNER'`, hits the same endpoint, updates `AuthContext`, and navigates to `/dashboard`.
+8. A third entry point reaches the same flow: on `/dashboard/settings`, the approved-instructor application panel's "Go to teaching area" action also calls `useProfileSwitch().switchTo('INSTRUCTOR')`, routing through the identical hook → endpoint → `AuthContext` update → navigation sequence as steps 2–5.
+
+**Backend endpoints:**
+- `POST /api/v1/profile/switch` (authenticated; validated against `ProfileAccessService.canUseProfile()`)
+
+**Frontend routes:** `/dashboard` (switch-to-instructor trigger, `DashboardLayout`) ↔ `/instructor/courses` (switch-to-learner trigger, `InstructorLayout`); `/dashboard/settings` (alternate switch-to-instructor trigger, `SettingsPage`)
+
+**Error handling:** A `403` from the backend (requested profile not available) is caught by `useProfileSwitch` and rendered as an inline, accessible (`role="alert"`) message in the triggering component (`DashboardLayout`, `InstructorLayout`, or `SettingsPage`); the user remains on the current page and no navigation occurs.
+
+**Result:** `AuthContext.activeProfile` reflects the backend-confirmed profile; the user lands on the matching area. All three UI entry points — `DashboardLayout`'s switch card, `InstructorLayout`'s back-to-learner action, and `SettingsPage`'s "Go to teaching area" action — are now backend-backed through the same `useProfileSwitch` hook.

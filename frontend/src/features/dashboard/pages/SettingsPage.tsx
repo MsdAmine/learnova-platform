@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
+import { useProfileSwitch } from '../../../hooks/useProfileSwitch';
 import api from '../../../api/axios';
 import {
   getMyLearnerProfile,
@@ -550,6 +551,7 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
 
 function InstructorApplicationPanel() {
   const { user, refreshUser } = useAuth();
+  const { switching, error: switchError, switchTo } = useProfileSwitch();
   const [isApplying, setIsApplying] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
   const [bio, setBio] = useState('');
@@ -766,9 +768,18 @@ function InstructorApplicationPanel() {
                 Manage your courses, content, and publishing from the instructor workspace.
               </p>
               <div>
-                <Button asChild variant="secondary" size="sm">
-                  <Link to="/instructor/courses">Go to teaching area</Link>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={switching}
+                  aria-label="Go to teaching area"
+                  onClick={() => void switchTo('INSTRUCTOR')}
+                >
+                  Go to teaching area
                 </Button>
+                {switchError && (
+                  <p className="text-caption text-error mt-1" role="alert">{switchError}</p>
+                )}
               </div>
             </div>
           ) : (

@@ -20,7 +20,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type |
+| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type (validated against the caller's `availableProfiles`; `403` if not available); consumed by the frontend via `src/api/profile.ts` → `src/hooks/useProfileSwitch.ts`, called from `DashboardLayout`'s instructor switch card, `InstructorLayout`'s "back to learner" action, and `SettingsPage`'s "Go to teaching area" action |
 | GET | `/api/v1/learner-profile/me` | Authenticated | Get the caller's own learner profile (self-resolved, no id in URL) |
 | PATCH | `/api/v1/learner-profile/me` | Authenticated | Update `displayName`, `bio`, `profileImageUrl` on the caller's own learner profile |
 | POST | `/api/v1/instructor-profile/request` | Authenticated | Submit an instructor profile request (status starts `PENDING`) |
@@ -114,9 +114,18 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 |---|---|---|---|
 | GET | `/api/v1/learner/courses/{courseId}/quizzes` | LEARNER; enrollment-gated | List `PUBLISHED` quizzes for an enrolled course (no `isCorrect` exposed) |
 | GET | `/api/v1/learner/quizzes/{quizId}` | LEARNER; enrollment-gated | Get learner-safe quiz detail (no `isCorrect` exposed) |
-| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt |
+| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt; creates a new attempt (retake) if the existing one is already `SUBMITTED` |
 | POST | `/api/v1/learner/quiz-attempts/{attemptId}/submit` | LEARNER; own attempt only | Submit answers, compute score and pass/fail; 409 if already submitted |
 | GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER; own attempt only | Retrieve a submitted attempt's result with per-question correctness |
+| GET | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | List the caller's own attempts for a quiz, most-recent-first; `SUBMITTED` attempts include per-question results, `IN_PROGRESS` attempts never expose correctness; no pagination |
+
+## Certificates
+
+| Method | Path | Access | Purpose |
+|---|---|---|---|
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment (`201` first issue, `200` idempotent repeat; `409` if not completed) |
+| GET | `/api/v1/learner/certificates` | LEARNER; self-scoped | List the caller's own certificates |
+| GET | `/api/v1/learner/certificates/{certificateId}` | LEARNER; self-scoped | Get one certificate owned by the caller (`404` if not found or not owned) |
 
 ## Admin
 

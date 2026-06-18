@@ -47,6 +47,15 @@ public class LearnerQuizController {
                 learnerQuizService.startOrResumeAttempt(currentUser.getId(), quizId));
     }
 
+    @GetMapping("/quizzes/{quizId}/attempts")
+    public ResponseEntity<List<QuizAttemptResponse>> listAttempts(
+            @PathVariable Long quizId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        return ResponseEntity.ok(
+                learnerQuizService.listAttempts(currentUser.getId(), quizId));
+    }
+
     @PostMapping("/quiz-attempts/{attemptId}/submit")
     public ResponseEntity<QuizAttemptResponse> submitAttempt(
             @PathVariable Long attemptId,

@@ -8,12 +8,31 @@ controllers.
 
 ## Features owned elsewhere / explicitly out of scope here
 
-- **Certificates** — owned by another developer. No certificate backend
-  exists in this codebase. `CertificatesPage` (`/dashboard/certificates`) is
-  a frontend placeholder page with no backend contract behind it. Do not
-  present certificate issuance as implemented.
 - **Live sessions** — no backend exists. `LiveSessionsPage`
   (`/dashboard/live-sessions`) is frontend placeholder/mock only.
+
+## Certificates
+
+Certificates are implemented end-to-end (backend module + `CertificatesPage`,
+`CertificateViewPage`, and a certificate panel in `CoursePlayerPage` — see
+`core-workflows.md` §9 and `use-cases.md` UC-28), with these real, code-backed
+limitations:
+
+- **Issuance is manual, not automatic.** A learner must explicitly click
+  "Issue certificate" from the course player's certificate panel; there is no
+  background job or completion hook that creates a `Certificate` row without
+  that click.
+- **Certificate availability depends on course completion.** The panel only
+  appears once `Enrollment.progressPercentage` reaches 100%; issuing for a
+  non-`COMPLETED` enrollment is rejected by the backend with `409`.
+- **No PDF generation, download, sharing, QR code, or revocation.** The
+  certificate view page offers only a browser "Print / Save as PDF" button
+  (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
+  share action, no QR/verification code, and no revoke or regenerate flow.
+- **No certificate-issuance trigger from anywhere except the course player.**
+  `CertificatesPage` (the certificates list) and the learner dashboard's
+  Certificates section both only read existing certificates via
+  `GET /api/v1/learner/certificates` — neither offers an issuance action.
 
 ## Course content and player
 
@@ -29,14 +48,18 @@ controllers.
 
 ## Quizzes
 
-- No attempt-history UI — learners can start a new attempt, but there is no
-  list of past attempts or a way to review earlier results.
-- No dedicated retake flow — starting the same quiz again creates a new
-  attempt; there is no retake CTA after viewing a result.
+- No pagination on the attempt-history endpoint
+  (`GET /api/v1/learner/quizzes/{quizId}/attempts`) — it returns the full,
+  unbounded list of the caller's attempts for a quiz, ordered purely by
+  `startedAt` descending with no other sort/filter options.
+- Per-quiz attempt-history fetches on the Quizzes tab are non-blocking and
+  fail silently per card — a failed fetch for one quiz leaves that card's
+  history empty without surfacing an error or blocking the rest of the tab.
 - No timers/duration fields on quizzes.
 - No quiz analytics or learner-results dashboard for instructors.
-- No certificate integration tied to quiz passing (depends on the
-  certificates module, which does not exist here).
+- No certificate integration tied to quiz passing — certificate issuance
+  (see the **Certificates** section above) is keyed only to lesson/course
+  progress reaching 100%, not to quiz results.
 - v1 supports exactly one selected option per question — no multi-select /
   partial-credit question type.
 - No unpublish or restore-from-archived flow for quizzes; publish is
@@ -54,15 +77,40 @@ controllers.
 
 ## Profiles and admin
 
-- No profile-switcher UI component — the backend endpoint
-  (`POST /api/v1/profile/switch`) exists, but nothing in the frontend calls
-  it yet.
+- The profile switcher is wired end-to-end across all three UI entry
+  points: `DashboardLayout`'s instructor switch card, `InstructorLayout`'s
+  "back to learner dashboard" action, and `SettingsPage`'s "Go to teaching
+  area" action (in the approved-instructor application panel) all call
+  `POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts`. No
+  remaining navigation-only entry point exists for profile switching.
 - No admin user-management capability beyond instructor approvals and
   category creation; there is no broader admin console.
 
+## Frontend automated testing
+
+- Frontend automated tests are minimal and cover selected high-value flows
+  only: `useProfileSwitch` success/failure, the learner dashboard's
+  certificate-section states, the `learnerQuizzes` API client's
+  attempt-history contract, and the `CoursePlayer` quiz history UI extracted
+  into `QuizCard`/`AttemptHistory` (4 test files, 17 tests, via Vitest +
+  React Testing Library + jsdom — see `testing-summary.md`).
+- No broad frontend integration, visual, or accessibility automation suite
+  exists yet.
+- The extracted quiz card and attempt-history pieces
+  (`frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx`)
+  are component-tested, but the full `CoursePlayer` route-level flow (tab
+  switching, data fetching, answer selection, submit, the Lessons tab, and
+  the certificate panel) remains manually QA'd, not automated. Do not
+  present `CoursePlayer` as having full route-level coverage.
+
 ## Dashboard
 
-- The weekly activity chart and some learner dashboard sections are
-  placeholder/mock content.
+- The learner dashboard's fabricated "Upcoming Live Sessions" section and
+  hardcoded certificate list have been removed; the dashboard's Certificates
+  section now reads real data via `GET /api/v1/learner/certificates`.
 - `ProgressPage` shows enrollment-level progress only — no per-lesson
-  breakdown view.
+  breakdown view, and no weekly-activity or learning-time analytics module
+  exists. Its fake weekly-activity strip (`WEEK_ACTIVITY`) has been removed;
+  the page now shows only real enrollment-derived data (summary counts and
+  in-progress/completed/not-started course lists) and no fabricated
+  activity claims of any kind.

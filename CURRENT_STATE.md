@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player (with Lessons and Quizzes tabs), instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking is end-to-end complete: backend (attempt creation, answer submission, scoring, result retrieval) and frontend (quiz list, start/resume attempt, radio-based answer selection, submit, and result panel with per-question correctness).
+Frontend integration: learner course player (with Lessons and Quizzes tabs), instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking is end-to-end complete: backend (attempt creation, answer submission, scoring, result retrieval, attempt-history listing) and frontend (quiz list, start/resume attempt, radio-based answer selection, submit, result panel with per-question correctness, retake, and collapsible attempt history).
 
 ## Backend Status
 
@@ -38,12 +38,14 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
   - `GET /api/v1/instructor/courses/{courseId}/quizzes` — lists all quizzes for an instructor-owned course; consumed by `InstructorQuizzesPage` on load
   - `GET /api/v1/instructor/courses/quizzes/{quizId}` — returns quiz detail with questions and answer options; consumed by `InstructorQuizzesPage` on expand
-- Learner quiz-taking: enrolled learners can list, preview, attempt, submit, and retrieve quiz results
+- Learner quiz-taking: enrolled learners can list, preview, attempt, submit, retake, and retrieve quiz results and full attempt history
   - `GET /api/v1/learner/courses/{courseId}/quizzes` — lists PUBLISHED quizzes for an enrolled course; excludes DRAFT and ARCHIVED; no isCorrect in response
   - `GET /api/v1/learner/quizzes/{quizId}` — returns learner-safe quiz detail (questions + options without isCorrect); enrollment-gated
-  - `POST /api/v1/learner/quizzes/{quizId}/attempts` — starts or resumes an IN_PROGRESS attempt; idempotent (returns existing attempt if one is in progress)
+  - `POST /api/v1/learner/quizzes/{quizId}/attempts` — starts or resumes an IN_PROGRESS attempt; idempotent (returns existing attempt if one is in progress); retaking after a SUBMITTED attempt creates a new attempt without overwriting the prior one
   - `POST /api/v1/learner/quiz-attempts/{attemptId}/submit` — submits answers; validates all quiz questions answered, no duplicates, options belong to questions; computes score: `scorePercentage = floor((earnedPoints * 100) / totalPoints)`, `passed = scorePercentage >= quiz.passingScore`; 409 if already SUBMITTED
   - `GET /api/v1/learner/quiz-attempts/{attemptId}` — returns submitted attempt result with per-question breakdown; ownership-gated (own attempt only)
+  - `GET /api/v1/learner/quizzes/{quizId}/attempts` — returns all of the caller's attempts for a quiz, most-recent-first (`ORDER BY startedAt DESC`); SUBMITTED attempts include per-question result details, IN_PROGRESS attempts never expose answer correctness; same enrollment/quiz-status gating as the other learner quiz endpoints (404 for non-enrolled/CANCELLED enrollment, 404 for DRAFT/ARCHIVED quiz)
+  - `QuizAttemptResponse` now includes `startedAt`
   - Access control: enrollment must be ACTIVE or COMPLETED; CANCELLED → 404; DRAFT/ARCHIVED quiz → 404; non-enrolled → 404 (content enumeration protection)
   - New entities: `QuizAttempt`, `QuizAttemptAnswer`, `QuizAttemptStatus` (IN_PROGRESS, SUBMITTED); v1 supports one selected option per question
 - Wishlist: list, add course, remove course
@@ -58,7 +60,7 @@ Do not recreate or re-implement any of the above. The backend foundation is done
 
 ## Frontend Status
 
-A React + TypeScript + Vite frontend exists and is actively in development.
+A React + TypeScript + Vite frontend exists and is actively in development. It now has a minimal automated test harness (Vitest + React Testing Library + jsdom): 4 test files, 17 tests, run via `npm run test`. Coverage is selective — `useProfileSwitch` success/failure, the learner dashboard's certificate-section states, the `learnerQuizzes` API client's attempt-history contract, and the `CoursePlayer` quiz history UI extracted into `QuizCard`/`AttemptHistory` (`frontend/src/features/dashboard/components/courseQuiz/QuizCard.tsx`) — empty/in-progress/submitted attempt states, the Resume/View result/Retake actions, attempt ordering, and the no-correctness-leak rule for in-progress attempts. `frontend/src/test/setup.ts` now runs `afterEach(cleanup)` to prevent React Testing Library DOM leakage between tests. There is no broad frontend integration suite yet, and the full `CoursePlayer` route-level flow (tab switching, data fetching, lesson tab, certificate panel) remains untested at that level. Browser QA remains important for visual/accessibility checks.
 
 What is in place:
 
@@ -72,10 +74,10 @@ What is in place:
 - Public course detail page (`CourseDetailPage`) at `/courses/:courseId` — no route guard; uses `GET /api/v1/courses/{courseId}`; marketing chrome (`<Navbar forceSolid />` + `<Footer />`); handles guest (sign-in CTA), authenticated-not-enrolled (enroll CTA), enrolled (continue-learning CTA), 404 (not-found panel), and generic-error (retry panel) states; does not expose public lessons, section previews, price, rating, duration, lesson count, instructor bio, or certificate claims; public course content still requires enrollment and `/dashboard/courses/:courseId`; wishlist save-for-later action integrated in the side action panel — learner-only (eligibility gate: `isAuthenticated && user.roles.includes('ROLE_LEARNER')`); guests see a "Sign in to save this course" link; saved state is derived non-blocking from `GET /api/v1/wishlist?size=200`; 409 on add and 404 on remove are treated as stale-state reconciliation (no error surfaced); wishlist does not unlock course content and does not replace enrollment
 - API clients: `src/api/auth.ts`, `src/api/courses.ts` (public catalog + detail), `src/api/enrollments.ts`, `src/api/wishlist.ts` (wishlist list/add/remove; exports `WishlistCourse`, `Page<T>`, `getMyWishlist(size?)`, `addToWishlist`, `removeFromWishlist`)
 - Hooks: `useCurrentUser`, `useEnrollments`
-- Learner dashboard and My Courses wired to real enrollment data
+- Learner dashboard and My Courses wired to real enrollment data; the dashboard's Certificates section reads real certificates via `getMyCertificates()` (loading skeleton, accessible error state with retry, real empty state) and each card links to `/dashboard/certificates/:certificateId`; the dashboard's previous local-placeholder "Upcoming Live Sessions" section and its fake "Download" certificate action have been removed (no live-sessions backend exists, and no certificate download/PDF feature exists)
 - UI component primitives: Button, Badge, Card, Avatar, Input, FilterTabs, ProgressBar, and more
 - Design token system in tokens.css aligned with DESIGN.md
-- `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error; has two tabs — **Lessons** (existing behaviour) and **Quizzes**; Quizzes tab lists published quizzes for the enrolled course (lazy-loaded on first activation), allows starting or resuming an IN_PROGRESS attempt, native radio answer selection (one option per question), submit attempt, and a result panel showing score percentage, passed/not-passed badge, and per-question correct/incorrect feedback after submission; correct answers are never exposed before submission; uses `src/api/learnerQuizzes.ts`
+- `CoursePlayerPage` at `/dashboard/courses/:courseId` — wired to `GET /api/v1/learner/courses/{courseId}/content` and `PATCH /api/v1/lessons/{lessonId}/progress`; optimistic lesson completion with rollback on error; auto-selects first incomplete lesson on load; 404 guard shows an enrollment-specific error; has two tabs — **Lessons** (existing behaviour) and **Quizzes**; Quizzes tab lists published quizzes for the enrolled course (lazy-loaded on first activation), allows starting or resuming an IN_PROGRESS attempt, native radio answer selection (one option per question), submit attempt, and a result panel showing score percentage, passed/not-passed badge, and per-question correct/incorrect feedback after submission; correct answers are never exposed before submission; each quiz card shows its status (not started / in progress / passed / not passed) and latest score when available, a "Retake quiz" action after a submitted attempt, and a collapsible attempt history (attempt number/date, status, score, passed/not-passed, "Resume" for IN_PROGRESS, "View result" for SUBMITTED); per-quiz attempt-history fetches run via `Promise.allSettled` and degrade silently per card on failure; uses `src/api/learnerQuizzes.ts` (including `listQuizAttempts(quizId)`)
 - `SavedCoursesPage` at `/dashboard/saved-courses` — learner dashboard page under the existing `ProtectedRoute` + `DashboardLayout`; uses `GET /api/v1/wishlist?size=200` and `DELETE /api/v1/wishlist/course/{courseId}`; reads the Spring `Page` `.content` field; renders saved course cards with category badge, level, title (links to `/courses/:courseId`), description, instructor name, and a Remove button; states: loading skeleton (3-card grid), empty state (→ `/courses` link), generic fetch error with retry, per-card remove-loading spinner, remove-404 stale-state reconciliation (treated as success), and inline per-card remove error; does not fetch enrollments; does not show enroll CTA, progress, duration, lesson count, price, rating, or certificate claims
 - Instructor area: `InstructorLayout`, `InstructorCoursesPage` (`/instructor/courses`), `InstructorCourseContentPage` (`/instructor/courses/:courseId/content`), `InstructorQuizzesPage` (`/instructor/courses/:courseId/quizzes`) — all wired to real backend; guarded by `InstructorRoute` (checks `isAuthenticated` + `availableProfiles` includes `INSTRUCTOR`); uses `InstructorLayout`; `InstructorCourseContentPage` exposes a "Manage quizzes" link that navigates to the quiz management page for the same course
   - `InstructorQuizzesPage` supports: list quizzes; create quiz (title, optional description, passing score %, optional section); edit quiz; expand quiz detail (lazy-loads questions + answer options via `GET /quizzes/{quizId}`); add/edit/delete questions (content, points, type: MULTIPLE\_CHOICE | TRUE\_FALSE); add/edit/delete answer options; mark/unmark options as correct; publish quiz with friendly inline validation messages (no questions, no options, no correct option); archive quiz (renders the quiz and its questions/options as read-only); loading skeleton; not-found and generic-error states with retry
@@ -85,12 +87,12 @@ What is in place:
 - `SettingsPage` profile editing: learners can edit `displayName`, `bio`, and `profileImageUrl` via `GET`/`PATCH /api/v1/learner-profile/me`; instructors (when `INSTRUCTOR` is in `availableProfiles`) can edit `bio`, `expertise`, `experience`, and `motivation` via `PATCH /api/v1/instructor-profile/me`; uses `src/api/profile.ts`; the "Profile editing is not available yet" placeholder is removed
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
+- Profile switching is wired to the real backend: `switchActiveProfile(profileType)` in `src/api/profile.ts` calls `POST /api/v1/profile/switch`; `src/hooks/useProfileSwitch.ts` exposes `{ switching, error, switchTo }`, updates `AuthContext`'s active profile on success, and navigates (`LEARNER` → `/dashboard`, `INSTRUCTOR` → `/instructor/courses`); on failure it shows an inline `role="alert"` message and stays on the page. `DashboardLayout`'s instructor profile-switch card, `InstructorLayout`'s "Back to learner dashboard" action, and `SettingsPage`'s "Go to teaching area" action (in the approved-instructor application panel) all call this same hook — the switcher is no longer local-only `setActiveProfile()` state or a plain navigation link anywhere in the app. Route guards (`InstructorRoute`, etc.) are unaffected and still gate access independently.
 
 Still mocked or placeholder:
 
-- `LiveSessionsPage` — frontend placeholder page; no backend exists for this feature
-- Weekly activity chart and some dashboard sections are placeholder/mock
-- `ProgressPage` shows enrollment-level progress only; no per-lesson breakdown display
+- `LiveSessionsPage` — frontend placeholder page; no backend exists for this feature. (The learner dashboard previously duplicated this as a local "Upcoming Live Sessions" placeholder section; that duplicate has been removed from the dashboard, but `LiveSessionsPage` itself remains a standalone mock page.)
+- `ProgressPage` shows enrollment-level progress only (no per-lesson breakdown display); its fake weekly activity strip (`WEEK_ACTIVITY`) has been removed entirely — the page no longer renders any weekly-activity data, fake or real, since no learning-activity/analytics endpoint exists — the learner dashboard's own mocked sections (live sessions, certificates) have already been removed, per above
 - Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
 
 ## Known Gaps
@@ -101,15 +103,13 @@ Still mocked or placeholder:
 - No catalog-card wishlist controls; `CourseCatalogCard` intentionally does not show save/unsave yet (deferred decision)
 - No per-course wishlist status endpoint on the backend; saved state is derived from `GET /api/v1/wishlist?size=200` (v1 size cap)
 - No auto-remove from wishlist after enrollment; wishlist and enrollment are independent at both the backend and frontend layers
-- No attempt history UI; learners can start a new attempt but there is no list of past attempts or review of earlier results
-- No dedicated retake flow; starting the same quiz again creates a new attempt, but there is no retake CTA after viewing results
+- No pagination on the learner quiz attempt-history endpoint (`GET /api/v1/learner/quizzes/{quizId}/attempts` returns the full list, unbounded)
 - No timers or duration fields on quizzes
 - No quiz analytics or learner results dashboard
 - No certificate integration based on quiz passing
 - No multi-select (partial-credit) question type; v1 supports one selected option per question only
 - No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
 - No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)
-- No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
 - No admin user management beyond instructor approvals
 - No media upload; `thumbnailUrl` accepts a plain URL string only
 

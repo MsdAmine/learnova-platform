@@ -29,7 +29,9 @@ profile, with instructor access gated behind an admin approval step.
 
 **Learner** — browses the public course catalog, enrolls in published
 courses, studies lessons at their own pace, takes quizzes and receives a
-score, saves courses to a wishlist for later, and edits their own profile.
+score, retakes quizzes and reviews full attempt history, saves courses to a
+wishlist for later, edits their own profile, and can issue and view a
+certificate of completion once a course reaches 100% progress.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -49,6 +51,7 @@ implemented; there is no broader user-management console.
 | `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
+| `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
 
 ## Implemented Workflows
@@ -62,29 +65,48 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Instructor course creation, content authoring, and quiz authoring
 - Learner enrollment in published courses
 - Learner lesson study and progress tracking
-- Learner quiz-taking with automatic scoring
+- Learner quiz-taking with automatic scoring, retake, and full attempt
+  history
 - Learner wishlist (save-for-later) and saved-courses dashboard
 - Profile self-editing for both learner and instructor profiles
+- Learner certificate issuance and viewing, triggered manually from the
+  course player once a course reaches 100% progress (see
+  `core-workflows.md` §9); the learner dashboard also displays a learner's
+  already-issued certificates, with each card linking to the certificate
+  view route
+- Approved-instructor profile switching between the learner and instructor
+  areas from all three UI entry points (dashboard switch card, instructor
+  layout back-to-learner action, and Settings page), backed by
+  `POST /api/v1/profile/switch` (see `core-workflows.md` §10)
 
 ## Current Limitations
 
 These areas are intentionally **not** presented as complete:
 
-- **Certificates** — owned by another developer; no certificate backend or
-  frontend exists in this codebase. `CertificatesPage` is a frontend
-  placeholder only.
 - **Live sessions** — no backend exists. `LiveSessionsPage` is a frontend
   placeholder/mock.
+- **Certificate issuance is manual, not automatic**, and offers only a
+  browser print/save-as-PDF option — no server-generated PDF, sharing, QR
+  code, or revocation flow exists. See `limitations.md` for the full list.
 - **Lesson content body** — the course player's lesson content area is a
   placeholder panel; there is no rich text, video, or media rendering.
-- **Quiz attempt history** — learners can start and submit one attempt at a
-  time; there is no list of past attempts or a retake flow.
 - **Content ordering** — sections, lessons, questions, and answer options are
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; no media upload pipeline exists.
-- **Profile switch UI** — the backend endpoint (`POST /api/v1/profile/switch`)
-  exists, but no frontend profile-switcher component is wired to it yet.
+- **Frontend automated testing is minimal** — a Vitest + React Testing
+  Library + jsdom harness now exists (4 test files, 17 tests covering
+  `useProfileSwitch`, the dashboard's certificate section, the
+  `learnerQuizzes` API client, and the `CoursePlayer` quiz history UI
+  extracted into `QuizCard`/`AttemptHistory`), but there is no broad
+  frontend integration suite — the full `CoursePlayer` route-level flow is
+  not component-tested — and lint/build/manual browser QA remain the
+  primary verification method for most UI. See `testing-summary.md`.
+- **Profile switch UI** — fully implemented; no remaining navigation-only
+  caveat. All three entry points (the learner dashboard's instructor switch
+  card, the instructor area's "back to learner" action, and `SettingsPage`'s
+  "Go to teaching area" action) call `POST /api/v1/profile/switch` through
+  the shared `useProfileSwitch` hook.
 
 A full breakdown of known gaps is in `docs/report/limitations.md`.
 
@@ -115,4 +137,7 @@ through a single shared Axios instance (`src/api/axios.ts`) with request
 (JWT attach) and response (401 → logout, 403 → `/unauthorized`) interceptors.
 Auth and active-profile state live in `AuthContext`; the backend's
 `/auth/me` response is the source of truth for which profiles a user may
-switch to.
+switch to, and `POST /api/v1/profile/switch` (called via
+`src/hooks/useProfileSwitch.ts`) is the source of truth for performing the
+switch itself — the frontend never flips `activeProfile` locally without a
+successful backend round-trip from the wired entry points.

@@ -1,6 +1,7 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Bell, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { useProfileSwitch } from '../../../hooks/useProfileSwitch';
 import { cn } from '../../../lib/cn';
 import logoPrimary from '../../../assets/logo-primary.png';
 
@@ -14,8 +15,8 @@ function getInitials(name: string): string {
 }
 
 export default function InstructorLayout() {
-  const { user, setActiveProfile } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { switching, error: switchError, switchTo } = useProfileSwitch();
   const displayName = user?.fullName ?? 'User';
   const initials = user?.fullName ? getInitials(user.fullName) : '?';
 
@@ -36,19 +37,17 @@ export default function InstructorLayout() {
         <div className="flex items-center gap-3 flex-1 min-w-0">
           <button
             type="button"
-            onClick={() => {
-              setActiveProfile('LEARNER');
-              navigate('/dashboard');
-            }}
+            disabled={switching}
+            onClick={() => void switchTo('LEARNER')}
             className={cn(
               'flex items-center gap-1.5 text-body-sm text-text-secondary flex-shrink-0',
-              'hover:text-text-primary transition-colors duration-fast',
+              'hover:text-text-primary transition-colors duration-fast disabled:opacity-60 disabled:cursor-not-allowed',
               'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
             )}
             aria-label="Back to learner dashboard"
           >
             <ArrowLeft size={14} aria-hidden="true" />
-            <span className="hidden sm:inline">Dashboard</span>
+            <span className="hidden sm:inline">{switching ? 'Switching…' : 'Dashboard'}</span>
           </button>
 
           <span className="text-border-default select-none flex-shrink-0" aria-hidden="true">/</span>
@@ -90,6 +89,12 @@ export default function InstructorLayout() {
           </div>
         </div>
       </header>
+
+      {switchError && (
+        <p className="text-caption text-error px-4 md:px-6 py-2 border-b border-border-default" role="alert">
+          {switchError}
+        </p>
+      )}
 
       {/* ── Main content ──────────────────────────────────────────────────────── */}
       <main id="main-content" className="flex-1 overflow-y-auto" tabIndex={-1}>

@@ -1,4 +1,10 @@
 import api from './axios';
+import type { ProfileType, ProfileSwitchResponse } from '../types/profile';
+
+export async function switchActiveProfile(profileType: ProfileType): Promise<ProfileSwitchResponse> {
+  const { data } = await api.post<ProfileSwitchResponse>('/api/v1/profile/switch', { profileType });
+  return data;
+}
 
 export interface LearnerProfileResponse {
   id: number;

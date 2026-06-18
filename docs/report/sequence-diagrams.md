@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the three flows most relevant to the PFA demo. Internal helper method
+for the six flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -230,5 +230,197 @@ sequenceDiagram
   enumeration-prevention pattern used elsewhere in the API. Resubmitting an
   already-`SUBMITTED` attempt returns `409`, after which the frontend falls
   back to fetching the stored result rather than treating it as an error.
-  There is no attempt-history list — only the most recent attempt's result
-  is retrievable by id.
+  The full attempt history (not just the most recent attempt) is retrievable
+  via `GET /api/v1/learner/quizzes/{quizId}/attempts` — see §4 below.
+
+---
+
+## 4. Learner Quiz Retake and Attempt History
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Quizzes as CoursePlayerPage Quizzes tab
+    participant QuizCtrl as LearnerQuizController
+    participant QuizSvc as LearnerQuizService
+    participant ADB as QuizAttempt/QuizAttemptAnswer persistence
+
+    Learner->>Quizzes: Open Quizzes tab
+    Quizzes->>QuizCtrl: GET /api/v1/learner/courses/{courseId}/quizzes
+    QuizCtrl-->>Quizzes: 200 quiz summaries
+
+    par Per-quiz attempt history (non-blocking)
+        Quizzes->>QuizCtrl: GET /api/v1/learner/quizzes/{quizId}/attempts
+        QuizCtrl->>QuizSvc: listAttempts
+        QuizSvc->>ADB: find attempts by (learnerProfileId, quizId), order by startedAt desc
+
+        alt Not enrolled, or quiz DRAFT/ARCHIVED
+            QuizSvc-->>Quizzes: 404 Not Found
+            Note over Quizzes: that quiz card's history panel stays empty (Promise.allSettled)
+        else Enrolled and quiz PUBLISHED
+            ADB-->>QuizSvc: attempts (most-recent-first)
+            QuizSvc->>ADB: load QuizAttemptAnswer rows for SUBMITTED attempts only
+            ADB-->>QuizSvc: per-question results (IN_PROGRESS attempts have none)
+            QuizSvc-->>Quizzes: 200 QuizAttemptResponse[] (no isCorrect leak on IN_PROGRESS)
+            Quizzes-->>Learner: render attempt-history panel (number, date, status, score)
+        end
+    end
+
+    Learner->>Quizzes: Start or resume attempt
+    Quizzes->>QuizCtrl: POST /api/v1/learner/quizzes/{quizId}/attempts
+    QuizCtrl->>QuizSvc: startOrResumeAttempt
+    QuizSvc->>ADB: find existing IN_PROGRESS attempt
+
+    alt IN_PROGRESS attempt exists
+        ADB-->>QuizSvc: existing attempt (resumed)
+    else No IN_PROGRESS attempt (first attempt or all prior attempts SUBMITTED)
+        QuizSvc->>ADB: create new QuizAttempt (status = IN_PROGRESS)
+        ADB-->>QuizSvc: new attempt
+        Note over ADB: any earlier SUBMITTED attempts are untouched
+    end
+    QuizSvc-->>Quizzes: 200 QuizAttemptResponse (IN_PROGRESS)
+
+    Learner->>Quizzes: Answer questions, submit
+    Quizzes->>QuizCtrl: POST /api/v1/learner/quiz-attempts/{attemptId}/submit
+    QuizCtrl->>QuizSvc: submitAttempt
+    QuizSvc->>QuizSvc: compute scorePercentage, passed
+    QuizSvc->>ADB: save QuizAttempt (SUBMITTED) and QuizAttemptAnswer rows
+    ADB-->>QuizSvc: persisted
+    QuizSvc-->>Quizzes: 200 QuizAttemptResponse (score, passed, per-question results)
+    Quizzes-->>Learner: show result panel; refresh attempt-history panel for this quiz
+
+    Learner->>Quizzes: Click "Retake quiz"
+    Note over Quizzes,QuizCtrl: Same POST .../attempts call as above — since the\nprior attempt is SUBMITTED (not IN_PROGRESS), a new\nattempt is created, and the old SUBMITTED attempt\nremains stored and visible in the attempt-history panel.
+```
+
+**Notes:**
+- **Retake is the same start/resume endpoint.** There is no separate
+  "retake" backend endpoint — `POST /api/v1/learner/quizzes/{quizId}/attempts`
+  is idempotent for an `IN_PROGRESS` attempt and creates a fresh attempt once
+  the prior one is `SUBMITTED`. This is the same call UC-10 uses for the
+  first attempt.
+- **History never overwrites.** Every `SUBMITTED` `QuizAttempt` row persists
+  indefinitely; retaking only ever adds a new row, so `GET
+  /api/v1/learner/quizzes/{quizId}/attempts` always reflects the full
+  history, most-recent-first.
+- **Correctness secrecy holds in history too.** `IN_PROGRESS` attempts have
+  no `QuizAttemptAnswer` rows yet (they are created only on submit), so the
+  attempt-history response for an in-progress attempt is structurally
+  incapable of leaking `isCorrect` — confirmed by
+  `listAttemptsDoesNotExposeIsCorrect` in `LearnerQuizIntegrationTest`.
+- **Non-blocking per-quiz fetch.** The frontend fetches attempt history per
+  quiz with `Promise.allSettled`; a `404`/error for one quiz's history does
+  not block the quiz list or other quizzes' history panels from rendering.
+
+---
+
+## 5. Learner Certificate Issuance
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Player as CoursePlayerPage
+    participant Panel as CertificatePanel
+    participant CertCtrl as CertificateController
+    participant CertSvc as CertificateService
+    participant DB as Certificate/Enrollment persistence
+
+    Learner->>Player: Complete all lessons (progressPercentage = 100)
+    Player->>Panel: Render certificate panel
+    Panel->>CertCtrl: GET /api/v1/learner/certificates
+    CertCtrl->>DB: list certificates for caller
+    DB-->>CertCtrl: certificates
+    CertCtrl-->>Panel: 200 list
+
+    alt Certificate already exists for this course
+        Panel-->>Learner: show "View certificate" link
+    else No certificate yet
+        Panel-->>Learner: show "Issue certificate" button
+        Learner->>Panel: Click "Issue certificate"
+        Panel->>CertCtrl: POST /api/v1/learner/certificates/course/{courseId}/issue
+        CertCtrl->>CertSvc: issueCertificateForCourse
+
+        alt Enrollment not COMPLETED
+            CertSvc-->>Panel: 409 Conflict
+            Panel-->>Learner: accessible role="alert" error message
+        else Certificate already issued (idempotent repeat)
+            CertSvc->>DB: find existing certificate
+            DB-->>CertSvc: existing certificate
+            CertSvc-->>Panel: 200 CertificateResponse (existing)
+            Panel-->>Learner: show "View certificate" link
+        else First issuance, enrollment COMPLETED
+            CertSvc->>DB: create Certificate (certificateCode, issuedAt)
+            DB-->>CertSvc: saved certificate
+            CertSvc-->>Panel: 201 CertificateResponse (new)
+            Panel-->>Learner: show "View certificate" link
+        end
+    end
+
+    Learner->>Panel: Click "View certificate"
+    Panel->>CertCtrl: GET /api/v1/learner/certificates/{certificateId}
+    CertCtrl->>DB: find by id, verify ownership
+    alt Not found or not owned by caller
+        CertCtrl-->>Panel: 404 Not Found
+    else Found and owned
+        DB-->>CertCtrl: certificate
+        CertCtrl-->>Panel: 200 CertificateResponse
+        Panel-->>Learner: render full-screen certificate document (Print / Save as PDF)
+    end
+```
+
+**Notes:**
+- **Manual trigger, not automatic** — reaching 100% progress only makes the
+  certificate panel appear; the `POST .../issue` call happens only on an
+  explicit learner click. Nothing issues a certificate as a side effect of
+  the lesson-progress endpoint itself.
+- **Idempotent issuance** — a repeat `POST .../issue` call for a course that
+  already has a certificate returns `200` with the existing certificate
+  rather than creating a duplicate or erroring.
+- **Completion gate** — `CertificateService` rejects issuance with `409` if
+  the caller's enrollment for the course is not `COMPLETED`; the frontend
+  surfaces this as an accessible (`role="alert"`) message in the panel
+  rather than a silent failure.
+- **No PDF generation** — the certificate view renders an HTML document and
+  relies on the browser's native print dialog (`window.print()`) for a PDF;
+  there is no server-side rendering, email delivery, or sharing endpoint.
+
+---
+
+## 6. Approved Instructor Switches Active Profile
+
+```mermaid
+sequenceDiagram
+    actor Instructor as Approved Instructor
+    participant Layout as DashboardLayout / InstructorLayout / SettingsPage
+    participant Hook as useProfileSwitch
+    participant API as src/api/profile.ts
+    participant Ctrl as ProfileSwitchController
+    participant Svc as ProfileSwitchService
+    participant Access as ProfileAccessService
+
+    Instructor->>Layout: Click "Switch to instructor" / "Back to learner dashboard" / "Go to teaching area"
+    Layout->>Hook: switchTo(profileType)
+    Hook->>API: switchActiveProfile(profileType)
+    API->>Ctrl: POST /api/v1/profile/switch { profileType }
+    Ctrl->>Svc: switchProfile(user, profileType)
+    Svc->>Access: canUseProfile(user, profileType)
+
+    alt Profile not available to caller
+        Access-->>Svc: false
+        Svc-->>Ctrl: 403 Forbidden
+        Ctrl-->>Hook: 403
+        Hook-->>Layout: set inline role="alert" error; no navigation
+    else Profile available
+        Access-->>Svc: true
+        Svc-->>Ctrl: activeProfile, availableProfiles
+        Ctrl-->>Hook: 200 ProfileSwitchResponse
+        Hook->>Hook: update AuthContext.activeProfile
+        Hook->>Layout: navigate(PROFILE_ROUTE[activeProfile])
+        Layout-->>Instructor: render /instructor/courses or /dashboard
+    end
+```
+
+**Notes:**
+- **Single hook, three entry points.** `useProfileSwitch` (`src/hooks/useProfileSwitch.ts`) is shared by `DashboardLayout`'s sidebar switch card (learner → instructor), `InstructorLayout`'s topbar "Back to learner dashboard" action (instructor → learner), and `SettingsPage`'s "Go to teaching area" action in the approved-instructor application panel (learner → instructor); all three call the same `POST /api/v1/profile/switch` endpoint through this diagram's sequence.
+- **Backend is the authority.** The hook never flips `AuthContext.activeProfile` optimistically — it waits for a successful response before updating state and navigating, so a `403` (requested profile not in `availableProfiles`) leaves the UI exactly where it was, with an accessible error message.
+- **Route guards remain independent.** `InstructorRoute` still re-checks `availableProfiles` on every navigation to `/instructor/*`; the switch endpoint does not replace or short-circuit that check.
