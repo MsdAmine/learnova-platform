@@ -1,8 +1,47 @@
 # Brand Refresh Spec: Restrained Purple/Blue Accent System
 
-> **Status:** Planning only. No source code, tokens, or other design docs are modified by this spec. Implementation happens in a future, separate task, in the phases described below.
+> **Status:** Phase 1 and Phase 2 implemented and visually approved. Phase 3 is optional/deferred. See §0 below for the shipped state.
 >
-> **Relationship to canonical docs:** `DESIGN.md` remains the single source of truth for Learnova's visual system. This spec proposes an *addition* to that system (new accent tokens layered on top of the existing palette), not a replacement of it. If this spec is approved and implemented, `DESIGN.md`, `colors.md`, and `tokens.css` should be updated together as part of Phase 1 — not before.
+> **Relationship to canonical docs:** `DESIGN.md` remains the single source of truth for Learnova's visual system. This spec proposes an *addition* to that system (new accent tokens layered on top of the existing palette), not a replacement of it. `DESIGN.md`, `colors.md`, and `tokens.css` were updated together once Phase 1 shipped.
+
+---
+
+## 0. Implementation Status
+
+**Phase 1 — implemented.** Tokens and primitives shipped exactly as proposed in §4:
+- `--color-accent-primary`, `-hover`, `-active`, `-soft`, `-border`, `-text`, and `--color-learning`/`-soft` aliases added to `frontend/src/styles/tokens.css`.
+- Matching entries added to `frontend/tailwind.config.ts`.
+- `Badge` (`frontend/src/components/ui/Badge.tsx`) gained an `accent` variant (`bg-accent-soft text-accent-text`), alongside the existing `default`/`salem`/`coral`/`anzac`/`azure` variants.
+- `ProgressBar` (`frontend/src/components/ui/ProgressBar.tsx`) gained a `learning` fill variant (`bg-learning`), distinct from the default `progress` (Salem) variant.
+- Learner/instructor dashboard sidebar active nav state (`DashboardLayout.tsx`) changed from a Salem-adjacent treatment to `bg-accent-soft text-accent-text`.
+
+**Phase 2 — implemented and visually approved as balanced.** Shipped touches, page by page:
+- **Learner Dashboard** (`LearnerDashboard.tsx`): "Continue Learning" card uses `border-accent-border` in place of the default neutral border.
+- **Progress page** (`ProgressPage.tsx`): "In progress" rows use the `accent` Badge variant next to the instructor name.
+- **Course Player** (`CoursePlayerPage.tsx`): the active Lessons/Quizzes tab indicator uses `border-accent-primary text-accent-text`, and the selected lesson row uses `bg-accent-soft text-accent-text`. See the nested-hierarchy exception below.
+- **Learner Live Sessions** (`LiveSessionsPage.tsx`): the empty-state video icon sits in a `bg-accent-soft` chip with `text-accent-text`.
+- **Instructor Live Sessions** (`InstructorLiveSessionsPage.tsx`): the empty-state panel uses a `border-accent-border` outline.
+- **Catalog card** (`CourseCatalogCard.tsx`) and **Course Detail** (`CourseDetailPage.tsx`): the category badge uses the `accent` Badge variant.
+- **Instructor Courses** (`InstructorCoursesPage.tsx`): the "Draft" course status badge uses the `accent` Badge variant (Published stays `salem`; everything else stays `default`).
+- **Instructor Quizzes** (`InstructorQuizzesPage.tsx`): the "Draft" quiz status badge uses the `accent` Badge variant, mirroring the course-status treatment (Published stays `salem`, Archived stays `coral`).
+- **Certificates page**: unchanged — remains gold/neutral, intentionally excluded (see §5 Component Usage Rules, Certificates row).
+- **Admin Approvals** (`AdminInstructorApprovalsPage.tsx`): the "Pending" badge uses the `accent` Badge variant, matching the swap proposed for this row in §6 (Approved stays `salem`; Rejected stays `coral`).
+
+**Not shipped (scoped for Phase 3, not yet implemented):**
+- Live Sessions "Live now" indicator (learner + instructor) — requires new status-derivation logic, not just styling; remains deferred per §9 Phase 3.
+- Instructor Live Sessions scheduled/cancelled visual differentiation — remains deferred per §9 Phase 3.
+
+**Phase 3 — optional/deferred.** Not started. Treat the "Live now" / scheduled-vs-cancelled items above as the remaining Phase 3 backlog, to be revisited only if there's a specific product need.
+
+### CoursePlayer nested-hierarchy exception
+
+`CoursePlayerPage` ships two simultaneous accent-colored "active" indicators: the active Lessons/Quizzes tab border and the selected lesson row in the outline. This is a literal exception to the anti-goal in §8 ("Accent color on more than one active indicator per view").
+
+The visual review judged this acceptable because the two indicators sit at different hierarchy levels, not in competition for the same signal:
+- the active tab indicator says "this is the active panel" (Lessons vs. Quizzes), and
+- the selected lesson row says "this is the selected item inside that panel's outline."
+
+**This exception is narrow and should not be generalized.** It applies only to a tab-plus-nested-list relationship where the second indicator lives strictly inside the panel the first indicator selects. It is not a license to add a second accent indicator anywhere else — a page with two accent badges, two accent borders, or an accent border alongside an accent badge describing the *same* hierarchy level still violates the anti-goal and should be flagged in review.
 
 ---
 
@@ -136,7 +175,7 @@ No existing token name, value, or usage site changes. `Badge`'s existing `azure`
 | **Alerts/info panels** | `info` semantic alerts may use `bg-accent-soft border-accent-border text-accent-text` instead of plain neutral, giving informational callouts (e.g., "Quiz attempt in progress") a distinct, recognizable treatment from warning/error alerts. | Warning (`warning`/Coral-adjacent) and error alerts keep their current red/orange treatment unchanged — never recolor a warning or error as accent-blue. |
 | **Learner course player** | Selected-lesson row may shift from `bg-salem-50 text-salem` to `bg-accent-soft text-accent-text`, freeing Salem-tint exclusively for "completed" states and making "currently viewing" visually distinct from "done." Tab active indicator may use `border-accent-primary text-accent-text` instead of `border-salem text-salem`, for the same reason. | Quiz pass/fail badges keep current Salem (pass) / Coral (fail) semantics — do not touch pass/fail color meaning. |
 | **Instructor pages** | Status badges may gain an `accent` variant for "Draft" (currently plain `default` neutral) to give draft courses a touch more visual presence than a flat gray badge, while "Published" stays Salem. | Publish/Archive action buttons stay Salem (primary) / neutral (secondary) — no accent buttons in instructor course management. |
-| **Admin pages** | "Pending" approval status may use the new `accent` badge variant instead of plain `default`, distinguishing pending from rejected (error/coral) and approved (Salem/success) at a glance. | Approve/Reject action buttons unchanged (Salem primary / neutral or destructive secondary). |
+| **Admin pages** | "Pending" approval status uses the `accent` badge variant instead of plain `default`, distinguishing pending from rejected (error/coral) and approved (Salem/success) at a glance. Shipped. | Approve/Reject action buttons unchanged (Salem primary / neutral or destructive secondary). |
 | **Live sessions page** | A small "Live now" indicator (when a session's start time has passed and end time has not) may use `bg-accent-soft text-accent-text` as a subtle status chip — net new functionality note: this status concept does not exist yet in the current implementation and would need a small logic addition, not just a style change, if pursued. | Join button stays Salem primary; session list rows stay neutral. |
 | **Certificates page** | No accent. Certificates are an Anzac (achievement/gold) context per existing design language; introducing blue here would dilute the "earned" signal. Keep certificate cards as proposed in the survey: neutral, with Anzac reserved for the icon/badge only if/when added. | Do not add accent-blue to certificates under any circumstance — this conflicts with the Field Rule (Anzac is achievement-only, and mixing accent with achievement muddies meaning). |
 
@@ -159,7 +198,7 @@ No existing token name, value, or usage site changes. `Badge`'s existing `azure`
 | Instructor content builder (`InstructorCourseContentPage`) | Entirely neutral; no states needing emphasis beyond existing edit/delete affordances. | No accent — this is a utility editing surface, not a learning moment. | Low | No change. |
 | Instructor quizzes (`InstructorQuizzesPage`) | Neutral throughout; quiz status (draft/published/archived) likely mirrors course status badges. | If a "Draft" quiz badge exists with the same neutral pattern, apply the same `accent` badge swap for consistency with course status. | Low | Confirm exact current badge variant before implementing; keep parallel to InstructorCoursesPage treatment. |
 | Instructor live sessions (`InstructorLiveSessionsPage`) | No visual distinction between scheduled/cancelled sessions beyond text. | Optional: "Scheduled" sessions could use a neutral or accent badge to differentiate from a greyed-out "Cancelled" row; low priority. | Low | Defer to Phase 3 alongside the learner live-sessions page; keep both pages' treatment consistent. |
-| Admin approvals (`AdminInstructorApprovalsPage`) | "Pending" requests have no distinct badge from other states in the current implementation. | Add `accent` badge for "Pending," keep Salem for "Approved," keep error/coral for "Rejected." | Low | Pure badge-variant addition; verify against actual current badge logic before implementing (survey was based on partial view of this page). |
+| Admin approvals (`AdminInstructorApprovalsPage`) | Previously: "Pending" requests had no distinct badge from other states. | Shipped: `accent` badge for "Pending," Salem for "Approved," error/coral for "Rejected." | Low | Done. |
 
 ---
 
@@ -209,9 +248,9 @@ No existing token name, value, or usage site changes. `Badge`'s existing `azure`
 - Catalog/course-detail: only if a featured-course concept is introduced; otherwise skip
 
 **Phase 3 — Instructor, admin, and live-session surfaces**
-- Instructor "Draft" status badge swap (courses, and quizzes if applicable)
-- Admin "Pending" approval badge
-- Live sessions "Live now" indicator (learner + instructor pages) — flag the new status-derivation logic for product review before styling
+- Instructor "Draft" status badge swap (courses, and quizzes if applicable) — shipped in Phase 2/3 alongside other badge swaps (see §0)
+- Admin "Pending" approval badge — shipped (see §0)
+- Live sessions "Live now" indicator (learner + instructor pages) — flag the new status-derivation logic for product review before styling; remains deferred
 
 **Phase 4 — Final visual QA and docs sync**
 - Full visual pass at all three required viewports across every page touched in Phases 1-3
@@ -248,6 +287,8 @@ Visual QA checklist:
 
 ## 11. Next Implementation Task
 
-Recommended next step: **implement Phase 1 only.**
+Phase 1 and Phase 2 are implemented and visually approved (see §0). The Admin Approvals "Pending" badge swap has since shipped as well. There is no pending implementation work from this spec; remaining Phase 3 items are optional and should only be picked up against a specific product need, not as a default next step.
 
-Scope: token additions to `tokens.css` and `tailwind.config.ts`, the new `accent` Badge variant, and the sidebar/nav active-state primitive update. No page-by-page rewrites, no live-session status logic, no catalog/featured-course concept. This keeps the first implementation PR small, reviewable, and fully reversible if the accent reads wrong in practice — exactly the kind of controlled, low-risk first step the rest of this spec's phasing is built around.
+If the remaining Phase 3 backlog is pursued, scope it narrowly and one item at a time:
+- Live Sessions "Live now" indicator (learner + instructor) — needs a status-derivation function reviewed by product before any styling work.
+- Instructor Live Sessions scheduled/cancelled differentiation — keep consistent with whatever the learner-facing live-sessions treatment ends up being.
