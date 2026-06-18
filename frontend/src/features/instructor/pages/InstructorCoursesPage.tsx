@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
   type CourseLevel,
@@ -12,6 +12,7 @@ import {
   getMyInstructorCourses,
   publishInstructorCourse,
   updateInstructorCourse,
+  uploadCourseThumbnail,
 } from '../../../api/instructorCourses';
 import { type CategoryResponse, getCategories } from '../../../api/categories';
 import { Badge, type BadgeVariant } from '../../../components/ui/Badge';
@@ -21,6 +22,33 @@ import { Input, FormField } from '../../../components/ui/Input';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { Bone } from '../../../components/common/skeletons/Bone';
 import { cn } from '../../../lib/cn';
+
+// ── Thumbnail upload helpers ───────────────────────────────────────────────────
+
+const ALLOWED_THUMBNAIL_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_THUMBNAIL_BYTES = 5 * 1024 * 1024;
+
+function validateThumbnailFile(file: File): string | null {
+  if (!ALLOWED_THUMBNAIL_TYPES.includes(file.type)) {
+    return 'Please choose a JPG, PNG, or WEBP image.';
+  }
+  if (file.size > MAX_THUMBNAIL_BYTES) {
+    return 'Image must be 5MB or smaller.';
+  }
+  return null;
+}
+
+function extractThumbnailErrorMessage(err: unknown, fallback: string): string {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'response' in err &&
+    typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+  ) {
+    return (err as { response: { data: { message: string } } }).response.data.message;
+  }
+  return fallback;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -147,6 +175,10 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [thumbnailUploadError, setThumbnailUploadError] = useState<string | null>(null);
+
   const [categories, setCategories] = useState<CategoryResponse[]>([]);
   const [catsLoading, setCatsLoading] = useState(true);
   const [catsError, setCatsError] = useState(false);
@@ -267,6 +299,32 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
       }
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleThumbnailFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file || !isEdit) return;
+
+    const hintError = validateThumbnailFile(file);
+    if (hintError) {
+      setThumbnailUploadError(hintError);
+      return;
+    }
+
+    setThumbnailUploadError(null);
+    setIsUploadingThumbnail(true);
+    try {
+      const updated = await uploadCourseThumbnail(course.id, file);
+      setThumbnailUrl(updated.thumbnailUrl ?? '');
+      onSuccess(updated);
+    } catch (err) {
+      setThumbnailUploadError(
+        extractThumbnailErrorMessage(err, 'We could not upload this thumbnail. Please try again.'),
+      );
+    } finally {
+      setIsUploadingThumbnail(false);
     }
   }
 
@@ -419,12 +477,60 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
               )}
             </div>
 
+            {/* Thumbnail upload (edit mode only — new courses have no id to upload against) */}
+            {isEdit && (
+              <div className="flex flex-col gap-xs">
+                <span className="text-body-sm font-medium text-text-secondary">Thumbnail image</span>
+                <div className="flex items-center gap-3">
+                  {thumbnailUrl ? (
+                    <img
+                      src={thumbnailUrl}
+                      alt=""
+                      className="w-16 h-16 rounded-md object-cover bg-surface-elevated"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-md bg-surface-elevated" aria-hidden="true" />
+                  )}
+                  <div>
+                    <input
+                      ref={thumbnailInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      aria-label="Choose course thumbnail image"
+                      disabled={submitting}
+                      onChange={handleThumbnailFileChange}
+                    />
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      loading={isUploadingThumbnail}
+                      disabled={submitting}
+                      onClick={() => thumbnailInputRef.current?.click()}
+                      aria-label="Upload thumbnail image"
+                    >
+                      Upload thumbnail
+                    </Button>
+                    <p className="text-caption text-text-muted mt-1">JPG, PNG, or WEBP. Max 5MB.</p>
+                  </div>
+                </div>
+                {thumbnailUploadError && (
+                  <p className="text-body-sm text-error" role="alert">{thumbnailUploadError}</p>
+                )}
+              </div>
+            )}
+
             {/* Thumbnail URL */}
             <FormField
-              label="Thumbnail URL (optional)"
+              label={isEdit ? 'Thumbnail URL (optional fallback)' : 'Thumbnail URL (optional)'}
               htmlFor="cf-thumb"
               error={fieldErrors.thumbnailUrl}
-              hint="Paste a direct image URL. There is no upload endpoint in v1."
+              hint={
+                isEdit
+                  ? 'Set automatically after an upload, or paste a direct image URL instead.'
+                  : 'Paste a direct image URL. Image upload is available after the course is created.'
+              }
             >
               <Input
                 id="cf-thumb"

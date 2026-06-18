@@ -49,6 +49,9 @@ public class Course {
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
 
+    @Column(name = "thumbnail_public_id", length = 255)
+    private String thumbnailPublicId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     @Builder.Default
