@@ -67,8 +67,8 @@ self-editing for both learner and instructor profiles, learner
 certificate issuance + viewing (manually triggered from the course player
 once a course reaches 100% progress), and approved-instructor profile
 switching (`POST /api/v1/profile/switch`, called from `DashboardLayout`'s
-switch card and `InstructorLayout`'s "back to learner" action — see
-`core-workflows.md` §10).
+switch card, `InstructorLayout`'s "back to learner" action, and
+`SettingsPage`'s "Go to teaching area" action — see `core-workflows.md` §10).
 
 **Not implemented / explicitly out of scope for this codebase:**
 - **Live sessions** — no backend exists; the frontend page is a
@@ -140,9 +140,10 @@ no PDF generation, sharing, QR code, or revocation. Quiz attempt history and
 retake are implemented but the attempt-history endpoint has no pagination.
 Lesson video/rich content, file upload, and section/lesson/question/option
 ordering do not exist either. Profile switching is implemented end-to-end
-for the main entry points, with one remaining caveat: the `SettingsPage`
-"Go to teaching area" link still navigates directly without calling the
-switch endpoint. Full categorized list in `limitations.md`.
+across all UI entry points (dashboard switch card, instructor layout
+back-to-learner action, and the Settings page's "Go to teaching area"
+action) — no remaining navigation-only caveat. Full categorized list in
+`limitations.md`.
 
 ## Suggested Next Report Assets to Add Later
 
@@ -152,7 +153,7 @@ switch endpoint. Full categorized list in `limitations.md`.
 - A short slide deck summarizing `project-overview.md` for the oral defense.
 - An actual `./mvnw test` run transcript captured at submission time, to
   pin down the exact test count referenced loosely in `testing-summary.md`.
-- A risk/roadmap note distinguishing "deferred by design" gaps (e.g., the
-  `SettingsPage` "Go to teaching area" link not calling the profile-switch
-  endpoint) from "blocked on another developer" gaps (e.g., certificates),
-  to help the jury separate scope decisions from dependencies.
+- A risk/roadmap note distinguishing "deferred by design" gaps (e.g., quiz
+  attempt-history pagination) from "blocked on another developer" gaps
+  (e.g., certificates), to help the jury separate scope decisions from
+  dependencies.

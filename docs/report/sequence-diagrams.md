@@ -391,14 +391,14 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor Instructor as Approved Instructor
-    participant Layout as DashboardLayout / InstructorLayout
+    participant Layout as DashboardLayout / InstructorLayout / SettingsPage
     participant Hook as useProfileSwitch
     participant API as src/api/profile.ts
     participant Ctrl as ProfileSwitchController
     participant Svc as ProfileSwitchService
     participant Access as ProfileAccessService
 
-    Instructor->>Layout: Click "Switch to instructor" / "Back to learner dashboard"
+    Instructor->>Layout: Click "Switch to instructor" / "Back to learner dashboard" / "Go to teaching area"
     Layout->>Hook: switchTo(profileType)
     Hook->>API: switchActiveProfile(profileType)
     API->>Ctrl: POST /api/v1/profile/switch { profileType }
@@ -421,7 +421,6 @@ sequenceDiagram
 ```
 
 **Notes:**
-- **Single hook, two entry points.** `useProfileSwitch` (`src/hooks/useProfileSwitch.ts`) is shared by `DashboardLayout`'s sidebar switch card (learner → instructor) and `InstructorLayout`'s topbar "Back to learner dashboard" action (instructor → learner); both call the same `POST /api/v1/profile/switch` endpoint.
+- **Single hook, three entry points.** `useProfileSwitch` (`src/hooks/useProfileSwitch.ts`) is shared by `DashboardLayout`'s sidebar switch card (learner → instructor), `InstructorLayout`'s topbar "Back to learner dashboard" action (instructor → learner), and `SettingsPage`'s "Go to teaching area" action in the approved-instructor application panel (learner → instructor); all three call the same `POST /api/v1/profile/switch` endpoint through this diagram's sequence.
 - **Backend is the authority.** The hook never flips `AuthContext.activeProfile` optimistically — it waits for a successful response before updating state and navigating, so a `403` (requested profile not in `availableProfiles`) leaves the UI exactly where it was, with an accessible error message.
 - **Route guards remain independent.** `InstructorRoute` still re-checks `availableProfiles` on every navigation to `/instructor/*`; the switch endpoint does not replace or short-circuit that check.
-- **Known caveat.** `SettingsPage`'s "Go to teaching area" link is a plain `<Link>` and does not go through this hook or call the switch endpoint — it is not represented in this diagram.

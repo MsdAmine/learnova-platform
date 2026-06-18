@@ -186,6 +186,30 @@ report. Verification is currently manual and tooling-based:
   on (`POST /api/v1/profile/switch`) is covered by the existing
   `ProfileSwitchIntegrationTest`.
 
+**Settings profile-switch update — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - A learner-only user (no `INSTRUCTOR` in `availableProfiles`) does not see
+    the "Go to teaching area" action on `/dashboard/settings`.
+  - An approved instructor sees the "Go to teaching area" action in the
+    Settings instructor-application panel.
+  - Clicking the action calls `POST /api/v1/profile/switch` (via
+    `useProfileSwitch().switchTo('INSTRUCTOR')`); success navigates to
+    `/instructor/courses`.
+  - A simulated API failure renders an inline, accessible (`role="alert"`)
+    message in the Settings panel and does not navigate away.
+  - Keyboard focus reaches the action and Enter activates it, matching the
+    existing `Button` component's behavior.
+  - No horizontal overflow introduced at any of the three viewports.
+  - `DashboardLayout`'s switch card and `InstructorLayout`'s "back to
+    learner dashboard" action continue to work unchanged.
+- No automated frontend component test was added for this UI in this
+  change — these claims are manual QA only. The backend behavior it depends
+  on (`POST /api/v1/profile/switch`) is covered by the existing
+  `ProfileSwitchIntegrationTest`; no backend code was modified for this
+  change.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
@@ -211,7 +235,6 @@ and should not be presented as verified in the report:
   have no explicit ordering or reorder capability; not applicable for
   testing.
 - **Profile switcher UI** — covered by manual browser QA only (see above);
-  no automated frontend component test exists for `useProfileSwitch`, the
-  `DashboardLayout` switch card, or the `InstructorLayout` "back to learner"
-  action. The `SettingsPage` "Go to teaching area" link is untested because
-  it is plain navigation with no backend call involved.
+  no automated frontend component test exists for `useProfileSwitch` or any
+  of its three call sites (`DashboardLayout`'s switch card, `InstructorLayout`'s
+  "back to learner" action, or `SettingsPage`'s "Go to teaching area" action).

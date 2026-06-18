@@ -75,8 +75,9 @@ where applicable, a wired frontend screen). Each is documented in detail in
   already-issued certificates, with each card linking to the certificate
   view route
 - Approved-instructor profile switching between the learner and instructor
-  areas, backed by `POST /api/v1/profile/switch` (see `core-workflows.md`
-  §10)
+  areas from all three UI entry points (dashboard switch card, instructor
+  layout back-to-learner action, and Settings page), backed by
+  `POST /api/v1/profile/switch` (see `core-workflows.md` §10)
 
 ## Current Limitations
 
@@ -93,11 +94,11 @@ These areas are intentionally **not** presented as complete:
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; no media upload pipeline exists.
-- **Profile switch UI** — implemented for the main entry points (the
-  learner dashboard's instructor switch card and the instructor area's
-  "back to learner" action both call `POST /api/v1/profile/switch`); the
-  `SettingsPage` "Go to teaching area" link is the one remaining navigation
-  that does not call the endpoint.
+- **Profile switch UI** — fully implemented; no remaining navigation-only
+  caveat. All three entry points (the learner dashboard's instructor switch
+  card, the instructor area's "back to learner" action, and `SettingsPage`'s
+  "Go to teaching area" action) call `POST /api/v1/profile/switch` through
+  the shared `useProfileSwitch` hook.
 
 A full breakdown of known gaps is in `docs/report/limitations.md`.
 

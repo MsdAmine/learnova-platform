@@ -22,12 +22,10 @@ certificate-issuance UI work that followed this validation pass —
 `CoursePlayerPage` now exposes a certificate panel that calls the issuance
 endpoint once a course reaches 100% progress. See UC-28 for the exact flow
 and remaining caveats (issuance is manual, not automatic). **Profile
-switching** (UC-17, UC-27) is also implemented end-to-end: the learner
-dashboard's instructor switch card and the instructor area's "back to
-learner" action both call `POST /api/v1/profile/switch` via
-`src/hooks/useProfileSwitch.ts`, with one remaining caveat — the
-`SettingsPage` "Go to teaching area" link still navigates directly without
-calling the switch endpoint.
+switching** (UC-17, UC-27) is implemented end-to-end across every UI entry
+point: the learner dashboard's instructor switch card, the instructor area's
+"back to learner" action, and `SettingsPage`'s "Go to teaching area" action
+all call `POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts`.
 
 ---
 
@@ -462,6 +460,7 @@ replaces "Learner" capabilities — it's additive.
 - **Frontend routes:** `/dashboard` (switch trigger) → `/instructor/courses`, `/instructor/courses/:courseId/content`, `/instructor/courses/:courseId/quizzes` (all under `InstructorRoute`)
 - **Backend endpoints:** `POST /api/v1/profile/switch`
 - **Entities/tables:** `InstructorProfile`, `User`
+- **Alternative entry point:** the approved-instructor application panel on `/dashboard/settings` (`SettingsPage`) offers an equivalent "Go to teaching area" action that calls the same `useProfileSwitch().switchTo('INSTRUCTOR')` hook and follows the identical success/error flow described above.
 
 ---
 
@@ -721,7 +720,6 @@ replaces "Learner" capabilities — it's additive.
 - UC-30 Retake Quiz
 
 ### Planned / future extension
-- A profile-switch entry point on `SettingsPage`'s "Go to teaching area" link, which still navigates directly without calling `POST /api/v1/profile/switch` (see UC-17/UC-27 — the sidebar and instructor-topbar switch controls already call the endpoint)
 - Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
@@ -744,15 +742,15 @@ truth: the backend `@RestController`/`@Service`/`@Entity` classes under
 endpoint, or entity name in this document was invented — every claim traces
 to a controller method, a router entry, a frontend component, or an explicit
 statement in the existing report documents. Where a capability is incomplete
-or absent (e.g., live sessions, the `SettingsPage` "Go to teaching area" link
-not calling the switch endpoint), it is marked
+or absent (e.g., live sessions), it is marked
 **Planned / not fully implemented** rather than
-presented as done. The profile switcher (UC-17/UC-27) is now wired
-end-to-end — `DashboardLayout`'s sidebar switch card and `InstructorLayout`'s
-"Back to learner dashboard" action both call `POST /api/v1/profile/switch`
-via `src/hooks/useProfileSwitch.ts` — and is marked **Implemented** rather
-than navigation-only, consistent with the project's "no feature claimed
-unless wired end-to-end" convention.
+presented as done. The profile switcher (UC-17/UC-27) is wired
+end-to-end across every UI entry point — `DashboardLayout`'s sidebar switch
+card, `InstructorLayout`'s "Back to learner dashboard" action, and
+`SettingsPage`'s "Go to teaching area" action all call
+`POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts` — and is
+marked **Implemented** rather than partially navigation-only, consistent
+with the project's "no feature claimed unless wired end-to-end" convention.
 
 **`graphify` refresh attempted and failed.** This validation pass attempted
 to refresh the project graph via `graphify update .` and `graphify query`,

@@ -341,12 +341,13 @@ not found, or not owned by the caller, returns `404` on the view page.
 5. On success, the hook updates `AuthContext`'s active profile and navigates to `/instructor/courses` (mapped via `PROFILE_ROUTE`).
 6. `InstructorRoute` independently re-checks `isAuthenticated` + `availableProfiles` includes `'INSTRUCTOR'` before rendering the instructor shell — the switch call does not bypass this guard.
 7. To switch back, the instructor clicks "Back to learner dashboard" in `InstructorLayout`'s topbar, which calls the same hook with `'LEARNER'`, hits the same endpoint, updates `AuthContext`, and navigates to `/dashboard`.
+8. A third entry point reaches the same flow: on `/dashboard/settings`, the approved-instructor application panel's "Go to teaching area" action also calls `useProfileSwitch().switchTo('INSTRUCTOR')`, routing through the identical hook → endpoint → `AuthContext` update → navigation sequence as steps 2–5.
 
 **Backend endpoints:**
 - `POST /api/v1/profile/switch` (authenticated; validated against `ProfileAccessService.canUseProfile()`)
 
-**Frontend routes:** `/dashboard` (switch-to-instructor trigger, `DashboardLayout`) ↔ `/instructor/courses` (switch-to-learner trigger, `InstructorLayout`)
+**Frontend routes:** `/dashboard` (switch-to-instructor trigger, `DashboardLayout`) ↔ `/instructor/courses` (switch-to-learner trigger, `InstructorLayout`); `/dashboard/settings` (alternate switch-to-instructor trigger, `SettingsPage`)
 
-**Error handling:** A `403` from the backend (requested profile not available) is caught by `useProfileSwitch` and rendered as an inline, accessible (`role="alert"`) message in the triggering layout; the user remains on the current page and no navigation occurs.
+**Error handling:** A `403` from the backend (requested profile not available) is caught by `useProfileSwitch` and rendered as an inline, accessible (`role="alert"`) message in the triggering component (`DashboardLayout`, `InstructorLayout`, or `SettingsPage`); the user remains on the current page and no navigation occurs.
 
-**Result:** `AuthContext.activeProfile` reflects the backend-confirmed profile; the user lands on the matching area. **Caveat:** the `SettingsPage` "Go to teaching area" link (in the instructor-application-approved panel) still performs a plain `<Link to="/instructor/courses">` navigation and does not call `POST /api/v1/profile/switch` or this hook — it was intentionally left untouched by this integration.
+**Result:** `AuthContext.activeProfile` reflects the backend-confirmed profile; the user lands on the matching area. All three UI entry points — `DashboardLayout`'s switch card, `InstructorLayout`'s back-to-learner action, and `SettingsPage`'s "Go to teaching area" action — are now backend-backed through the same `useProfileSwitch` hook.

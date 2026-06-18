@@ -20,7 +20,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type (validated against the caller's `availableProfiles`; `403` if not available); consumed by the frontend via `src/api/profile.ts` → `src/hooks/useProfileSwitch.ts`, called from `DashboardLayout`'s instructor switch card and `InstructorLayout`'s "back to learner" action |
+| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type (validated against the caller's `availableProfiles`; `403` if not available); consumed by the frontend via `src/api/profile.ts` → `src/hooks/useProfileSwitch.ts`, called from `DashboardLayout`'s instructor switch card, `InstructorLayout`'s "back to learner" action, and `SettingsPage`'s "Go to teaching area" action |
 | GET | `/api/v1/learner-profile/me` | Authenticated | Get the caller's own learner profile (self-resolved, no id in URL) |
 | PATCH | `/api/v1/learner-profile/me` | Authenticated | Update `displayName`, `bio`, `profileImageUrl` on the caller's own learner profile |
 | POST | `/api/v1/instructor-profile/request` | Authenticated | Submit an instructor profile request (status starts `PENDING`) |
