@@ -71,10 +71,18 @@ limitations:
   no direct/unsigned frontend-to-Cloudinary upload exists.
   - **Instructor profile image upload is not implemented** — `InstructorProfile`
     has no image URL field.
-  - **Live, successful upload to real Cloudinary is unverified** in this
-    environment — only placeholder credentials exist locally, so an upload
-    reaches the Cloudinary API call and fails cleanly with a `502`; it has
-    not been exercised against a real account.
+  - Live upload against real Cloudinary credentials (cloud `dnd5pu5me`) has
+    been verified for the learner profile image and instructor course
+    thumbnail flows, including replacement uploads — see
+    `testing-summary.md` for the QA evidence. **Cloudinary dashboard
+    verification (the web console itself) has not been performed**; QA
+    relied on rendered URLs, reload persistence, and catalog/detail
+    rendering instead.
+  - Replacement uploads reuse deterministic public-ID naming
+    (`course-{id}` / `learner-{id}`), so Cloudinary overwrites the existing
+    asset in place rather than creating an orphan; the explicit
+    delete-previous-asset code path only fires when the public ID itself
+    changes, which does not happen under this naming scheme.
   - Course thumbnail upload is wired in course **edit** mode only — create
     mode remains URL-only since no `courseId` exists before the course is
     created.

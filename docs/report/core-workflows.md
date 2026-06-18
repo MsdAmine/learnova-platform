@@ -415,7 +415,7 @@ not found, or not owned by the caller, returns `404` on the view page.
 
 **Frontend routes:** `/dashboard/settings`
 
-**Result:** `LearnerProfile.profileImageUrl` and `profileImagePublicId` updated; the old Cloudinary asset is cleaned up on replacement. As of this pass, real Cloudinary credentials are still pending in dev — the call to Cloudinary itself currently fails cleanly with a `502`, which is expected behavior until real credentials are configured, not a bug in this workflow.
+**Result:** `LearnerProfile.profileImageUrl` and `profileImagePublicId` updated. Live QA against real Cloudinary credentials (cloud `dnd5pu5me`) confirmed the upload persists and renders correctly after a page reload. On replacement, Cloudinary's deterministic `learner-{profileId}` public-ID naming means the new upload overwrites the same asset in place — the explicit delete-previous-asset step only fires when the public ID changes, which it does not under this naming scheme. Cloudinary dashboard verification (the web console) was not performed.
 
 ---
 
@@ -449,4 +449,4 @@ not found, or not owned by the caller, returns `404` on the view page.
 
 **Frontend routes:** `/instructor/courses` (EDIT mode)
 
-**Result:** `Course.thumbnailUrl` and `thumbnailPublicId` updated; old Cloudinary asset cleaned up on replacement. As with the learner profile-image flow, real Cloudinary credentials are still pending in dev, so the live call to Cloudinary currently fails cleanly with a `502`.
+**Result:** `Course.thumbnailUrl` and `thumbnailPublicId` updated. Live QA against real Cloudinary credentials (cloud `dnd5pu5me`) confirmed the new thumbnail persists after reload and renders correctly on both the public catalog card and the course detail page. As with the learner profile-image flow, replacement uploads reuse a deterministic `course-{id}` public ID, so the upload overwrites the existing asset in place rather than triggering the explicit-delete branch. Cloudinary dashboard verification (the web console) was not performed.

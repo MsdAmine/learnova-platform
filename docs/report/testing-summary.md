@@ -12,7 +12,7 @@ test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
 no external database is required. A full `./mvnw test` run currently reports
-**215 tests, 0 failures, 0 errors**.
+**222 tests, 0 failures, 0 errors**.
 
 ### Test categories
 
@@ -408,20 +408,20 @@ lint, build, and manual browser QA:
 - Only `frontend/src/features/instructor/components/InstructorLayout.tsx`
   was changed; no backend code and no certificate-related code was touched.
 
-**Cloudinary media upload — manual verification:**
-- Backend: `./mvnw test` passed (215 tests, 0 failures, 0 errors), including
-  the 10 `MediaUploadIntegrationTest` scenarios (see "Backend Test Suite"
-  above; Cloudinary mocked, no real external calls).
+**Cloudinary media upload — manual verification (mocked, placeholder-credential pass):**
+- Backend: `./mvnw test` passed (215 tests, 0 failures, 0 errors at the time
+  of this pass), including the 10 `MediaUploadIntegrationTest` scenarios (see
+  "Backend Test Suite" above; Cloudinary mocked, no real external calls).
 - Frontend: `npm run lint` passed, `npm run build` passed, `npm run test`
   passed (35 tests, 0 failures), including `profile.test.ts`,
   `instructorCourses.test.ts`, `SettingsPage.test.tsx`, and
   `InstructorCoursesPage.test.tsx` (see "Frontend Automated Tests" above).
 - Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
-  - A valid image upload on the Settings photo uploader and the course
-    thumbnail uploader reaches the Cloudinary call and fails cleanly with a
-    `502` — this is expected, since only placeholder Cloudinary credentials
-    are configured in this environment; a live successful upload has not
-    been verified.
+  - With only placeholder Cloudinary credentials configured at the time, a
+    valid image upload on both uploaders reached the Cloudinary call and
+    failed cleanly with a `502` — expected given placeholder credentials, and
+    superseded by the live QA pass below once real credentials were
+    configured.
   - An invalid file type and an oversized file are both rejected
     client-side with an accessible error message and no network call made,
     on both uploaders.
@@ -430,6 +430,50 @@ lint, build, and manual browser QA:
   - No unexpected console errors.
 - Instructor profile image upload was not exercised because it does not
   exist — `InstructorProfile` has no image URL field.
+
+**Cloudinary media upload — live QA with real credentials (cloud `dnd5pu5me`):**
+- Real Cloudinary credentials were configured for cloud `dnd5pu5me`; backend
+  local config hardening for reading these from `backend/.env` (without
+  sourcing unrelated JWT/DB values) was committed separately (`98203b2`).
+- Backend: `./mvnw test` passed (222 tests, 0 failures, 0 errors). Cloudinary
+  itself remains mocked in the automated suite — these are unit/integration
+  tests, not the live-credentials QA evidence below.
+- Frontend: `npm run lint`, `npm run build`, and `npm run test` all passed
+  (35 tests, 0 failures).
+- Live, real-Cloudinary manual QA at three viewports (390×844, 768×1024,
+  1440×900):
+  - Learner profile image upload succeeded; the rendered image URL was a
+    real `https://res.cloudinary.com/dnd5pu5me/image/upload/.../learnova/profile-images/learner-70.png` asset.
+  - Instructor course thumbnail upload succeeded for an owned course ("QA
+    Quiz Course", id 13); the thumbnail preview updated immediately and
+    persisted after a page reload; the public catalog card and the course
+    detail page both rendered the uploaded thumbnail.
+  - A replacement thumbnail upload succeeded; because Cloudinary overwrite
+    uses deterministic public-ID naming (`course-{id}` / `learner-{id}`),
+    the replacement overwrote the same asset rather than creating an orphan,
+    and the explicit-delete-on-replacement branch did not fire — this is
+    expected, since that branch only triggers when the public ID itself
+    changes, not on every replacement.
+  - Invalid file type and oversized file validation both still passed.
+  - Unauthenticated upload returned `401`; non-instructor upload returned
+    `403`; cross-instructor ownership is covered by the existing
+    `MediaUploadIntegrationTest` integration test.
+  - All browser upload requests went only to backend endpoints; the only
+    direct browser-to-Cloudinary traffic observed was public `GET` requests
+    to `res.cloudinary.com` for image display (no `api.cloudinary.com`
+    upload call ever originated from the browser).
+  - No Cloudinary secret appeared in frontend requests, browser console,
+    the frontend bundle, or backend logs.
+  - No horizontal overflow or unexpected console errors at any viewport.
+- **Cloudinary dashboard verification (the Cloudinary web console itself)
+  was not performed** during this pass — verification relied on the
+  rendered URLs, reload persistence, and catalog/detail rendering above, not
+  on inspecting the Cloudinary account dashboard directly.
+- Data side effects from this QA pass: a `qa.other.instructor@learnova.dev`
+  user (`ROLE_LEARNER`-only) was created for the non-instructor authorization
+  check; course 13's thumbnail was changed twice, ending on the blue
+  replacement image; learner 70's profile image was updated. These are
+  QA-environment side effects, not application bugs.
 
 ## Known Untested / Placeholder Areas
 
@@ -462,12 +506,13 @@ and should not be presented as verified in the report:
   attempt-history contract is covered by `learnerQuizzes.test.ts`.
 - **Rich lesson body/media** — the course player's lesson content area is a
   placeholder panel; there is no video/rich-text rendering to test.
-- **Live Cloudinary upload success** — only placeholder Cloudinary
-  credentials are configured in this environment, so a successful real
-  upload (as opposed to a clean failure on the Cloudinary call) has not
-  been verified by either automated tests (Cloudinary is mocked) or manual
-  QA. Instructor profile image upload has no test coverage because it is
-  not implemented.
+- **Live Cloudinary upload success** — verified by manual QA against real
+  Cloudinary credentials (cloud `dnd5pu5me`) for the learner profile image
+  and instructor course thumbnail flows (see "Cloudinary media upload — live
+  QA with real credentials" above); automated tests still mock Cloudinary
+  and do not exercise the real API. Cloudinary dashboard verification (the
+  web console) was not performed. Instructor profile image upload has no
+  test coverage because it is not implemented.
 - **Ordering/reordering** — sections, lessons, questions, and answer options
   have no explicit ordering or reorder capability; not applicable for
   testing.
