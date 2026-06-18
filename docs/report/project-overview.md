@@ -85,11 +85,12 @@ where applicable, a wired frontend screen). Each is documented in detail in
   sessions, and access-controlled join with idempotent attendance recording
   — powered by generated Jitsi meeting URLs opened in a new browser tab (see
   `core-workflows.md` §10)
-- Cloudinary-backed media upload (v1): learner profile image upload from
-  Settings, and instructor course thumbnail upload from course edit mode —
-  both backend-authenticated multipart uploads validated for MIME type,
-  size, and non-empty content, with the prior Cloudinary asset deleted on
-  replacement (see `core-workflows.md` §12–13)
+- Cloudinary-backed media upload (v1, verified for profile image and course
+  thumbnail): learner profile image upload from Settings, and instructor
+  course thumbnail upload from course edit mode — both backend-authenticated
+  multipart uploads validated for MIME type, size, and non-empty content,
+  with the prior Cloudinary asset deleted on replacement when the public ID
+  changes (see `core-workflows.md` §12–13)
 
 ## Current Limitations
 
@@ -111,9 +112,10 @@ These areas are intentionally **not** presented as complete:
   and course thumbnails (edit mode only) only; instructor profile image
   upload is not implemented (`InstructorProfile` has no image URL field),
   lesson attachments and certificate media/PDF storage do not exist, and
-  no direct/unsigned frontend-to-Cloudinary upload is used. Live, successful
-  upload against real Cloudinary credentials is unverified in this
-  environment (placeholder credentials only).
+  no direct/unsigned frontend-to-Cloudinary upload is used. Live upload
+  against real Cloudinary credentials (cloud `dnd5pu5me`) has been verified
+  for both the learner profile image and instructor course thumbnail flows;
+  Cloudinary dashboard (web console) verification was not performed.
 - **Frontend automated testing is minimal** — a Vitest + React Testing
   Library + jsdom harness now exists (27 tests covering `useProfileSwitch`,
   the dashboard's certificate section, the `learnerQuizzes` API client, the

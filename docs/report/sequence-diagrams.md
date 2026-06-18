@@ -548,7 +548,7 @@ sequenceDiagram
 **Notes:**
 - **Validate before upload, delete after save.** `MediaValidator.validateImage` runs before any Cloudinary call; the previous Cloudinary asset is only deleted after the new URL/public ID is successfully persisted, so a failed deletion never leaves the profile pointing at a missing image.
 - **Self-scoped, no profile id in the request.** The target `LearnerProfile` is resolved from the authenticated principal, consistent with the rest of the self-edit endpoints.
-- **Placeholder credentials in this environment.** With real Cloudinary credentials not yet configured locally, a valid file reaches the `Storage.uploadImage` call and that call fails with a `502`; live successful upload is unverified pending real credentials.
+- **Live upload verified with real credentials.** Manual QA against real Cloudinary credentials (cloud `dnd5pu5me`) confirmed `Storage.uploadImage` succeeds end-to-end — the resulting URL renders in the UI and persists after reload. Cloudinary dashboard verification (the web console itself) was not performed.
 
 ---
 
@@ -597,4 +597,4 @@ sequenceDiagram
 **Notes:**
 - **Edit mode only.** This upload path exists only once a course (and its `courseId`) already exists; course creation remains URL-only for the thumbnail field.
 - **Ownership-gated, same pattern as other course mutations.** A non-owning instructor's upload attempt returns `403`, mirroring the ownership checks on `PATCH /api/v1/instructor/courses/{courseId}` and the section/lesson/quiz endpoints.
-- **Placeholder credentials in this environment.** As with the learner profile image flow, a valid upload reaches the Cloudinary call and fails cleanly with `502` until real credentials are configured.
+- **Live upload verified with real credentials.** As with the learner profile image flow, manual QA against real Cloudinary credentials (cloud `dnd5pu5me`) confirmed the upload succeeds, persists after reload, and renders on both the public catalog card and the course detail page. Cloudinary dashboard verification (the web console itself) was not performed.

@@ -34,9 +34,11 @@ all call `POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts`.
 two surfaces only — learner profile image and instructor course thumbnail
 (edit mode only) — via a backend `media` module
 (`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`).
-Instructor profile image upload, lesson attachments, certificate media/PDF
-storage, and any direct/unsigned frontend-to-Cloudinary upload remain
-out of scope; see `limitations.md`.
+Live upload against real Cloudinary credentials (cloud `dnd5pu5me`) has been
+verified for both surfaces; Cloudinary dashboard (web console) verification
+was not performed. Instructor profile image upload, lesson attachments,
+certificate media/PDF storage, and any direct/unsigned
+frontend-to-Cloudinary upload remain out of scope; see `limitations.md`.
 
 ---
 
@@ -804,7 +806,7 @@ replaces "Learner" capabilities — it's additive.
   3. Backend validates MIME type, size, and non-empty content (`MediaValidator`), uploads the file to Cloudinary via `MediaStorageService`/`CloudinaryMediaStorageService`, and stores the returned secure URL on `LearnerProfile.profileImageUrl` plus the Cloudinary public ID on `LearnerProfile.profileImagePublicId`.
   4. If a previous `profileImagePublicId` existed, the backend deletes the old Cloudinary asset after the new upload succeeds.
   5. Frontend updates the photo preview with the new image.
-- **Alternative/error flows:** Invalid MIME type, oversized file, or empty file → rejected client-side with an accessible error and no network call, and rejected server-side regardless. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal (the new upload already succeeded). In the current environment, Cloudinary credentials are placeholders, so a valid upload reaches the Cloudinary call and fails cleanly with a `502` — live success is unverified pending real credentials.
+- **Alternative/error flows:** Invalid MIME type, oversized file, or empty file → rejected client-side with an accessible error and no network call, and rejected server-side regardless. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal (the new upload already succeeded); in practice, the deterministic `learner-{profileId}` public ID means the new upload overwrites the same asset rather than reaching this branch. Live upload against real Cloudinary credentials (cloud `dnd5pu5me`) has been verified — the resulting URL renders correctly and persists after reload. Cloudinary dashboard (web console) verification was not performed.
 - **Postconditions:** `LearnerProfile.profileImageUrl`/`profileImagePublicId` updated on success.
 - **Frontend routes:** `/dashboard/settings`
 - **Backend endpoints:** `POST /api/v1/learner-profile/me/image`
@@ -823,7 +825,7 @@ replaces "Learner" capabilities — it's additive.
   3. Backend checks course ownership, validates the file (`MediaValidator`), uploads to Cloudinary, and stores the secure URL on `Course.thumbnailUrl` plus the public ID on `Course.thumbnailPublicId`.
   4. If a previous `thumbnailPublicId` existed, the backend deletes the old Cloudinary asset after the new upload succeeds.
   5. Frontend updates the thumbnail preview with the new image.
-- **Alternative/error flows:** Cross-instructor upload attempt (non-owner) → `403`. Invalid MIME type, oversized, or empty file → rejected client-side and server-side. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal. Placeholder Cloudinary credentials in the current environment mean a valid upload reaches the Cloudinary call and fails cleanly with `502` — live success is unverified pending real credentials.
+- **Alternative/error flows:** Cross-instructor upload attempt (non-owner) → `403`. Invalid MIME type, oversized, or empty file → rejected client-side and server-side. Unauthenticated request → `401`. Old-asset deletion failure on replacement is logged and non-fatal; in practice, the deterministic `course-{id}` public ID means the new upload overwrites the same asset rather than reaching this branch. Live upload against real Cloudinary credentials (cloud `dnd5pu5me`) has been verified, including a replacement upload, with the new thumbnail persisting after reload and rendering on the public catalog card and course detail page. Cloudinary dashboard (web console) verification was not performed.
 - **Postconditions:** `Course.thumbnailUrl`/`thumbnailPublicId` updated on success.
 - **Frontend routes:** `/instructor/courses` (edit mode)
 - **Backend endpoints:** `POST /api/v1/instructor/courses/{courseId}/thumbnail`
@@ -876,7 +878,6 @@ replaces "Learner" capabilities — it's additive.
 
 ### Planned / future extension
 - Instructor profile image upload (no image URL field on `InstructorProfile`)
-- Live, successful Cloudinary upload verification (only placeholder credentials are configured in this environment)
 - Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
