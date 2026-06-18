@@ -303,7 +303,11 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 5. The same certificate is also reachable later from `/dashboard/certificates`
    (the certificates list page), which calls `GET
    /api/v1/learner/certificates` and links each card to its certificate view.
-6. `CertificateViewPage` calls `GET
+6. The learner dashboard (`/dashboard`) also reads `GET
+   /api/v1/learner/certificates` directly and renders a Certificates section
+   with the same loading/error/empty states; each card on the dashboard links
+   to the same `/dashboard/certificates/:certificateId` view route.
+7. `CertificateViewPage` calls `GET
    /api/v1/learner/certificates/{certificateId}` and renders a full-screen,
    printable certificate document with a "Print / Save as PDF" button
    (browser `window.print()` — no server-side PDF generation).
@@ -317,6 +321,6 @@ not found, or not owned by the caller, returns `404` on the view page.
 - `GET /api/v1/learner/certificates` (LEARNER; self-scoped)
 - `GET /api/v1/learner/certificates/{certificateId}` (LEARNER; self-scoped)
 
-**Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
+**Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard` (Certificates section on the learner dashboard), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
 
 **Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. The certificate backend itself was not changed by this workflow's UI integration.

@@ -144,6 +144,24 @@ report. Verification is currently manual and tooling-based:
   The backend behavior it depends on is covered by the automated
   `CertificateIntegrationTest` listed above.
 
+**Learner dashboard mock-content cleanup — manual verification:**
+- `npm run lint` passed.
+- `npm run build` passed.
+- Manual browser QA at three viewports (390×844, 768×1024, 1440×900):
+  - No horizontal overflow at any of the three viewports.
+  - No console errors or warnings during QA.
+  - Empty certificate state (no certificates issued yet) rendered correctly
+    on the dashboard's Certificates section.
+  - Populated certificate state tested with a real, previously issued
+    certificate — the dashboard card linked correctly to
+    `/dashboard/certificates/:certificateId`.
+  - Certificate card keyboard focus tested — cards are reachable via
+    keyboard and show a visible focus state.
+- No automated frontend test was added for this change — these claims are
+  manual QA only, consistent with the rest of this section (the frontend
+  has no automated test suite). The dashboard change did not touch any
+  backend code or the certificate backend.
+
 ## Known Untested / Placeholder Areas
 
 These areas have little or no test coverage and/or are not feature-complete,
@@ -154,6 +172,9 @@ and should not be presented as verified in the report:
 - **Certificate issuance UI** — covered by manual browser QA only (see
   above); no automated frontend component test exists for the certificate
   panel or certificate pages.
+- **Learner dashboard certificate display** — covered by manual browser QA
+  only (see above); no automated frontend component test exists for the
+  dashboard's Certificates section.
 - **Quiz attempt-history pagination** — the attempt-history endpoint has no
   pagination; this is untested because there is nothing to paginate, not
   because coverage is missing.

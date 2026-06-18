@@ -71,7 +71,9 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Profile self-editing for both learner and instructor profiles
 - Learner certificate issuance and viewing, triggered manually from the
   course player once a course reaches 100% progress (see
-  `core-workflows.md` §9)
+  `core-workflows.md` §9); the learner dashboard also displays a learner's
+  already-issued certificates, with each card linking to the certificate
+  view route
 
 ## Current Limitations
 

@@ -30,8 +30,9 @@ limitations:
   (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
   share action, no QR/verification code, and no revoke or regenerate flow.
 - **No certificate-issuance trigger from anywhere except the course player.**
-  `CertificatesPage` (the certificates list) only reads existing certificates
-  — it does not itself offer an issuance action.
+  `CertificatesPage` (the certificates list) and the learner dashboard's
+  Certificates section both only read existing certificates via
+  `GET /api/v1/learner/certificates` — neither offers an issuance action.
 
 ## Course content and player
 
@@ -84,7 +85,10 @@ limitations:
 
 ## Dashboard
 
-- The weekly activity chart and some learner dashboard sections are
-  placeholder/mock content.
+- The learner dashboard's fabricated "Upcoming Live Sessions" section and
+  hardcoded certificate list have been removed; the dashboard's Certificates
+  section now reads real data via `GET /api/v1/learner/certificates`.
 - `ProgressPage` shows enrollment-level progress only — no per-lesson
-  breakdown view.
+  breakdown view. Its weekly-activity strip (`WEEK_ACTIVITY`) is a local
+  placeholder with no backend source yet — this is on `ProgressPage`, not
+  the learner dashboard.
