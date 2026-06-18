@@ -324,3 +324,29 @@ not found, or not owned by the caller, returns `404` on the view page.
 **Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard` (Certificates section on the learner dashboard), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
 
 **Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. The certificate backend itself was not changed by this workflow's UI integration.
+
+---
+
+## 10. Approved Instructor Switches Active Profile
+
+**Actor:** Approved Instructor (a user with `INSTRUCTOR` in `availableProfiles`)
+
+**Goal:** Toggle the active profile between `LEARNER` and `INSTRUCTOR` and land on the corresponding area, with the backend as the source of truth for which profile is active.
+
+**Main steps:**
+1. On `/dashboard`, `DashboardLayout`'s sidebar renders a profile-switch card for approved instructors only (`showProfileSwitchCard = isApprovedInstructor`).
+2. The instructor clicks "Switch to instructor". The button calls `useProfileSwitch().switchTo('INSTRUCTOR')` (`src/hooks/useProfileSwitch.ts`).
+3. The hook calls `switchActiveProfile('INSTRUCTOR')` (`src/api/profile.ts`), which performs `POST /api/v1/profile/switch` with `{ profileType: 'INSTRUCTOR' }`.
+4. Backend (`ProfileSwitchController` → `ProfileSwitchService`) validates the request via `ProfileAccessService.canUseProfile()` and returns `{ activeProfile, availableProfiles }` on success, or `403` if the profile is not available to the caller.
+5. On success, the hook updates `AuthContext`'s active profile and navigates to `/instructor/courses` (mapped via `PROFILE_ROUTE`).
+6. `InstructorRoute` independently re-checks `isAuthenticated` + `availableProfiles` includes `'INSTRUCTOR'` before rendering the instructor shell — the switch call does not bypass this guard.
+7. To switch back, the instructor clicks "Back to learner dashboard" in `InstructorLayout`'s topbar, which calls the same hook with `'LEARNER'`, hits the same endpoint, updates `AuthContext`, and navigates to `/dashboard`.
+
+**Backend endpoints:**
+- `POST /api/v1/profile/switch` (authenticated; validated against `ProfileAccessService.canUseProfile()`)
+
+**Frontend routes:** `/dashboard` (switch-to-instructor trigger, `DashboardLayout`) ↔ `/instructor/courses` (switch-to-learner trigger, `InstructorLayout`)
+
+**Error handling:** A `403` from the backend (requested profile not available) is caught by `useProfileSwitch` and rendered as an inline, accessible (`role="alert"`) message in the triggering layout; the user remains on the current page and no navigation occurs.
+
+**Result:** `AuthContext.activeProfile` reflects the backend-confirmed profile; the user lands on the matching area. **Caveat:** the `SettingsPage` "Go to teaching area" link (in the instructor-application-approved panel) still performs a plain `<Link to="/instructor/courses">` navigation and does not call `POST /api/v1/profile/switch` or this hook — it was intentionally left untouched by this integration.

@@ -21,7 +21,13 @@ end-to-end: a real certificate backend module (`certificate/controller`,
 certificate-issuance UI work that followed this validation pass —
 `CoursePlayerPage` now exposes a certificate panel that calls the issuance
 endpoint once a course reaches 100% progress. See UC-28 for the exact flow
-and remaining caveats (issuance is manual, not automatic).
+and remaining caveats (issuance is manual, not automatic). **Profile
+switching** (UC-17, UC-27) is also implemented end-to-end: the learner
+dashboard's instructor switch card and the instructor area's "back to
+learner" action both call `POST /api/v1/profile/switch` via
+`src/hooks/useProfileSwitch.ts`, with one remaining caveat — the
+`SettingsPage` "Go to teaching area" link still navigates directly without
+calling the switch endpoint.
 
 ---
 
@@ -441,17 +447,20 @@ replaces "Learner" capabilities — it's additive.
 ---
 
 ### UC-17: Switch to Instructor Area
-- **Status:** Implemented (navigation only) — **the backend `activeProfile` switch endpoint itself is Planned / not fully implemented on the frontend**
+- **Status:** Implemented
 - **Primary actor:** Approved Instructor
 - **Goal:** Move from the learner experience to the instructor course-management area.
 - **Preconditions:** `availableProfiles` includes `INSTRUCTOR` (i.e., `approvalStatus = APPROVED`).
 - **Main success flow:**
-  1. Approved instructor navigates to `/instructor/courses` (a separate shell, `InstructorLayout`, not nested under the learner `DashboardLayout`).
-  2. `InstructorRoute` checks `isAuthenticated` + `availableProfiles` includes `'INSTRUCTOR'`; access is granted.
-- **Alternative/error flows:** `INSTRUCTOR` not in `availableProfiles` → redirected to `/unauthorized` (not `/login`, since the user is already authenticated).
-- **Postconditions:** Instructor-only routes accessible.
-- **Frontend routes:** `/instructor/courses`, `/instructor/courses/:courseId/content`, `/instructor/courses/:courseId/quizzes` (all under `InstructorRoute`)
-- **Backend endpoints:** None required for this navigation itself; `POST /api/v1/profile/switch` exists on the backend but **no frontend component currently calls it** — there is no profile-switcher UI. Today, instructor-area access is route-guard-based (`availableProfiles` check), not an explicit "switch" action with a persisted `activeProfile` server round-trip.
+  1. On `/dashboard`, the approved instructor sees a profile-switch card in `DashboardLayout`'s sidebar and clicks "Switch to instructor".
+  2. The card calls `useProfileSwitch().switchTo('INSTRUCTOR')` (`src/hooks/useProfileSwitch.ts`), which calls `switchActiveProfile('INSTRUCTOR')` (`src/api/profile.ts`) → `POST /api/v1/profile/switch`.
+  3. Backend validates the requested profile via `ProfileAccessService.canUseProfile()`; on success it returns `{ activeProfile, availableProfiles }`.
+  4. The hook updates `AuthContext`'s active profile and navigates to `/instructor/courses` (a separate shell, `InstructorLayout`, not nested under the learner `DashboardLayout`).
+  5. `InstructorRoute` checks `isAuthenticated` + `availableProfiles` includes `'INSTRUCTOR'`; access is granted (this guard check is independent of the switch call and still enforced).
+- **Alternative/error flows:** `INSTRUCTOR` not in `availableProfiles` → backend returns `403`; the hook surfaces an inline, accessible (`role="alert"`) error and the user stays on the current page (no navigation). Direct navigation to an instructor route without the role still redirects to `/unauthorized` via `InstructorRoute`, independent of this switch flow.
+- **Postconditions:** Instructor-only routes accessible; `AuthContext.activeProfile = 'INSTRUCTOR'`.
+- **Frontend routes:** `/dashboard` (switch trigger) → `/instructor/courses`, `/instructor/courses/:courseId/content`, `/instructor/courses/:courseId/quizzes` (all under `InstructorRoute`)
+- **Backend endpoints:** `POST /api/v1/profile/switch`
 - **Entities/tables:** `InstructorProfile`, `User`
 
 ---
@@ -602,16 +611,18 @@ replaces "Learner" capabilities — it's additive.
 ---
 
 ### UC-27: Switch Back to Learner Area
-- **Status:** Implemented (navigation only) — same caveat as UC-17
+- **Status:** Implemented
 - **Primary actor:** Approved Instructor
 - **Goal:** Return to the learner dashboard experience.
 - **Preconditions:** None beyond being authenticated (every user retains a `LearnerProfile`).
 - **Main success flow:**
-  1. From `/instructor/*`, the user navigates to `/dashboard` (a separate shell, `DashboardLayout`, guarded by `ProtectedRoute` only — no instructor-specific check).
-- **Alternative/error flows:** None — this direction has no authorization gate beyond standard authentication.
-- **Postconditions:** Learner dashboard rendered.
-- **Frontend routes:** `/dashboard` (and its children)
-- **Backend endpoints:** None specific to the switch itself; same note as UC-17 — `POST /api/v1/profile/switch` exists server-side but is not wired to any frontend "switch" UI. The learner/instructor "areas" today are two separate route trees the user navigates between, not a persisted `activeProfile` toggle round-tripped through the switch endpoint.
+  1. From `/instructor/*`, the user clicks "Back to learner dashboard" in `InstructorLayout`'s topbar.
+  2. This calls `useProfileSwitch().switchTo('LEARNER')`, which calls `POST /api/v1/profile/switch` with `profileType: 'LEARNER'`.
+  3. On success, `AuthContext`'s active profile is updated and the hook navigates to `/dashboard` (a separate shell, `DashboardLayout`, guarded by `ProtectedRoute` only — no instructor-specific check).
+- **Alternative/error flows:** API failure → inline, accessible (`role="alert"`) error rendered in `InstructorLayout`; the user stays on the instructor page. The learner-direction switch has no authorization gate beyond standard authentication (every user retains a `LearnerProfile`), so this branch is expected to be rare in practice.
+- **Postconditions:** Learner dashboard rendered; `AuthContext.activeProfile = 'LEARNER'`.
+- **Frontend routes:** `/instructor/*` (switch trigger) → `/dashboard` (and its children)
+- **Backend endpoints:** `POST /api/v1/profile/switch`
 - **Entities/tables:** `LearnerProfile`, `User`
 
 ---
@@ -710,7 +721,7 @@ replaces "Learner" capabilities — it's additive.
 - UC-30 Retake Quiz
 
 ### Planned / future extension
-- A true `activeProfile` switcher UI calling `POST /api/v1/profile/switch` (the endpoint exists; nothing in the frontend calls it — see UC-17/UC-27)
+- A profile-switch entry point on `SettingsPage`'s "Go to teaching area" link, which still navigates directly without calling `POST /api/v1/profile/switch` (see UC-17/UC-27 — the sidebar and instructor-topbar switch controls already call the endpoint)
 - Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
 - Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
@@ -733,14 +744,15 @@ truth: the backend `@RestController`/`@Service`/`@Entity` classes under
 endpoint, or entity name in this document was invented — every claim traces
 to a controller method, a router entry, a frontend component, or an explicit
 statement in the existing report documents. Where a capability is incomplete
-or absent (e.g., the profile switcher UI, live sessions), it is marked
+or absent (e.g., live sessions, the `SettingsPage` "Go to teaching area" link
+not calling the switch endpoint), it is marked
 **Planned / not fully implemented** rather than
-presented as done. Where a capability is real on one side but not wired on
-the other (e.g., the certificate issuance endpoint with no calling UI, the
-`POST /api/v1/profile/switch` endpoint with no calling UI), it is marked
-**Implemented (navigation only)** or **Partially implemented** with an
-explicit gap note, consistent with the project's "no feature claimed unless
-wired end-to-end" convention.
+presented as done. The profile switcher (UC-17/UC-27) is now wired
+end-to-end — `DashboardLayout`'s sidebar switch card and `InstructorLayout`'s
+"Back to learner dashboard" action both call `POST /api/v1/profile/switch`
+via `src/hooks/useProfileSwitch.ts` — and is marked **Implemented** rather
+than navigation-only, consistent with the project's "no feature claimed
+unless wired end-to-end" convention.
 
 **`graphify` refresh attempted and failed.** This validation pass attempted
 to refresh the project graph via `graphify update .` and `graphify query`,

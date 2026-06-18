@@ -16,8 +16,8 @@ model where one account can act as both learner and instructor (see
 
 1. **[project-overview.md](./project-overview.md)** — start here for the big picture
 2. **[class-diagram.md](./class-diagram.md)** — the persistent domain model
-3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the five flagship flows
-4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all eight implemented workflows
+3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the six flagship flows
+4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all ten implemented workflows
 5. **[api-summary.md](./api-summary.md)** — the full REST surface, grouped by module
 6. **[testing-summary.md](./testing-summary.md)** — backend test coverage and frontend verification style
 7. **[limitations.md](./limitations.md)** — known gaps, read last so they land with full context
@@ -28,8 +28,8 @@ model where one account can act as both learner and instructor (see
 |---|---|
 | `project-overview.md` | Objective, target users, modules, implemented workflows, limitations summary, architecture summary |
 | `class-diagram.md` | Mermaid UML class diagrams of the JPA domain model (main model + quiz/assessment model) and enum reference |
-| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, quiz attempt/scoring, quiz retake/attempt history, and certificate issuance |
-| `core-workflows.md` | Actor/goal/steps/endpoints/routes/result for all eight implemented end-to-end workflows |
+| `sequence-diagrams.md` | Mermaid UML sequence diagrams for instructor approval, enrollment/lesson progress, quiz attempt/scoring, quiz retake/attempt history, certificate issuance, and profile switching |
+| `core-workflows.md` | Actor/goal/steps/endpoints/routes/result for all ten implemented end-to-end workflows |
 | `api-summary.md` | REST endpoint reference grouped by module (method, path, access level, purpose), sourced from controllers |
 | `testing-summary.md` | Backend test suite breakdown by category, frontend verification style, untested/placeholder areas |
 | `limitations.md` | Consolidated list of known gaps and out-of-scope features |
@@ -42,9 +42,9 @@ model where one account can act as both learner and instructor (see
 - **class-diagram.md** answers "how is the data modeled" — entities,
   relationships, and enums, taken directly from the JPA entity classes.
 - **sequence-diagrams.md** answers "how do the pieces actually talk to each
-  other" for the five flows most relevant to a live demo: instructor
+  other" for the six flows most relevant to a live demo: instructor
   approval, enrollment + lesson progress, quiz scoring, quiz retake/attempt
-  history, and certificate issuance.
+  history, certificate issuance, and profile switching.
 - **core-workflows.md** is the demo script — each workflow lists the exact
   endpoints and frontend routes involved, suitable for narrating a live
   walkthrough.
@@ -63,9 +63,12 @@ learner registration/login, instructor application and admin approval,
 instructor course/content/quiz authoring, learner enrollment, lesson study
 and progress tracking, learner quiz-taking with automatic scoring plus
 retake and full attempt history, wishlist / saved courses, profile
-self-editing for both learner and instructor profiles, and learner
+self-editing for both learner and instructor profiles, learner
 certificate issuance + viewing (manually triggered from the course player
-once a course reaches 100% progress).
+once a course reaches 100% progress), and approved-instructor profile
+switching (`POST /api/v1/profile/switch`, called from `DashboardLayout`'s
+switch card and `InstructorLayout`'s "back to learner" action — see
+`core-workflows.md` §10).
 
 **Not implemented / explicitly out of scope for this codebase:**
 - **Live sessions** — no backend exists; the frontend page is a
@@ -93,6 +96,7 @@ See `limitations.md` for the complete, categorized list.
 | Learner quiz attempt and scoring | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner quiz retake and attempt history | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner certificate issuance | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
+| Approved-instructor profile switching | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 
 All diagrams render directly from standard Mermaid syntax — no external
 tooling or generated image assets are required.
@@ -135,7 +139,10 @@ from the course player), not automatic, and offers only browser print —
 no PDF generation, sharing, QR code, or revocation. Quiz attempt history and
 retake are implemented but the attempt-history endpoint has no pagination.
 Lesson video/rich content, file upload, and section/lesson/question/option
-ordering do not exist either. Full categorized list in `limitations.md`.
+ordering do not exist either. Profile switching is implemented end-to-end
+for the main entry points, with one remaining caveat: the `SettingsPage`
+"Go to teaching area" link still navigates directly without calling the
+switch endpoint. Full categorized list in `limitations.md`.
 
 ## Suggested Next Report Assets to Add Later
 
@@ -145,6 +152,7 @@ ordering do not exist either. Full categorized list in `limitations.md`.
 - A short slide deck summarizing `project-overview.md` for the oral defense.
 - An actual `./mvnw test` run transcript captured at submission time, to
   pin down the exact test count referenced loosely in `testing-summary.md`.
-- A risk/roadmap note distinguishing "deferred by design" gaps (e.g., no
-  profile-switcher UI) from "blocked on another developer" gaps (e.g.,
-  certificates), to help the jury separate scope decisions from dependencies.
+- A risk/roadmap note distinguishing "deferred by design" gaps (e.g., the
+  `SettingsPage` "Go to teaching area" link not calling the profile-switch
+  endpoint) from "blocked on another developer" gaps (e.g., certificates),
+  to help the jury separate scope decisions from dependencies.

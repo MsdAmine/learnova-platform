@@ -87,6 +87,7 @@ What is in place:
 - `SettingsPage` profile editing: learners can edit `displayName`, `bio`, and `profileImageUrl` via `GET`/`PATCH /api/v1/learner-profile/me`; instructors (when `INSTRUCTOR` is in `availableProfiles`) can edit `bio`, `expertise`, `experience`, and `motivation` via `PATCH /api/v1/instructor-profile/me`; uses `src/api/profile.ts`; the "Profile editing is not available yet" placeholder is removed
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
+- Profile switching is wired to the real backend: `switchActiveProfile(profileType)` in `src/api/profile.ts` calls `POST /api/v1/profile/switch`; `src/hooks/useProfileSwitch.ts` exposes `{ switching, error, switchTo }`, updates `AuthContext`'s active profile on success, and navigates (`LEARNER` → `/dashboard`, `INSTRUCTOR` → `/instructor/courses`); on failure it shows an inline `role="alert"` message and stays on the page. `DashboardLayout`'s instructor profile-switch card and `InstructorLayout`'s "Back to learner dashboard" action both call this hook — the switcher is no longer local-only `setActiveProfile()` state. Route guards (`InstructorRoute`, etc.) are unaffected and still gate access independently. **Caveat:** the "Go to teaching area" link in `SettingsPage` (`src/features/dashboard/pages/SettingsPage.tsx`) still does a plain `<Link to="/instructor/courses">` navigation and does not call the switch endpoint or this hook.
 
 Still mocked or placeholder:
 
@@ -109,7 +110,7 @@ Still mocked or placeholder:
 - No multi-select (partial-credit) question type; v1 supports one selected option per question only
 - No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
 - No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)
-- No profile switch UI (backend `POST /api/v1/profile/switch` exists; no switcher component wired)
+- The `SettingsPage` "Go to teaching area" link does not call `POST /api/v1/profile/switch` — it is a plain navigation link, unlike the `DashboardLayout`/`InstructorLayout` switch controls
 - No admin user management beyond instructor approvals
 - No media upload; `thumbnailUrl` accepts a plain URL string only
 

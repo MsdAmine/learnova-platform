@@ -77,9 +77,14 @@ limitations:
 
 ## Profiles and admin
 
-- No profile-switcher UI component — the backend endpoint
-  (`POST /api/v1/profile/switch`) exists, but nothing in the frontend calls
-  it yet.
+- The profile switcher is wired end-to-end: `DashboardLayout`'s instructor
+  switch card and `InstructorLayout`'s "back to learner dashboard" action
+  both call `POST /api/v1/profile/switch` via `src/hooks/useProfileSwitch.ts`.
+  **Caveat:** the `SettingsPage` "Go to teaching area" link still does a
+  plain client-side navigation (`<Link to="/instructor/courses">`) and does
+  not call the switch endpoint — this is a minor inconsistency, not a
+  blocker, since route guards independently enforce access regardless of
+  which entry point was used.
 - No admin user-management capability beyond instructor approvals and
   category creation; there is no broader admin console.
 

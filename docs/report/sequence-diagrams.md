@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the five flows most relevant to the PFA demo. Internal helper method
+for the six flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -383,3 +383,45 @@ sequenceDiagram
 - **No PDF generation** — the certificate view renders an HTML document and
   relies on the browser's native print dialog (`window.print()`) for a PDF;
   there is no server-side rendering, email delivery, or sharing endpoint.
+
+---
+
+## 6. Approved Instructor Switches Active Profile
+
+```mermaid
+sequenceDiagram
+    actor Instructor as Approved Instructor
+    participant Layout as DashboardLayout / InstructorLayout
+    participant Hook as useProfileSwitch
+    participant API as src/api/profile.ts
+    participant Ctrl as ProfileSwitchController
+    participant Svc as ProfileSwitchService
+    participant Access as ProfileAccessService
+
+    Instructor->>Layout: Click "Switch to instructor" / "Back to learner dashboard"
+    Layout->>Hook: switchTo(profileType)
+    Hook->>API: switchActiveProfile(profileType)
+    API->>Ctrl: POST /api/v1/profile/switch { profileType }
+    Ctrl->>Svc: switchProfile(user, profileType)
+    Svc->>Access: canUseProfile(user, profileType)
+
+    alt Profile not available to caller
+        Access-->>Svc: false
+        Svc-->>Ctrl: 403 Forbidden
+        Ctrl-->>Hook: 403
+        Hook-->>Layout: set inline role="alert" error; no navigation
+    else Profile available
+        Access-->>Svc: true
+        Svc-->>Ctrl: activeProfile, availableProfiles
+        Ctrl-->>Hook: 200 ProfileSwitchResponse
+        Hook->>Hook: update AuthContext.activeProfile
+        Hook->>Layout: navigate(PROFILE_ROUTE[activeProfile])
+        Layout-->>Instructor: render /instructor/courses or /dashboard
+    end
+```
+
+**Notes:**
+- **Single hook, two entry points.** `useProfileSwitch` (`src/hooks/useProfileSwitch.ts`) is shared by `DashboardLayout`'s sidebar switch card (learner → instructor) and `InstructorLayout`'s topbar "Back to learner dashboard" action (instructor → learner); both call the same `POST /api/v1/profile/switch` endpoint.
+- **Backend is the authority.** The hook never flips `AuthContext.activeProfile` optimistically — it waits for a successful response before updating state and navigating, so a `403` (requested profile not in `availableProfiles`) leaves the UI exactly where it was, with an accessible error message.
+- **Route guards remain independent.** `InstructorRoute` still re-checks `availableProfiles` on every navigation to `/instructor/*`; the switch endpoint does not replace or short-circuit that check.
+- **Known caveat.** `SettingsPage`'s "Go to teaching area" link is a plain `<Link>` and does not go through this hook or call the switch endpoint — it is not represented in this diagram.

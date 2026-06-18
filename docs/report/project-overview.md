@@ -74,6 +74,9 @@ where applicable, a wired frontend screen). Each is documented in detail in
   `core-workflows.md` §9); the learner dashboard also displays a learner's
   already-issued certificates, with each card linking to the certificate
   view route
+- Approved-instructor profile switching between the learner and instructor
+  areas, backed by `POST /api/v1/profile/switch` (see `core-workflows.md`
+  §10)
 
 ## Current Limitations
 
@@ -90,8 +93,11 @@ These areas are intentionally **not** presented as complete:
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; no media upload pipeline exists.
-- **Profile switch UI** — the backend endpoint (`POST /api/v1/profile/switch`)
-  exists, but no frontend profile-switcher component is wired to it yet.
+- **Profile switch UI** — implemented for the main entry points (the
+  learner dashboard's instructor switch card and the instructor area's
+  "back to learner" action both call `POST /api/v1/profile/switch`); the
+  `SettingsPage` "Go to teaching area" link is the one remaining navigation
+  that does not call the endpoint.
 
 A full breakdown of known gaps is in `docs/report/limitations.md`.
 
@@ -122,4 +128,7 @@ through a single shared Axios instance (`src/api/axios.ts`) with request
 (JWT attach) and response (401 → logout, 403 → `/unauthorized`) interceptors.
 Auth and active-profile state live in `AuthContext`; the backend's
 `/auth/me` response is the source of truth for which profiles a user may
-switch to.
+switch to, and `POST /api/v1/profile/switch` (called via
+`src/hooks/useProfileSwitch.ts`) is the source of truth for performing the
+switch itself — the frontend never flips `activeProfile` locally without a
+successful backend round-trip from the wired entry points.
