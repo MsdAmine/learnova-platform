@@ -351,7 +351,7 @@ not found, or not owned by the caller, returns `404` on the view page.
 
 **Frontend routes:** `/instructor/live-sessions` (instructor schedule/list/cancel, under `InstructorLayout`), `/dashboard/live-sessions` (learner upcoming list + join, under `ProtectedRoute`)
 
-**Result:** A `LiveSession` row (`SCHEDULED` or `CANCELLED`) and, after a learner joins, a `SessionAttendance` row. The meeting itself is hosted entirely by Jitsi; the platform's responsibility ends at scheduling, access control, and attendance recording. There is no `/leave` endpoint, no recurring sessions, no reminders, and no past-session history view in v1. The instructor nav's "Live sessions" tab is hidden on mobile viewports (`hidden md:flex` in `InstructorLayout`); mobile instructors must navigate to `/instructor/live-sessions` directly.
+**Result:** A `LiveSession` row (`SCHEDULED` or `CANCELLED`) and, after a learner joins, a `SessionAttendance` row. The meeting itself is hosted entirely by Jitsi; the platform's responsibility ends at scheduling, access control, and attendance recording. There is no `/leave` endpoint, no recurring sessions, no reminders, and no past-session history view in v1. The instructor nav exposes "Live sessions" in both the desktop row (`hidden md:flex`) and the mobile row (`md:hidden`) in `InstructorLayout`, alongside "Courses"; `/instructor/live-sessions` is reachable through in-app navigation across viewports.
 
 ---
 
