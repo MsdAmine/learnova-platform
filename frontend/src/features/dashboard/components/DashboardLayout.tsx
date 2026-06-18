@@ -1,5 +1,5 @@
 import { type ComponentType, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   BookOpen,
@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
+import { useProfileSwitch } from '../../../hooks/useProfileSwitch';
 import { cn } from '../../../lib/cn';
 import logoPrimary from '../../../assets/logo-primary.png';
 
@@ -46,8 +47,8 @@ function getInitials(name: string): string {
 }
 
 export default function DashboardLayout() {
-  const { user, activeProfile, setActiveProfile } = useAuth();
-  const navigate = useNavigate();
+  const { user, activeProfile } = useAuth();
+  const { switching, error: switchError, switchTo } = useProfileSwitch();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const displayName  = user?.fullName ?? 'User';
@@ -247,14 +248,10 @@ export default function DashboardLayout() {
                 </p>
                 <button
                   type="button"
+                  disabled={switching}
                   onClick={() => {
-                    closeSidebar();
-                    if (activeProfile === 'INSTRUCTOR') {
-                      setActiveProfile('LEARNER');
-                    } else {
-                      setActiveProfile('INSTRUCTOR');
-                      navigate('/instructor/courses');
-                    }
+                    const target = activeProfile === 'INSTRUCTOR' ? 'LEARNER' : 'INSTRUCTOR';
+                    void switchTo(target).then(closeSidebar);
                   }}
                   aria-label={
                     activeProfile === 'INSTRUCTOR'
@@ -263,12 +260,17 @@ export default function DashboardLayout() {
                   }
                   className={cn(
                     'inline-flex items-center text-body-sm font-medium text-salem',
-                    'hover:text-salem-400 transition-colors duration-fast',
+                    'hover:text-salem-400 transition-colors duration-fast disabled:opacity-60 disabled:cursor-not-allowed',
                     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
                   )}
                 >
-                  {activeProfile === 'INSTRUCTOR' ? 'Switch to learner' : 'Switch to instructor'}
+                  {switching
+                    ? 'Switching…'
+                    : activeProfile === 'INSTRUCTOR' ? 'Switch to learner' : 'Switch to instructor'}
                 </button>
+                {switchError && (
+                  <p className="text-caption text-error mt-1" role="alert">{switchError}</p>
+                )}
               </div>
             </div>
           )}
