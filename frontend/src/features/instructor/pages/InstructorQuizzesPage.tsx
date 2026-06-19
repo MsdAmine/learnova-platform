@@ -680,13 +680,74 @@ interface AddQuestionFormProps {
   onClose: () => void;
 }
 
+type QuestionType = 'MULTIPLE_CHOICE' | 'TRUE_FALSE';
+
+interface AddQuestionFormState {
+  content: string;
+  points: string;
+  type: QuestionType;
+  fieldErrors: Record<string, string>;
+  formError: string | null;
+  submitting: boolean;
+}
+
+type AddQuestionFormAction =
+  | { type: 'contentChanged'; value: string }
+  | { type: 'pointsChanged'; value: string }
+  | { type: 'questionTypeChanged'; value: QuestionType }
+  | { type: 'validationFailed'; errors: Record<string, string> }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitSucceeded' };
+
+const INITIAL_ADD_QUESTION_FORM_STATE: AddQuestionFormState = {
+  content: '',
+  points: '1',
+  type: 'MULTIPLE_CHOICE',
+  fieldErrors: {},
+  formError: null,
+  submitting: false,
+};
+
+function addQuestionFormReducer(
+  state: AddQuestionFormState,
+  action: AddQuestionFormAction,
+): AddQuestionFormState {
+  switch (action.type) {
+    case 'contentChanged':
+      return {
+        ...state,
+        content: action.value,
+        fieldErrors: state.fieldErrors.content
+          ? { ...state.fieldErrors, content: '' }
+          : state.fieldErrors,
+      };
+    case 'pointsChanged':
+      return {
+        ...state,
+        points: action.value,
+        fieldErrors: state.fieldErrors.points
+          ? { ...state.fieldErrors, points: '' }
+          : state.fieldErrors,
+      };
+    case 'questionTypeChanged':
+      return { ...state, type: action.value };
+    case 'validationFailed':
+      return { ...state, fieldErrors: action.errors };
+    case 'submitStarted':
+      return { ...state, fieldErrors: {}, formError: null, submitting: true };
+    case 'submitFailed':
+      return { ...state, formError: action.message, submitting: false };
+    case 'submitSucceeded':
+      return { ...state, content: '', points: '1', fieldErrors: {}, submitting: false };
+  }
+}
+
 function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFormProps) {
-  const [content, setContent] = useState('');
-  const [points, setPoints] = useState('1');
-  const [type, setType] = useState<'MULTIPLE_CHOICE' | 'TRUE_FALSE'>('MULTIPLE_CHOICE');
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [{ content, points, type, fieldErrors, formError, submitting }, dispatch] = useReducer(
+    addQuestionFormReducer,
+    INITIAL_ADD_QUESTION_FORM_STATE,
+  );
   const contentRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => { contentRef.current?.focus(); }, []);
@@ -696,15 +757,15 @@ function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFor
     if (!content.trim()) errs.content = 'Question text is required.';
     const pts = parseInt(points, 10);
     if (!points.trim() || isNaN(pts) || pts < 1) errs.points = 'Points must be at least 1.';
-    setFieldErrors(errs);
-    return Object.keys(errs).length === 0;
+    if (Object.keys(errs).length === 0) return true;
+    dispatch({ type: 'validationFailed', errors: errs });
+    return false;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    setFormError(null);
-    setSubmitting(true);
+    dispatch({ type: 'submitStarted' });
     try {
       const q = await addQuestionToQuiz(quizId, {
         content: content.trim(),
@@ -712,18 +773,15 @@ function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFor
         type,
       });
       onAdded(q);
-      setContent('');
-      setPoints('1');
-      setFieldErrors({});
+      dispatch({ type: 'submitSucceeded' });
       contentRef.current?.focus();
     } catch (err) {
-      setFormError(
-        isHttpStatus(err, 400)
+      dispatch({
+        type: 'submitFailed',
+        message: isHttpStatus(err, 400)
           ? 'This quiz is archived and can no longer be edited.'
           : 'Could not add question. Try again.',
-      );
-    } finally {
-      setSubmitting(false);
+      });
     }
   }
 
@@ -743,7 +801,7 @@ function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFor
             id="new-q-content"
             ref={contentRef}
             value={content}
-            onChange={e => { setContent(e.target.value); if (fieldErrors.content) setFieldErrors(p => ({ ...p, content: '' })); }}
+            onChange={e => dispatch({ type: 'contentChanged', value: e.target.value })}
             rows={2}
             disabled={submitting}
             placeholder="Enter the question text"
@@ -773,7 +831,7 @@ function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFor
               type="number"
               min="1"
               value={points}
-              onChange={e => { setPoints(e.target.value); if (fieldErrors.points) setFieldErrors(p => ({ ...p, points: '' })); }}
+              onChange={e => dispatch({ type: 'pointsChanged', value: e.target.value })}
               hasError={!!fieldErrors.points}
               disabled={submitting}
             />
@@ -789,7 +847,10 @@ function AddQuestionForm({ quizId, quizTitle, onAdded, onClose }: AddQuestionFor
             <select
               id="new-q-type"
               value={type}
-              onChange={e => setType(e.target.value as typeof type)}
+              onChange={e => dispatch({
+                type: 'questionTypeChanged',
+                value: e.target.value as QuestionType,
+              })}
               disabled={submitting}
               className={cn(
                 'w-full bg-surface text-text-primary text-body',
