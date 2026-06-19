@@ -139,6 +139,56 @@ interface QuizFormInnerProps {
   onUpdated: (quiz: QuizResponse) => void;
 }
 
+interface QuizFormState {
+  title: string;
+  description: string;
+  passingScore: string;
+  sectionId: string;
+  fieldErrors: Record<string, string>;
+  formError: string | null;
+  submitting: boolean;
+}
+
+type QuizFormField = 'title' | 'description' | 'passingScore' | 'sectionId';
+
+type QuizFormAction =
+  | { type: 'fieldChanged'; field: QuizFormField; value: string }
+  | { type: 'validationFailed'; fieldErrors: Record<string, string> }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitSucceeded' };
+
+function createQuizFormState(quiz: QuizResponse | null): QuizFormState {
+  return {
+    title: quiz?.title ?? '',
+    description: quiz?.description ?? '',
+    passingScore: quiz ? String(quiz.passingScore) : '70',
+    sectionId: quiz?.sectionId != null ? String(quiz.sectionId) : '',
+    fieldErrors: {},
+    formError: null,
+    submitting: false,
+  };
+}
+
+function quizFormReducer(state: QuizFormState, action: QuizFormAction): QuizFormState {
+  switch (action.type) {
+    case 'fieldChanged': {
+      const fieldErrors = state.fieldErrors[action.field]
+        ? { ...state.fieldErrors, [action.field]: '' }
+        : state.fieldErrors;
+      return { ...state, [action.field]: action.value, fieldErrors };
+    }
+    case 'validationFailed':
+      return { ...state, fieldErrors: action.fieldErrors };
+    case 'submitStarted':
+      return { ...state, formError: null, submitting: true };
+    case 'submitFailed':
+      return { ...state, formError: action.message, submitting: false };
+    case 'submitSucceeded':
+      return { ...state, submitting: false };
+  }
+}
+
 function QuizFormInner({
   courseId,
   isEditing,
@@ -150,15 +200,16 @@ function QuizFormInner({
 }: QuizFormInnerProps) {
   // Initialize from props on mount; no sync useEffect needed because the key
   // prop on this component causes a full remount when create ↔ edit switches.
-  const [title, setTitle] = useState(quiz?.title ?? '');
-  const [description, setDescription] = useState(quiz?.description ?? '');
-  const [passingScore, setPassingScore] = useState(quiz ? String(quiz.passingScore) : '70');
-  const [sectionId, setSectionId] = useState(
-    quiz?.sectionId != null ? String(quiz.sectionId) : '',
-  );
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [state, dispatch] = useReducer(quizFormReducer, quiz, createQuizFormState);
+  const {
+    title,
+    description,
+    passingScore,
+    sectionId,
+    fieldErrors,
+    formError,
+    submitting,
+  } = state;
   const titleRef = useRef<HTMLInputElement>(null);
 
   // Focus on mount — DOM-only side effect, no setState.
@@ -172,15 +223,14 @@ function QuizFormInner({
     if (!passingScore.trim()) errs.passingScore = 'Passing score is required.';
     else if (isNaN(score) || score < 1 || score > 100)
       errs.passingScore = 'Passing score must be between 1 and 100.';
-    setFieldErrors(errs);
+    dispatch({ type: 'validationFailed', fieldErrors: errs });
     return Object.keys(errs).length === 0;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    setFormError(null);
-    setSubmitting(true);
+    dispatch({ type: 'submitStarted' });
     const payload: QuizFormPayload = {
       title: title.trim(),
       description: description.trim() || null,
@@ -195,11 +245,13 @@ function QuizFormInner({
         const created = await createInstructorQuiz(courseId, payload);
         onCreated(created);
       }
+      dispatch({ type: 'submitSucceeded' });
       onClose();
     } catch {
-      setFormError('Could not save quiz. Check the fields and try again.');
-    } finally {
-      setSubmitting(false);
+      dispatch({
+        type: 'submitFailed',
+        message: 'Could not save quiz. Check the fields and try again.',
+      });
     }
   }
 
@@ -221,10 +273,7 @@ function QuizFormInner({
               id="quiz-title"
               ref={titleRef}
               value={title}
-              onChange={e => {
-                setTitle(e.target.value);
-                if (fieldErrors.title) setFieldErrors(p => ({ ...p, title: '' }));
-              }}
+              onChange={e => dispatch({ type: 'fieldChanged', field: 'title', value: e.target.value })}
               maxLength={160}
               placeholder="e.g. Module 1 Knowledge Check"
               hasError={!!fieldErrors.title}
@@ -239,7 +288,7 @@ function QuizFormInner({
             <textarea
               id="quiz-description"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={e => dispatch({ type: 'fieldChanged', field: 'description', value: e.target.value })}
               rows={3}
               disabled={submitting}
               placeholder="Brief overview of this quiz."
@@ -261,10 +310,7 @@ function QuizFormInner({
               min="1"
               max="100"
               value={passingScore}
-              onChange={e => {
-                setPassingScore(e.target.value);
-                if (fieldErrors.passingScore) setFieldErrors(p => ({ ...p, passingScore: '' }));
-              }}
+              onChange={e => dispatch({ type: 'fieldChanged', field: 'passingScore', value: e.target.value })}
               hasError={!!fieldErrors.passingScore}
               disabled={submitting}
             />
@@ -278,7 +324,7 @@ function QuizFormInner({
               <select
                 id="quiz-section"
                 value={sectionId}
-                onChange={e => setSectionId(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', field: 'sectionId', value: e.target.value })}
                 disabled={submitting}
                 className={cn(
                   'w-full bg-surface text-text-primary text-body',
