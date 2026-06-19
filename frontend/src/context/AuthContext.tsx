@@ -29,7 +29,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
     const [user, setUser] = useState<User | null>(() => {
         const stored = localStorage.getItem('user:v1');
-        return stored ? JSON.parse(stored) : null;
+        if (!stored) return null;
+        try {
+            return JSON.parse(stored) as User;
+        } catch {
+            localStorage.removeItem('user:v1');
+            return null;
+        }
     });
     const [activeProfile, setActiveProfileState] = useState<ProfileType | null>(
         () => (localStorage.getItem('activeProfile') as ProfileType) || null

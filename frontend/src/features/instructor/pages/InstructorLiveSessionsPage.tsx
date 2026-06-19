@@ -449,7 +449,7 @@ function SessionRow({ session, onCancel }: SessionRowProps) {
         </div>
 
         {rowError && (
-          <p className="text-caption text-text-muted mt-2 text-right">{rowError}</p>
+          <p className="text-caption text-error mt-2 text-right" role="alert">{rowError}</p>
         )}
       </div>
     </article>

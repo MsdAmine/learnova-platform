@@ -720,7 +720,7 @@ function InstructorCourseRow({ course, onPublish, onArchive, onEdit }: Instructo
         )}
 
         {rowError && (
-          <p className="text-caption text-text-muted mt-2 text-right">{rowError}</p>
+          <p className="text-caption text-error mt-2 text-right" role="alert">{rowError}</p>
         )}
       </div>
     </article>

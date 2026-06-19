@@ -375,7 +375,7 @@ function LessonRow({
             </div>
           </div>
           {rowError && (
-            <p className="px-2 pb-2 text-caption text-text-muted" role="alert">{rowError}</p>
+            <p className="px-2 pb-2 text-caption text-error" role="alert">{rowError}</p>
           )}
         </>
       )}
@@ -582,7 +582,7 @@ function SectionCard({
         )}
 
         {sectionRowError && !isEditing && !isConfirmingDelete && (
-          <p className="text-caption text-text-muted mb-2" role="alert">{sectionRowError}</p>
+          <p className="text-caption text-error mb-2" role="alert">{sectionRowError}</p>
         )}
       </div>
 

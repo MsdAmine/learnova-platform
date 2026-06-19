@@ -25,7 +25,9 @@ function getScrollSnap() {
     document.getElementById('brand-intro-section') ??
     document.getElementById('hero-section');
   if (el) return el.getBoundingClientRect().bottom <= 0;
-  return window.scrollY > window.innerHeight * 0.8;
+  // No Salem hero on this page: default to the solid (safe) state instead of a
+  // transparent navbar, which would put white text/icons over a light background.
+  return true;
 }
 
 interface NavbarProps {
