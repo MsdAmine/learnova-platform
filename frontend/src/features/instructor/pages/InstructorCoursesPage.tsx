@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -151,28 +151,96 @@ interface CourseFormModalProps {
   onSuccess: (course: InstructorCourseResponse) => void;
 }
 
+type CourseFormField = 'title' | 'description' | 'categoryId' | 'level' | 'thumbnailUrl';
+
+interface CourseFormState {
+  title: string;
+  description: string;
+  categoryId: number | '';
+  level: CourseLevel | '';
+  thumbnailUrl: string;
+  fieldErrors: Partial<Record<CourseFormField, string>>;
+  formError: string | null;
+  submitting: boolean;
+  isUploadingThumbnail: boolean;
+  thumbnailUploadError: string | null;
+  categories: CategoryResponse[];
+  catsLoading: boolean;
+  catsError: boolean;
+}
+
+type CourseFormAction =
+  | { type: 'fieldChanged'; name: CourseFormField; value: string | number }
+  | { type: 'validationChecked'; errors: CourseFormState['fieldErrors'] }
+  | { type: 'duplicateTitleDetected' }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitFinished' }
+  | { type: 'thumbnailUploadStarted' }
+  | { type: 'thumbnailUploadRejected'; message: string }
+  | { type: 'thumbnailUploadSucceeded'; thumbnailUrl: string }
+  | { type: 'categoriesLoaded'; categories: CategoryResponse[] }
+  | { type: 'categoriesLoadFailed' };
+
+function createCourseFormState(course: InstructorCourseResponse | null): CourseFormState {
+  return {
+    title: course?.title ?? '',
+    description: course?.description ?? '',
+    categoryId: course?.categoryId ?? '',
+    level: course?.level ?? '',
+    thumbnailUrl: course?.thumbnailUrl ?? '',
+    fieldErrors: {},
+    formError: null,
+    submitting: false,
+    isUploadingThumbnail: false,
+    thumbnailUploadError: null,
+    categories: [],
+    catsLoading: true,
+    catsError: false,
+  };
+}
+
+function courseFormReducer(state: CourseFormState, action: CourseFormAction): CourseFormState {
+  switch (action.type) {
+    case 'fieldChanged':
+      return { ...state, [action.name]: action.value } as CourseFormState;
+    case 'validationChecked':
+      return { ...state, fieldErrors: action.errors };
+    case 'duplicateTitleDetected':
+      return {
+        ...state,
+        fieldErrors: { ...state.fieldErrors, title: 'You already have a course with this title.' },
+      };
+    case 'submitStarted':
+      return { ...state, formError: null, submitting: true };
+    case 'submitFailed':
+      return { ...state, formError: action.message };
+    case 'submitFinished':
+      return { ...state, submitting: false };
+    case 'thumbnailUploadStarted':
+      return { ...state, thumbnailUploadError: null, isUploadingThumbnail: true };
+    case 'thumbnailUploadRejected':
+      return { ...state, thumbnailUploadError: action.message, isUploadingThumbnail: false };
+    case 'thumbnailUploadSucceeded':
+      return { ...state, thumbnailUrl: action.thumbnailUrl, isUploadingThumbnail: false };
+    case 'categoriesLoaded':
+      return { ...state, categories: action.categories, catsLoading: false };
+    case 'categoriesLoadFailed':
+      return { ...state, catsError: true, catsLoading: false };
+  }
+}
+
 function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
   const isEdit = course !== null;
   const titleInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const [title, setTitle] = useState(course?.title ?? '');
-  const [description, setDescription] = useState(course?.description ?? '');
-  const [categoryId, setCategoryId] = useState<number | ''>(course?.categoryId ?? '');
-  const [level, setLevel] = useState<CourseLevel | ''>(course?.level ?? '');
-  const [thumbnailUrl, setThumbnailUrl] = useState(course?.thumbnailUrl ?? '');
-
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<string, string>>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
-  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
-  const [thumbnailUploadError, setThumbnailUploadError] = useState<string | null>(null);
-
-  const [categories, setCategories] = useState<CategoryResponse[]>([]);
-  const [catsLoading, setCatsLoading] = useState(true);
-  const [catsError, setCatsError] = useState(false);
+  const [form, dispatch] = useReducer(courseFormReducer, course, createCourseFormState);
+  const {
+    title, description, categoryId, level, thumbnailUrl, fieldErrors, formError, submitting,
+    isUploadingThumbnail, thumbnailUploadError, categories, catsLoading, catsError,
+  } = form;
 
   // showModal() gives native focus trapping and restores focus to the opener on close.
   // jsdom doesn't implement it, so tests fall back to plain `open`.
@@ -200,10 +268,10 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
     let cancelled = false;
     getCategories()
       .then(data => {
-        if (!cancelled) { setCategories(data); setCatsLoading(false); }
+        if (!cancelled) dispatch({ type: 'categoriesLoaded', categories: data });
       })
       .catch(() => {
-        if (!cancelled) { setCatsError(true); setCatsLoading(false); }
+        if (!cancelled) dispatch({ type: 'categoriesLoadFailed' });
       });
     return () => { cancelled = true; };
   }, []);
@@ -227,15 +295,14 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
     if (thumbnailUrl.length > 500) {
       next.thumbnailUrl = 'URL must not exceed 500 characters.';
     }
-    setFieldErrors(next);
+    dispatch({ type: 'validationChecked', errors: next });
     return Object.keys(next).length === 0;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    setFormError(null);
-    setSubmitting(true);
+    dispatch({ type: 'submitStarted' });
     try {
       let result: InstructorCourseResponse;
       if (isEdit) {
@@ -262,16 +329,17 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
       onClose();
     } catch (err) {
       if (isHttpStatus(err, 409)) {
-        setFieldErrors(prev => ({ ...prev, title: 'You already have a course with this title.' }));
+        dispatch({ type: 'duplicateTitleDetected' });
       } else {
-        setFormError(
-          isEdit
+        dispatch({
+          type: 'submitFailed',
+          message: isEdit
             ? 'We could not update this course. Try again.'
             : 'We could not create this course. Try again.',
-        );
+        });
       }
     } finally {
-      setSubmitting(false);
+      dispatch({ type: 'submitFinished' });
     }
   }
 
@@ -282,22 +350,23 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
 
     const hintError = validateThumbnailFile(file);
     if (hintError) {
-      setThumbnailUploadError(hintError);
+      dispatch({ type: 'thumbnailUploadRejected', message: hintError });
       return;
     }
 
-    setThumbnailUploadError(null);
-    setIsUploadingThumbnail(true);
+    dispatch({ type: 'thumbnailUploadStarted' });
     try {
       const updated = await uploadCourseThumbnail(course.id, file);
-      setThumbnailUrl(updated.thumbnailUrl ?? '');
+      dispatch({ type: 'thumbnailUploadSucceeded', thumbnailUrl: updated.thumbnailUrl ?? '' });
       onSuccess(updated);
     } catch (err) {
-      setThumbnailUploadError(
-        extractThumbnailErrorMessage(err, 'We could not upload this thumbnail. Please try again.'),
-      );
-    } finally {
-      setIsUploadingThumbnail(false);
+      dispatch({
+        type: 'thumbnailUploadRejected',
+        message: extractThumbnailErrorMessage(
+          err,
+          'We could not upload this thumbnail. Please try again.',
+        ),
+      });
     }
   }
 
@@ -338,7 +407,7 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
                 id="cf-title"
                 ref={titleInputRef}
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', name: 'title', value: e.target.value })}
                 maxLength={210}
                 placeholder="e.g. React Fundamentals"
                 hasError={!!fieldErrors.title}
@@ -355,7 +424,7 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
               <textarea
                 id="cf-desc"
                 value={description}
-                onChange={e => setDescription(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', name: 'description', value: e.target.value })}
                 maxLength={2100}
                 rows={4}
                 placeholder="What will learners gain from this course?"
@@ -397,7 +466,11 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
                 <select
                   id="cf-cat"
                   value={categoryId}
-                  onChange={e => setCategoryId(e.target.value ? Number(e.target.value) : '')}
+                  onChange={e => dispatch({
+                    type: 'fieldChanged',
+                    name: 'categoryId',
+                    value: e.target.value ? Number(e.target.value) : '',
+                  })}
                   disabled={submitting}
                   aria-invalid={!!fieldErrors.categoryId || undefined}
                   aria-required="true"
@@ -429,7 +502,7 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
               <select
                 id="cf-level"
                 value={level}
-                onChange={e => setLevel(e.target.value as CourseLevel | '')}
+                onChange={e => dispatch({ type: 'fieldChanged', name: 'level', value: e.target.value })}
                 disabled={submitting}
                 aria-invalid={!!fieldErrors.level || undefined}
                 aria-required="true"
@@ -509,7 +582,7 @@ function CourseFormModal({ course, onClose, onSuccess }: CourseFormModalProps) {
                 id="cf-thumb"
                 type="url"
                 value={thumbnailUrl}
-                onChange={e => setThumbnailUrl(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', name: 'thumbnailUrl', value: e.target.value })}
                 maxLength={510}
                 placeholder="https://..."
                 hasError={!!fieldErrors.thumbnailUrl}

@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import InstructorCoursesPage from './InstructorCoursesPage';
-import { getMyInstructorCourses, uploadCourseThumbnail } from '../../../api/instructorCourses';
+import {
+  createInstructorCourse,
+  getMyInstructorCourses,
+  updateInstructorCourse,
+  uploadCourseThumbnail,
+} from '../../../api/instructorCourses';
 import { getCategories } from '../../../api/categories';
 import type { InstructorCourseResponse } from '../../../api/instructorCourses';
 
@@ -12,7 +17,9 @@ vi.mock('../../../api/instructorCourses', async () => {
   );
   return {
     ...actual,
+    createInstructorCourse: vi.fn(),
     getMyInstructorCourses: vi.fn(),
+    updateInstructorCourse: vi.fn(),
     uploadCourseThumbnail: vi.fn(),
   };
 });
@@ -38,6 +45,8 @@ const COURSE: InstructorCourseResponse = {
 
 beforeEach(() => {
   vi.mocked(getMyInstructorCourses).mockReset();
+  vi.mocked(createInstructorCourse).mockReset();
+  vi.mocked(updateInstructorCourse).mockReset();
   vi.mocked(uploadCourseThumbnail).mockReset();
   vi.mocked(getCategories).mockReset();
   vi.mocked(getCategories).mockResolvedValue([
@@ -103,5 +112,62 @@ describe('InstructorCoursesPage thumbnail upload', () => {
 
     expect(await screen.findByText('Image must be 5MB or smaller.')).toHaveAttribute('role', 'alert');
     expect(uploadCourseThumbnail).not.toHaveBeenCalled();
+  });
+});
+
+describe('InstructorCoursesPage course form', () => {
+  it('preserves edit values and sends the updated fields', async () => {
+    const updated = { ...COURSE, title: 'Advanced React', level: 'ADVANCED' as const };
+    vi.mocked(updateInstructorCourse).mockResolvedValue(updated);
+
+    await openEditModal();
+
+    expect(screen.getByLabelText('Title')).toHaveValue('React Fundamentals');
+    expect(screen.getByLabelText('Description (optional)')).toHaveValue('Learn the basics.');
+    expect(screen.getByLabelText('Category *')).toHaveValue('1');
+    expect(screen.getByLabelText('Level *')).toHaveValue('BEGINNER');
+
+    fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Advanced React' } });
+    fireEvent.change(screen.getByLabelText('Level *'), { target: { value: 'ADVANCED' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    await waitFor(() => {
+      expect(updateInstructorCourse).toHaveBeenCalledWith(7, expect.objectContaining({
+        title: 'Advanced React',
+        level: 'ADVANCED',
+      }));
+    });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('shows validation errors without submitting an incomplete create form', async () => {
+    vi.mocked(getMyInstructorCourses).mockResolvedValue([]);
+    render(
+      <MemoryRouter>
+        <InstructorCoursesPage />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Create course' }));
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Create course' }));
+
+    expect(await screen.findByText('Title is required.')).toHaveAttribute('role', 'alert');
+    expect(screen.getByText('Category is required.')).toHaveAttribute('role', 'alert');
+    expect(screen.getByText('Level is required.')).toHaveAttribute('role', 'alert');
+    expect(createInstructorCourse).not.toHaveBeenCalled();
+  });
+
+  it('shows a submit failure and still allows the modal to be cancelled', async () => {
+    vi.mocked(updateInstructorCourse).mockRejectedValue(new Error('update failed'));
+
+    await openEditModal();
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect(
+      await screen.findByText('We could not update this course. Try again.'),
+    ).toHaveAttribute('role', 'alert');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
