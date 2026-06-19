@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode, type FormEvent, type ChangeEvent } from 'react';
+import { useState, useEffect, useReducer, useRef, type ReactNode, type FormEvent, type ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useCurrentUser } from '../../../hooks/useCurrentUser';
@@ -455,33 +455,94 @@ interface InstructorProfileEditFormProps {
   onSaved: (profile: InstructorProfileResponse) => void;
 }
 
+interface InstructorProfileFormState {
+  isEditing: boolean;
+  isSaving: boolean;
+  formError: string | null;
+  fieldErrors: ApplicationFormErrors;
+  bio: string;
+  expertise: string;
+  experience: string;
+  motivation: string;
+}
+
+type InstructorProfileFormField = 'bio' | 'expertise' | 'experience' | 'motivation';
+
+type InstructorProfileFormAction =
+  | { type: 'editingStarted'; profile: InstructorProfileResponse }
+  | { type: 'fieldChanged'; field: InstructorProfileFormField; value: string }
+  | { type: 'validationFailed'; fieldErrors: ApplicationFormErrors }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitSucceeded' }
+  | { type: 'editCancelled' };
+
+function createInstructorProfileFormState(
+  profile: InstructorProfileResponse,
+): InstructorProfileFormState {
+  return {
+    isEditing: false,
+    isSaving: false,
+    formError: null,
+    fieldErrors: {},
+    bio: profile.bio,
+    expertise: profile.expertise,
+    experience: profile.experience ?? '',
+    motivation: profile.motivation ?? '',
+  };
+}
+
+function instructorProfileFormReducer(
+  state: InstructorProfileFormState,
+  action: InstructorProfileFormAction,
+): InstructorProfileFormState {
+  switch (action.type) {
+    case 'editingStarted':
+      return {
+        ...createInstructorProfileFormState(action.profile),
+        isEditing: true,
+      };
+    case 'fieldChanged':
+      return { ...state, [action.field]: action.value };
+    case 'validationFailed':
+      return { ...state, fieldErrors: action.fieldErrors };
+    case 'submitStarted':
+      return { ...state, isSaving: true, formError: null };
+    case 'submitFailed':
+      return { ...state, isSaving: false, formError: action.message };
+    case 'submitSucceeded':
+      return { ...state, isEditing: false, isSaving: false };
+    case 'editCancelled':
+      return { ...state, isEditing: false, fieldErrors: {}, formError: null };
+  }
+}
+
 function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFormProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<ApplicationFormErrors>({});
+  const [state, dispatch] = useReducer(
+    instructorProfileFormReducer,
+    profile,
+    createInstructorProfileFormState,
+  );
   // Deliberate draft buffer, not a stale copy: the read-only view below always
   // renders `profile.*` directly, never this state, and startEditing() resets
   // every field from the current `profile` prop each time editing opens.
-  const [bio, setBio] = useState(profile.bio);
-  const [expertise, setExpertise] = useState(profile.expertise);
-  const [experience, setExperience] = useState(profile.experience ?? '');
-  const [motivation, setMotivation] = useState(profile.motivation ?? '');
+  const {
+    isEditing,
+    isSaving,
+    formError,
+    fieldErrors,
+    bio,
+    expertise,
+    experience,
+    motivation,
+  } = state;
 
   function startEditing() {
-    setBio(profile.bio);
-    setExpertise(profile.expertise);
-    setExperience(profile.experience ?? '');
-    setMotivation(profile.motivation ?? '');
-    setFieldErrors({});
-    setFormError(null);
-    setIsEditing(true);
+    dispatch({ type: 'editingStarted', profile });
   }
 
   function cancelEditing() {
-    setIsEditing(false);
-    setFieldErrors({});
-    setFormError(null);
+    dispatch({ type: 'editCancelled' });
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -500,11 +561,10 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
     if (trimmedExperience.length > 1000) errors.experience = 'Experience must not exceed 1000 characters.';
     if (trimmedMotivation.length > 1000) errors.motivation = 'Motivation must not exceed 1000 characters.';
 
-    setFieldErrors(errors);
+    dispatch({ type: 'validationFailed', fieldErrors: errors });
     if (Object.keys(errors).length > 0) return;
 
-    setIsSaving(true);
-    setFormError(null);
+    dispatch({ type: 'submitStarted' });
     try {
       const updated = await updateMyInstructorProfile({
         bio: trimmedBio,
@@ -513,11 +573,12 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
         motivation: trimmedMotivation,
       });
       onSaved(updated);
-      setIsEditing(false);
+      dispatch({ type: 'submitSucceeded' });
     } catch {
-      setFormError('We could not save your instructor profile. Please try again.');
-    } finally {
-      setIsSaving(false);
+      dispatch({
+        type: 'submitFailed',
+        message: 'We could not save your instructor profile. Please try again.',
+      });
     }
   }
 
@@ -555,7 +616,7 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
         <textarea
           id="instructor-edit-bio"
           value={bio}
-          onChange={e => setBio(e.target.value)}
+          onChange={e => dispatch({ type: 'fieldChanged', field: 'bio', value: e.target.value })}
           maxLength={1000}
           rows={3}
           aria-invalid={fieldErrors.bio ? true : undefined}
@@ -572,7 +633,7 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
         <Input
           id="instructor-edit-expertise"
           value={expertise}
-          onChange={e => setExpertise(e.target.value)}
+          onChange={e => dispatch({ type: 'fieldChanged', field: 'expertise', value: e.target.value })}
           maxLength={500}
           hasError={!!fieldErrors.expertise}
         />
@@ -587,7 +648,7 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
         <textarea
           id="instructor-edit-experience"
           value={experience}
-          onChange={e => setExperience(e.target.value)}
+          onChange={e => dispatch({ type: 'fieldChanged', field: 'experience', value: e.target.value })}
           maxLength={1000}
           rows={3}
           aria-invalid={fieldErrors.experience ? true : undefined}
@@ -605,7 +666,7 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
         <textarea
           id="instructor-edit-motivation"
           value={motivation}
-          onChange={e => setMotivation(e.target.value)}
+          onChange={e => dispatch({ type: 'fieldChanged', field: 'motivation', value: e.target.value })}
           maxLength={1000}
           rows={3}
           aria-invalid={fieldErrors.motivation ? true : undefined}
