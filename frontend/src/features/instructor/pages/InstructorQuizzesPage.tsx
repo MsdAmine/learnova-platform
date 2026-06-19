@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, ChevronDown, ChevronRight } from 'lucide-react';
@@ -374,32 +374,73 @@ interface AddOptionFormProps {
   onClose: () => void;
 }
 
+interface AddOptionFormState {
+  optionText: string;
+  isCorrect: boolean;
+  textError: string | null;
+  formError: string | null;
+  submitting: boolean;
+}
+
+type AddOptionFormAction =
+  | { type: 'optionTextChanged'; value: string }
+  | { type: 'correctnessChanged'; isCorrect: boolean }
+  | { type: 'validationFailed'; message: string }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitSucceeded' };
+
+const INITIAL_ADD_OPTION_FORM_STATE: AddOptionFormState = {
+  optionText: '',
+  isCorrect: false,
+  textError: null,
+  formError: null,
+  submitting: false,
+};
+
+function addOptionFormReducer(
+  state: AddOptionFormState,
+  action: AddOptionFormAction,
+): AddOptionFormState {
+  switch (action.type) {
+    case 'optionTextChanged':
+      return { ...state, optionText: action.value, textError: null };
+    case 'correctnessChanged':
+      return { ...state, isCorrect: action.isCorrect };
+    case 'validationFailed':
+      return { ...state, textError: action.message };
+    case 'submitStarted':
+      return { ...state, textError: null, formError: null, submitting: true };
+    case 'submitFailed':
+      return { ...state, formError: action.message, submitting: false };
+    case 'submitSucceeded':
+      return INITIAL_ADD_OPTION_FORM_STATE;
+  }
+}
+
 function AddOptionForm({ questionId, questionContent, onAdded, onClose }: AddOptionFormProps) {
-  const [optionText, setOptionText] = useState('');
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [textError, setTextError] = useState<string | null>(null);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [{ optionText, isCorrect, textError, formError, submitting }, dispatch] = useReducer(
+    addOptionFormReducer,
+    INITIAL_ADD_OPTION_FORM_STATE,
+  );
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!optionText.trim()) { setTextError('Option text is required.'); return; }
-    setTextError(null);
-    setFormError(null);
-    setSubmitting(true);
+    if (!optionText.trim()) {
+      dispatch({ type: 'validationFailed', message: 'Option text is required.' });
+      return;
+    }
+    dispatch({ type: 'submitStarted' });
     try {
       const opt = await addAnswerOption(questionId, { optionText: optionText.trim(), isCorrect });
       onAdded(opt);
-      setOptionText('');
-      setIsCorrect(false);
+      dispatch({ type: 'submitSucceeded' });
       inputRef.current?.focus();
     } catch {
-      setFormError('Could not add option. Try again.');
-    } finally {
-      setSubmitting(false);
+      dispatch({ type: 'submitFailed', message: 'Could not add option. Try again.' });
     }
   }
 
@@ -410,7 +451,7 @@ function AddOptionForm({ questionId, questionContent, onAdded, onClose }: AddOpt
           <Input
             ref={inputRef}
             value={optionText}
-            onChange={e => { setOptionText(e.target.value); if (textError) setTextError(null); }}
+            onChange={e => dispatch({ type: 'optionTextChanged', value: e.target.value })}
             placeholder="Option text"
             hasError={!!textError}
             disabled={submitting}
@@ -422,7 +463,7 @@ function AddOptionForm({ questionId, questionContent, onAdded, onClose }: AddOpt
           <input
             type="checkbox"
             checked={isCorrect}
-            onChange={e => setIsCorrect(e.target.checked)}
+            onChange={e => dispatch({ type: 'correctnessChanged', isCorrect: e.target.checked })}
             disabled={submitting}
             className="accent-salem"
           />
