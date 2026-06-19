@@ -2,8 +2,8 @@ import { Bone } from './Bone';
 
 export function LandingPageSkeleton() {
   return (
-    <div role="status" className="flex flex-col min-h-screen">
-      <span className="sr-only">Loading</span>
+    <div className="flex flex-col min-h-screen">
+      <output className="sr-only">Loading</output>
 
       {/* Topbar — mirrors marketing Navbar height and layout */}
       <div className="h-nav-mobile md:h-nav bg-surface border-b border-border-default flex items-center justify-between px-6 md:px-12 shrink-0">

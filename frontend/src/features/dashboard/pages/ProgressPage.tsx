@@ -169,12 +169,12 @@ export default function ProgressPage() {
                   <CompletedRow key={course.id} course={course} />
                 ))}
               </ul>
-              <button
-                type="button"
+              <Link
+                to="/dashboard/certificates"
                 className="flex items-center gap-1 text-body-sm font-medium text-salem min-h-[44px] rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
               >
                 View certificates <ArrowRight size={13} aria-hidden="true" />
-              </button>
+              </Link>
             </section>
           )}
 

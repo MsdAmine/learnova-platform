@@ -32,17 +32,19 @@ function getInitials(name: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 // Deterministic color palette
 //
-// Pairs taken from the tonal ramps in .impeccable/design.json:
-//   bg  — index 6 (light tint, readable surface)
-//   text — index 0 (darkest shade, maximum contrast on that tint)
+// Reuses the same tint/text token pairs as Badge's status variants (see
+// Badge.tsx) rather than inventing a parallel hex ramp — bg is each hue's
+// `-50` surface tint, fg is its documented on-tint text color (`-700` for
+// salem/coral/anzac; azure has no `-700`, so it reuses Badge's own
+// `bg-azure-50`/`text-azure` pairing). All five pairs clear WCAG AA (4.5:1+).
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PALETTE = [
-  { bg: '#9DD4BE', fg: '#03221A' }, // Salem
-  { bg: '#8DA3E6', fg: '#0A1245' }, // Azure
-  { bg: '#FFC2AE', fg: '#4A1308' }, // Coral
-  { bg: '#EDD47D', fg: '#241D00' }, // Anzac
-  { bg: '#D1D5DB', fg: '#111827' }, // Neutral
+  { bg: 'bg-salem-50',     fg: 'text-salem-700' },     // Salem
+  { bg: 'bg-azure-50',     fg: 'text-azure' },          // Azure
+  { bg: 'bg-coral-50',     fg: 'text-coral-700' },      // Coral
+  { bg: 'bg-anzac-50',     fg: 'text-anzac-700' },      // Anzac
+  { bg: 'bg-border-hover', fg: 'text-text-primary' },   // Neutral
 ] as const;
 
 function paletteFor(name: string): (typeof PALETTE)[number] {
@@ -87,15 +89,12 @@ export function Avatar({ src, name, size = 40, stroke = false, className, style,
         'rounded-full overflow-hidden select-none',
         wh,
         stroke && 'ring-2 ring-white',
+        palette && [palette.bg, palette.fg],
         // No-content fallback: neutral tint
         !showImage && !showInitials && 'bg-surface-elevated',
         className,
       )}
-      style={
-        palette
-          ? { backgroundColor: palette.bg, color: palette.fg, ...style }
-          : style
-      }
+      style={style}
       {...props}
     >
       {showImage && (

@@ -58,7 +58,7 @@ const buttonClasses = (
     'relative inline-flex items-center justify-center rounded-md border',
     'font-semibold leading-none whitespace-nowrap select-none cursor-pointer',
     'transition-[background-color,border-color,transform] duration-[180ms] ease-out',
-    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
+    'focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px]',
     'active:scale-[0.98]',
     'disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none',
     loading && 'cursor-wait',

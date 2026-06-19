@@ -99,6 +99,9 @@ export default function CourseCatalogPage() {
       .catch(() => {});
   }, [isAuthenticated]);
 
+  // enrolledIds is not derivable during render: it comes from an async network
+  // call, not from props/state already available on this render pass. An
+  // effect is the correct tool here, not useMemo.
   useEffect(() => {
     refreshEnrollments();
   }, [refreshEnrollments]);

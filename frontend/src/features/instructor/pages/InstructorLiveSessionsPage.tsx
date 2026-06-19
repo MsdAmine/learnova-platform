@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
   type CreateLiveSessionPayload,
@@ -72,15 +72,6 @@ function InstructorLiveSessionsLoadingSkeleton() {
 
 // ── Create session form modal ───────────────────────────────────────────────
 
-const FOCUSABLE_SELECTOR = [
-  'button:not([disabled])',
-  '[href]',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(', ');
-
 const INPUT_CLASS = cn(
   'w-full bg-surface text-text-primary text-body',
   'border border-border-default rounded-md',
@@ -98,94 +89,135 @@ interface CreateSessionModalProps {
   onSuccess: (session: InstructorLiveSessionResponse) => void;
 }
 
+// One state machine: the six form fields, their validation errors, and the
+// submit lifecycle all change together in response to typing, submitting, or
+// a server response — never independently of each other.
+type SessionFormFieldErrors = Partial<Record<
+  'courseId' | 'title' | 'description' | 'startTime' | 'endTime' | 'maxParticipants',
+  string
+>>;
+
+interface SessionFormState {
+  courseId: number | '';
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  maxParticipants: string;
+  fieldErrors: SessionFormFieldErrors;
+  formError: string | null;
+  submitting: boolean;
+}
+
+type SessionFormAction =
+  | { type: 'courseChanged'; courseId: number | '' }
+  | { type: 'fieldChanged'; field: 'title' | 'description' | 'startTime' | 'endTime' | 'maxParticipants'; value: string }
+  | { type: 'validationChecked'; errors: SessionFormFieldErrors }
+  | { type: 'submitStarted' }
+  | { type: 'submitFailed'; message: string }
+  | { type: 'submitSettled' };
+
+function sessionFormReducer(state: SessionFormState, action: SessionFormAction): SessionFormState {
+  switch (action.type) {
+    case 'courseChanged':
+      return { ...state, courseId: action.courseId };
+    case 'fieldChanged':
+      return { ...state, [action.field]: action.value };
+    case 'validationChecked':
+      return { ...state, fieldErrors: action.errors };
+    case 'submitStarted':
+      return { ...state, submitting: true, formError: null };
+    case 'submitFailed':
+      return { ...state, formError: action.message };
+    case 'submitSettled':
+      return { ...state, submitting: false };
+    default:
+      return state;
+  }
+}
+
+function createInitialSessionFormState(firstEligibleCourseId: number | ''): SessionFormState {
+  return {
+    courseId: firstEligibleCourseId,
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    maxParticipants: '',
+    fieldErrors: {},
+    formError: null,
+    submitting: false,
+  };
+}
+
+function computeSessionFormErrors(form: SessionFormState): SessionFormFieldErrors {
+  const next: SessionFormFieldErrors = {};
+  if (!form.courseId) {
+    next.courseId = 'Course is required.';
+  }
+  if (!form.title.trim()) {
+    next.title = 'Title is required.';
+  } else if (form.title.length > 200) {
+    next.title = 'Title must not exceed 200 characters.';
+  }
+  if (form.description.length > 2000) {
+    next.description = 'Description must not exceed 2000 characters.';
+  }
+  if (!form.startTime) {
+    next.startTime = 'Start time is required.';
+  }
+  if (!form.endTime) {
+    next.endTime = 'End time is required.';
+  }
+  if (form.startTime && form.endTime && new Date(form.endTime) <= new Date(form.startTime)) {
+    next.endTime = 'End time must be after start time.';
+  }
+  if (form.maxParticipants && (!Number.isInteger(Number(form.maxParticipants)) || Number(form.maxParticipants) < 1)) {
+    next.maxParticipants = 'Maximum participants must be a whole number of at least 1.';
+  }
+  return next;
+}
+
 function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalProps) {
   const titleInputRef = useRef<HTMLInputElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const eligibleCourses = courses.filter(c => c.status !== 'ARCHIVED');
 
-  const [courseId, setCourseId] = useState<number | ''>(eligibleCourses[0]?.id ?? '');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [maxParticipants, setMaxParticipants] = useState('');
+  const [form, dispatch] = useReducer(
+    sessionFormReducer,
+    eligibleCourses[0]?.id ?? '',
+    createInitialSessionFormState,
+  );
+  const { courseId, title, description, startTime, endTime, maxParticipants, fieldErrors, formError, submitting } = form;
 
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<string, string>>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
+  // showModal() gives native focus trapping and restores focus to the opener on close.
+  // jsdom doesn't implement it, so tests fall back to plain `open`.
   useEffect(() => {
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = dialogRef.current;
+    if (typeof dialog?.showModal === 'function') {
+      dialog.showModal();
+    } else {
+      dialog?.setAttribute('open', '');
+    }
     titleInputRef.current?.focus();
-    return () => { opener?.focus(); };
   }, []);
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        if (!submitting) onClose();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      const dialog = dialogRef.current;
-      if (!dialog) return;
-      const focusables = Array.from(
-        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-      ).filter(el => el.offsetParent !== null);
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-      const inside = active instanceof HTMLElement && dialog.contains(active);
-      if (e.shiftKey) {
-        if (!inside || active === first) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else if (!inside || active === last) {
-        e.preventDefault();
-        first.focus();
-      }
+  function closeDialog() {
+    const dialog = dialogRef.current;
+    if (typeof dialog?.close === 'function') {
+      dialog.close();
+    } else {
+      onClose();
     }
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose, submitting]);
-
-  function validate(): boolean {
-    const next: Partial<Record<string, string>> = {};
-    if (!courseId) {
-      next.courseId = 'Course is required.';
-    }
-    if (!title.trim()) {
-      next.title = 'Title is required.';
-    } else if (title.length > 200) {
-      next.title = 'Title must not exceed 200 characters.';
-    }
-    if (description.length > 2000) {
-      next.description = 'Description must not exceed 2000 characters.';
-    }
-    if (!startTime) {
-      next.startTime = 'Start time is required.';
-    }
-    if (!endTime) {
-      next.endTime = 'End time is required.';
-    }
-    if (startTime && endTime && new Date(endTime) <= new Date(startTime)) {
-      next.endTime = 'End time must be after start time.';
-    }
-    if (maxParticipants && (!Number.isInteger(Number(maxParticipants)) || Number(maxParticipants) < 1)) {
-      next.maxParticipants = 'Maximum participants must be a whole number of at least 1.';
-    }
-    setFieldErrors(next);
-    return Object.keys(next).length === 0;
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!validate() || courseId === '') return;
-    setFormError(null);
-    setSubmitting(true);
+    const errors = computeSessionFormErrors(form);
+    dispatch({ type: 'validationChecked', errors });
+    if (Object.keys(errors).length > 0 || courseId === '') return;
+    dispatch({ type: 'submitStarted' });
     try {
       const payload: CreateLiveSessionPayload = {
         title: title.trim(),
@@ -199,28 +231,29 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
       onSuccess(result);
       onClose();
     } catch (err) {
-      setFormError(
-        isHttpStatus(err, 409)
+      dispatch({
+        type: 'submitFailed',
+        message: isHttpStatus(err, 409)
           ? 'Archived courses cannot have live sessions scheduled.'
           : 'We could not schedule this session. Try again.',
-      );
+      });
     } finally {
-      setSubmitting(false);
+      dispatch({ type: 'submitSettled' });
     }
   }
 
   return (
-    <div
+    <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
+      onCancel={e => { if (submitting) e.preventDefault(); }}
+      onClose={onClose}
+      className="fixed inset-0 z-50 m-0 h-full max-h-none w-full max-w-none flex items-center justify-center border-0 bg-transparent p-4"
       aria-labelledby="live-session-form-title"
     >
       <div
         className="absolute inset-0 bg-text-primary/40"
         aria-hidden="true"
-        onClick={() => { if (!submitting) onClose(); }}
+        onClick={() => { if (!submitting) closeDialog(); }}
       />
 
       <div className="relative bg-surface rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-modal">
@@ -248,7 +281,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
                 <select
                   id="ls-course"
                   value={courseId}
-                  onChange={e => setCourseId(e.target.value ? Number(e.target.value) : '')}
+                  onChange={e => dispatch({ type: 'courseChanged', courseId: e.target.value ? Number(e.target.value) : '' })}
                   disabled={submitting}
                   aria-invalid={!!fieldErrors.courseId || undefined}
                   aria-required="true"
@@ -270,7 +303,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
                 id="ls-title"
                 ref={titleInputRef}
                 value={title}
-                onChange={e => setTitle(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', field: 'title', value: e.target.value })}
                 maxLength={210}
                 placeholder="e.g. Week 3 Q&A"
                 hasError={!!fieldErrors.title}
@@ -286,7 +319,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
               <textarea
                 id="ls-desc"
                 value={description}
-                onChange={e => setDescription(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', field: 'description', value: e.target.value })}
                 maxLength={2100}
                 rows={3}
                 placeholder="What will this session cover?"
@@ -314,7 +347,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
                   id="ls-start"
                   type="datetime-local"
                   value={startTime}
-                  onChange={e => setStartTime(e.target.value)}
+                  onChange={e => dispatch({ type: 'fieldChanged', field: 'startTime', value: e.target.value })}
                   hasError={!!fieldErrors.startTime}
                   disabled={submitting}
                 />
@@ -324,7 +357,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
                   id="ls-end"
                   type="datetime-local"
                   value={endTime}
-                  onChange={e => setEndTime(e.target.value)}
+                  onChange={e => dispatch({ type: 'fieldChanged', field: 'endTime', value: e.target.value })}
                   hasError={!!fieldErrors.endTime}
                   disabled={submitting}
                 />
@@ -341,7 +374,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
                 type="number"
                 min={1}
                 value={maxParticipants}
-                onChange={e => setMaxParticipants(e.target.value)}
+                onChange={e => dispatch({ type: 'fieldChanged', field: 'maxParticipants', value: e.target.value })}
                 hasError={!!fieldErrors.maxParticipants}
                 disabled={submitting}
               />
@@ -353,7 +386,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
           </div>
 
           <div className="px-6 py-4 border-t border-border-default flex items-center justify-end gap-3">
-            <Button type="button" variant="ghost" size="md" onClick={onClose} disabled={submitting}>
+            <Button type="button" variant="ghost" size="md" onClick={closeDialog} disabled={submitting}>
               Cancel
             </Button>
             <Button
@@ -368,7 +401,7 @@ function CreateSessionModal({ courses, onClose, onSuccess }: CreateSessionModalP
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -449,7 +482,7 @@ function SessionRow({ session, onCancel }: SessionRowProps) {
         </div>
 
         {rowError && (
-          <p className="text-caption text-text-muted mt-2 text-right">{rowError}</p>
+          <p className="text-caption text-error mt-2 text-right" role="alert">{rowError}</p>
         )}
       </div>
     </article>

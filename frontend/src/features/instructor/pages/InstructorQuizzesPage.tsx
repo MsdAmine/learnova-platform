@@ -452,6 +452,9 @@ interface EditOptionFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingOptionId === option.id (see parent), and unmounts
+// on save/cancel — so the initial-value capture below never needs to re-sync
+// with a changed `option` prop; a different option means a fresh mount.
 function EditOptionForm({ option, questionContent, isPending, onSave, onCancel }: EditOptionFormProps) {
   const [optionText, setOptionText] = useState(option.optionText);
   const [isCorrect, setIsCorrect] = useState(option.isCorrect);
@@ -785,6 +788,9 @@ interface EditQuestionFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingQuestionId === question.id (see parent), and
+// unmounts on save/cancel — so the initial-value capture below never needs to
+// re-sync with a changed `question` prop; a different question means a fresh mount.
 function EditQuestionForm({ question, isPending, onSave, onCancel }: EditQuestionFormProps) {
   const [content, setContent] = useState(question.content);
   const [points, setPoints] = useState(String(question.points));

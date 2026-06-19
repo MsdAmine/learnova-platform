@@ -131,7 +131,7 @@ export function TestimonialCard({
             className={cn(
               'shrink-0 text-body-sm font-semibold text-salem',
               'hover:text-salem-700 transition-colors duration-fast ease-standard',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-salem focus-visible:ring-offset-2 rounded-sm',
+              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
             )}
             aria-label={`Read ${author.name}'s story`}
           >
