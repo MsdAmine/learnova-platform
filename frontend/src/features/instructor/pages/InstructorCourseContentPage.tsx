@@ -239,6 +239,9 @@ interface LessonEditFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingLessonId === lesson.id (see parent), and unmounts
+// on save/cancel — so the initial-value capture below never needs to re-sync
+// with a changed `lesson` prop; a different lesson means a fresh mount.
 function LessonEditForm({ lesson, sectionTitle, isPending, onSave, onCancel }: LessonEditFormProps) {
   const [draftTitle, setDraftTitle] = useState(lesson.title);
   const [editError, setEditError] = useState<string | null>(null);
@@ -392,6 +395,9 @@ interface SectionEditFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingSectionId === section.id (see parent), and
+// unmounts on save/cancel — so the initial-value capture below never needs to
+// re-sync with a changed `section` prop; a different section means a fresh mount.
 function SectionEditForm({ section, isPending, onSave, onCancel }: SectionEditFormProps) {
   const [draftTitle, setDraftTitle] = useState(section.title);
   const [editError, setEditError] = useState<string | null>(null);

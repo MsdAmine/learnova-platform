@@ -460,6 +460,9 @@ function InstructorProfileEditForm({ profile, onSaved }: InstructorProfileEditFo
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<ApplicationFormErrors>({});
+  // Deliberate draft buffer, not a stale copy: the read-only view below always
+  // renders `profile.*` directly, never this state, and startEditing() resets
+  // every field from the current `profile` prop each time editing opens.
   const [bio, setBio] = useState(profile.bio);
   const [expertise, setExpertise] = useState(profile.expertise);
   const [experience, setExperience] = useState(profile.experience ?? '');
