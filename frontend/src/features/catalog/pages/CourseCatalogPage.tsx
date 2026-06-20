@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Navbar } from '../../../components/marketing/landing/Navbar';
 import { Footer } from '../../../components/marketing/landing/Footer';
 import { Input } from '../../../components/ui/Input';
@@ -54,18 +55,34 @@ function CatalogSkeleton() {
 export default function CourseCatalogPage() {
   const { isAuthenticated } = useAuth();
 
+  // Read-once seed from the URL (e.g. a landing-page hero search or category
+  // chip link to /courses?q=...&category=...). This is not two-way sync: the
+  // toolbar's own Input/FilterTabs interactions below continue to update only
+  // local state, exactly as before this change.
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') ?? '';
+  const initialCategory = searchParams.get('category');
+
   const [courses, setCourses] = useState<CourseCatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [enrolledIds, setEnrolledIds] = useState<ReadonlySet<number>>(new Set());
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
   const [category, setCategory] = useState(ALL_CATEGORIES);
 
   const fetchCatalog = useCallback((token: { cancelled: boolean }) => {
     getPublishedCourses()
       .then((data) => {
-        if (!token.cancelled) setCourses(data);
+        if (token.cancelled) return;
+        setCourses(data);
+        // Seed the category filter from the URL once the real category list
+        // is known (derived from the just-fetched courses, not a separate
+        // call). A stale or mistyped ?category= value is ignored silently
+        // rather than erroring — a shared link should never break the page.
+        if (initialCategory && data.some(c => c.categoryName === initialCategory)) {
+          setCategory(initialCategory);
+        }
       })
       .catch(() => {
         if (!token.cancelled) setError(true);
@@ -73,7 +90,7 @@ export default function CourseCatalogPage() {
       .finally(() => {
         if (!token.cancelled) setLoading(false);
       });
-  }, []);
+  }, [initialCategory]);
 
   useEffect(() => {
     const token = { cancelled: false };

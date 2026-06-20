@@ -1,13 +1,34 @@
+import { useEffect, useState } from 'react';
 import { Navbar } from '../../../components/marketing/landing/Navbar';
 import { Hero } from '../../../components/marketing/landing/Hero';
-import { BrandIntro } from '../../../components/marketing/landing/BrandIntro';
-import { Journey } from '../../../components/marketing/landing/Journey';
-import { StatsGrid } from '../../../components/marketing/landing/StatsGrid';
-import { Testimonials } from '../../../components/marketing/landing/Testimonials';
-import { FinalCta } from '../../../components/marketing/landing/FinalCta';
+import { CategoryShortcutRow } from '../../../components/marketing/landing/CategoryShortcutRow';
+import { RecentCourses } from '../../../components/marketing/landing/RecentCourses';
+import { PlatformCapabilities } from '../../../components/marketing/landing/PlatformCapabilities';
+import { InstructorCta } from '../../../components/marketing/landing/InstructorCta';
 import { Footer } from '../../../components/marketing/landing/Footer';
+import { getCategories, type CategoryResponse } from '../../../api/categories';
 
 export default function LandingPage() {
+  // Fetched once at the page level and passed down to both Hero (search
+  // suggestion chips) and CategoryShortcutRow, per the discovery spec —
+  // avoids calling the public categories endpoint twice on one page load.
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getCategories()
+      .then((data) => {
+        if (!cancelled) setCategories(data);
+      })
+      .catch(() => {
+        // Degrade silently: the hero and shortcut row simply omit their
+        // category affordances if this fails. Search-by-text still works.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <>
       <a
@@ -18,12 +39,11 @@ export default function LandingPage() {
       </a>
       <Navbar />
       <main id="main-content" tabIndex={-1}>
-        <Hero />
-        <BrandIntro />
-        <Journey />
-        <StatsGrid />
-        <Testimonials />
-        <FinalCta />
+        <Hero categories={categories} />
+        <CategoryShortcutRow categories={categories} />
+        <RecentCourses />
+        <PlatformCapabilities />
+        <InstructorCta />
       </main>
       <Footer />
     </>
