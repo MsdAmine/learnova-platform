@@ -10,21 +10,7 @@ import { getCategories, type CategoryResponse } from '../../../../api/categories
 import { Button } from '../../../../components/ui/Button';
 import { FormField, Input } from '../../../../components/ui/Input';
 import { selectInputClass } from './settingsHelpers';
-
-const LEARNING_GOAL_LABELS: Record<LearningGoal, string> = {
-  CAREER_GROWTH: 'Career growth',
-  SKILL_UP: 'Build a new skill',
-  ACADEMIC: 'Academic / coursework',
-  HOBBY: 'Personal interest / hobby',
-  NOT_SURE: 'Not sure yet',
-};
-
-const PREFERRED_LEVEL_LABELS: Record<PreferredLevel, string> = {
-  BEGINNER: 'Beginner',
-  INTERMEDIATE: 'Intermediate',
-  ADVANCED: 'Advanced',
-  ALL_LEVELS: 'Any level',
-};
+import { LEARNING_GOAL_LABELS, PREFERRED_LEVEL_LABELS } from '../../../../lib/learning-preference-labels';
 
 const MAX_PREFERRED_CATEGORIES = 8;
 const MIN_WEEKLY_GOAL_MINUTES = 30;

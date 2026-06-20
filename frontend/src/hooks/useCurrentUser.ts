@@ -16,6 +16,7 @@ export function useCurrentUser() {
                 roles: data.roles,
                 availableProfiles: data.availableProfiles,
                 instructorApprovalStatus: data.instructorApprovalStatus,
+                learnerOnboardingCompleted: data.learnerOnboardingCompleted,
             });
         });
     }, [token, refreshUser]);

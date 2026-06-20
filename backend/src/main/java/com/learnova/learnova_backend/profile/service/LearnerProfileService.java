@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 public class LearnerProfileService {
@@ -73,6 +75,30 @@ public class LearnerProfileService {
         return toResponse(saved);
     }
 
+    @Transactional
+    public LearnerProfileResponse completeOnboarding(CustomUserDetails currentUser) {
+        LearnerProfile profile = learnerProfileRepository.findByUserId(currentUser.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Learner profile not found"
+                ));
+
+        if (!profile.isOnboardingCompleted()) {
+            profile.setOnboardingCompleted(true);
+            profile.setOnboardingCompletedAt(Instant.now());
+            profile = learnerProfileRepository.save(profile);
+        }
+
+        return toResponse(profile);
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean findOnboardingCompletedStatus(Long userId) {
+        return learnerProfileRepository.findByUserId(userId)
+                .map(LearnerProfile::isOnboardingCompleted)
+                .orElse(null);
+    }
+
     private String normalizeOptional(String value) {
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
@@ -85,6 +111,8 @@ public class LearnerProfileService {
                 profile.getDisplayName(),
                 profile.getBio(),
                 profile.getProfileImageUrl(),
+                profile.isOnboardingCompleted(),
+                profile.getOnboardingCompletedAt(),
                 profile.getCreatedAt(),
                 profile.getUpdatedAt()
         );

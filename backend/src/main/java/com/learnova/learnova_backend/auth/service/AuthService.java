@@ -147,7 +147,8 @@ public class AuthService {
                 user.getAccountStatus(),
                 extractRoles(user),
                 profileAccessService.resolveAvailableProfiles(user),
-                instructorApprovalStatus
+                instructorApprovalStatus,
+                learnerProfileService.findOnboardingCompletedStatus(user.getId())
         );
     }
 }

@@ -41,6 +41,13 @@ public class LearnerProfile {
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
 
+    @Column(name = "onboarding_completed", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean onboardingCompleted = false;
+
+    @Column(name = "onboarding_completed_at")
+    private Instant onboardingCompletedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -13,6 +13,7 @@ public record CurrentUserResponse(
         AccountStatus accountStatus,
         Set<RoleName> roles,
         Set<ProfileType> availableProfiles,
-        String instructorApprovalStatus
+        String instructorApprovalStatus,
+        Boolean learnerOnboardingCompleted
 ) {
 }

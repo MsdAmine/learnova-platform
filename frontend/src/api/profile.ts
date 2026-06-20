@@ -6,6 +6,8 @@ export interface LearnerProfileResponse {
   displayName: string;
   bio: string | null;
   profileImageUrl: string | null;
+  onboardingCompleted: boolean;
+  onboardingCompletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +49,11 @@ export async function updateMyLearnerProfile(
   payload: LearnerProfileUpdatePayload,
 ): Promise<LearnerProfileResponse> {
   const { data } = await api.patch<LearnerProfileResponse>('/api/v1/learner-profile/me', payload);
+  return data;
+}
+
+export async function completeOnboarding(): Promise<LearnerProfileResponse> {
+  const { data } = await api.post<LearnerProfileResponse>('/api/v1/learner-profile/me/onboarding/complete');
   return data;
 }
 

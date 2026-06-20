@@ -19,6 +19,7 @@ const LoginPage        = lazy(() => import('../features/auth/pages/LoginPage'));
 const RegisterPage     = lazy(() => import('../features/auth/pages/RegisterPage'));
 const StyleGuide       = lazy(() => import('../features/style-guide/pages/StyleGuide'));
 const UnauthorizedPage = lazy(() => import('../features/errors/pages/UnauthorizedPage'));
+const OnboardingPage   = lazy(() => import('../features/onboarding/pages/OnboardingPage'));
 
 const DashboardLayout  = lazy(() => import('../features/dashboard/components/DashboardLayout'));
 const LearnerDashboard = lazy(() => import('../features/dashboard/pages/LearnerDashboard'));
@@ -182,6 +183,18 @@ const router = createBrowserRouter([
             ),
           },
         ],
+      },
+      {
+        // Full-screen onboarding wizard — ProtectedRoute but intentionally outside the
+        // /dashboard group so DashboardLayout (sidebar + topbar) is not rendered.
+        path: '/onboarding',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={null}>
+              <OnboardingPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
       },
       {
         // Full-screen certificate view — ProtectedRoute but intentionally outside the

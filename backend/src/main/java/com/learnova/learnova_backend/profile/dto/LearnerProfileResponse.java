@@ -8,6 +8,8 @@ public record LearnerProfileResponse(
         String displayName,
         String bio,
         String profileImageUrl,
+        boolean onboardingCompleted,
+        Instant onboardingCompletedAt,
         Instant createdAt,
         Instant updatedAt
 ) {

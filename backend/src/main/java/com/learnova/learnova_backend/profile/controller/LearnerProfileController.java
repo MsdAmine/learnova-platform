@@ -35,6 +35,13 @@ public class LearnerProfileController {
         return learnerProfileService.updateMyProfile(currentUser, request);
     }
 
+    @PostMapping("/me/onboarding/complete")
+    public LearnerProfileResponse completeOnboarding(
+            @AuthenticationPrincipal CustomUserDetails currentUser
+    ) {
+        return learnerProfileService.completeOnboarding(currentUser);
+    }
+
     @GetMapping("/me/preferences")
     public LearningPreferencesResponse getMyPreferences(
             @AuthenticationPrincipal CustomUserDetails currentUser

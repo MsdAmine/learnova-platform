@@ -10,6 +10,7 @@ export interface SettingsUser {
   roles: string[];
   availableProfiles: ProfileType[];
   instructorApprovalStatus: string | null;
+  learnerOnboardingCompleted: boolean | null;
 }
 
 export type SettingsSectionId = 'profile' | 'learning-preferences' | 'instructor' | 'account';
