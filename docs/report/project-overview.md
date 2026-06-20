@@ -27,9 +27,12 @@ profile, with instructor access gated behind an admin approval step.
 
 ## Target Users
 
-**Learner** — browses the public course catalog, enrolls in published
-courses, studies lessons at their own pace, takes quizzes and receives a
-score, saves courses to a wishlist for later, and edits their own profile.
+**Learner** — completes a short onboarding wizard on first dashboard visit
+(learning goal, pace, preferred categories, or skips it), browses the public
+course catalog, enrolls in published courses, studies lessons at their own
+pace, takes quizzes and receives a score, saves courses to a wishlist for
+later, and edits their own profile (including the same learning preferences
+captured during onboarding).
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -46,7 +49,7 @@ implemented; there is no broader user-management console.
 |---|---|
 | `auth` | Registration, login, JWT issuance, `/auth/me` |
 | `user` | `User` entity, roles, account status, role seeding |
-| `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing |
+| `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing, learning preferences, onboarding-completion tracking |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
@@ -65,6 +68,7 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner quiz-taking with automatic scoring
 - Learner wishlist (save-for-later) and saved-courses dashboard
 - Profile self-editing for both learner and instructor profiles
+- Learner onboarding (learning preferences capture or skip, with completion tracking that gates a one-time dashboard redirect)
 
 ## Current Limitations
 
@@ -85,6 +89,10 @@ These areas are intentionally **not** presented as complete:
   strings only; no media upload pipeline exists.
 - **Profile switch UI** — the backend endpoint (`POST /api/v1/profile/switch`)
   exists, but no frontend profile-switcher component is wired to it yet.
+- **No recommendation engine or personalization** — onboarding and Settings
+  capture learning preferences (goal, level, weekly minutes, categories), but
+  no feature currently reads them back to recommend courses, send reminders,
+  or drive any analytics. They exist for future personalization only.
 
 A full breakdown of known gaps is in `docs/report/limitations.md`.
 

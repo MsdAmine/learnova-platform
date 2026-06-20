@@ -14,18 +14,23 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 |---|---|---|---|
 | POST | `/api/v1/auth/register` | Public | Create a `User` + auto-created `LearnerProfile` |
 | POST | `/api/v1/auth/login` | Public | Authenticate and issue a JWT |
-| GET | `/api/v1/auth/me` | Authenticated | Return current user, roles, available profiles, instructor approval status |
+| GET | `/api/v1/auth/me` | Authenticated | Return current user, roles, available profiles, instructor approval status, **`learnerOnboardingCompleted`** |
 
 ## Profile
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
 | POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type |
-| GET | `/api/v1/learner-profile/me` | Authenticated | Get the caller's own learner profile (self-resolved, no id in URL) |
+| GET | `/api/v1/learner-profile/me` | Authenticated | Get the caller's own learner profile (self-resolved, no id in URL); response includes `onboardingCompleted` and `onboardingCompletedAt` |
 | PATCH | `/api/v1/learner-profile/me` | Authenticated | Update `displayName`, `bio`, `profileImageUrl` on the caller's own learner profile |
+| POST | `/api/v1/learner-profile/me/onboarding/complete` | Authenticated | Mark the caller's learner onboarding complete; idempotent — repeat calls keep the first `onboardingCompletedAt` and return `200` unchanged; does not touch learning preferences |
+| GET | `/api/v1/learner-profile/me/preferences` | Authenticated | Get the caller's learning preferences (`learningGoal`, `preferredLevel`, `weeklyGoalMinutes`, `preferredCategoryIds`); returns an all-null default response if none saved yet |
+| PUT | `/api/v1/learner-profile/me/preferences` | Authenticated | Upsert the caller's learning preferences; validates `preferredCategoryIds` (max 8, must exist) and `weeklyGoalMinutes` (30–1200) |
 | POST | `/api/v1/instructor-profile/request` | Authenticated | Submit an instructor profile request (status starts `PENDING`) |
 | GET | `/api/v1/instructor-profile/me` | Authenticated | Get the caller's own instructor profile |
 | PATCH | `/api/v1/instructor-profile/me` | INSTRUCTOR | Update `bio`, `expertise`, `experience`, `motivation` on the caller's own instructor profile (self-resolved, no id in URL) |
+
+**Onboarding completion field:** `learnerOnboardingCompleted` (boolean, `GET /api/v1/auth/me`) and `onboardingCompleted` / `onboardingCompletedAt` (`GET`/`PATCH`/`POST .../onboarding/complete` on `/api/v1/learner-profile/me`) are the only places the onboarding flag is exposed. The underlying `LearnerProfile.onboardingCompleted` column has a DB-level default (`columnDefinition = "boolean default false"`), required for Hibernate `ddl-auto: update` to add a `NOT NULL` boolean column onto an already-populated Postgres `learner_profiles` table.
 
 ## Instructor Approval (Admin)
 

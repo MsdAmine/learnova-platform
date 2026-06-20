@@ -9,7 +9,7 @@ Learnova
 
 ## Current Milestone
 
-Frontend integration: learner course player (with Lessons and Quizzes tabs), instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking is end-to-end complete: backend (attempt creation, answer submission, scoring, result retrieval) and frontend (quiz list, start/resume attempt, radio-based answer selection, submit, and result panel with per-question correctness).
+Frontend integration: learner course player (with Lessons and Quizzes tabs), instructor content builder, instructor quiz management, admin instructor-approvals page, public course detail page, and saved-courses dashboard page are all wired to real backend APIs. The wishlist save-for-later action is integrated on both the public course detail page and the saved-courses dashboard page. Learner quiz-taking is end-to-end complete: backend (attempt creation, answer submission, scoring, result retrieval) and frontend (quiz list, start/resume attempt, radio-based answer selection, submit, and result panel with per-question correctness). Learner onboarding is end-to-end complete: a 4-step onboarding wizard at `/onboarding` collects learning preferences (reusing the preferences API added alongside Settings) and marks onboarding completed server-side; `LearnerDashboard` redirects a learner whose onboarding is incomplete to `/onboarding`.
 
 ## Backend Status
 
@@ -52,6 +52,16 @@ The backend is feature-complete for the current phase. These modules exist and a
   - `PATCH /api/v1/learner-profile/me` — updates `displayName`, `bio`, `profileImageUrl` for the caller's learner profile
   - `PATCH /api/v1/instructor-profile/me` — updates `bio`, `expertise`, `experience`, `motivation` for the caller's instructor profile
   - No profile id appears in any of these URLs; the profile is always resolved from the authenticated principal
+- Learner learning preferences: per-learner preferences (`LearningPreference` entity, 1-to-1 with `LearnerProfile`) capturing `learningGoal` (enum), `preferredLevel` (`CourseLevel`), `weeklyGoalMinutes` (30–1200), and up to 8 `preferredCategoryIds`
+  - `GET /api/v1/learner-profile/me/preferences` — returns the caller's preferences, or an all-null default response if none saved yet
+  - `PUT /api/v1/learner-profile/me/preferences` — upserts the caller's preferences; validates category ids exist and the max-8 cap
+  - Consumed both by the onboarding wizard (step 1–3 fields) and by the Settings "Learning preferences" section — the same backend record, edited in two places
+- Learner onboarding: a one-time onboarding flag on `LearnerProfile` (`onboardingCompleted`, default `false`; `onboardingCompletedAt` timestamp) tracks whether a learner has finished or skipped the onboarding wizard
+  - `POST /api/v1/learner-profile/me/onboarding/complete` — idempotently marks the caller's onboarding complete (keeps the first `onboardingCompletedAt` on repeat calls); does not itself touch preferences
+  - `learnerOnboardingCompleted` is exposed on `GET /api/v1/auth/me` (`CurrentUserResponse`) and `onboardingCompleted`/`onboardingCompletedAt` on `LearnerProfileResponse`, so the frontend never has to make a second round-trip to know onboarding status
+  - **DB-default fix:** `onboarding_completed` is declared with `columnDefinition = "boolean default false"` on the JPA column (`LearnerProfile.java`) — without the DB-level default, Hibernate's `ddl-auto: update` cannot add a `NOT NULL` column to a Postgres table that already has rows, since existing rows would have no value to satisfy the constraint
+- Onboarding wizard (frontend, `/onboarding`, `ProtectedRoute`, deliberately outside `/dashboard` so it renders full-screen without `DashboardLayout`): 4 steps — learning goal, pace (preferred level + weekly goal minutes), preferred categories (loaded from `GET /api/v1/categories`), and review. "Skip for now" calls `POST .../onboarding/complete` directly, **without** saving preferences, specifically to avoid a redirect loop back into onboarding. "Finish onboarding" saves preferences (`PUT .../me/preferences`) then completes onboarding. Revisiting `/onboarding` after completion (`user.learnerOnboardingCompleted === true`) shows an "You're all set" panel with a link back to `/dashboard` instead of the wizard.
+- Dashboard-entry onboarding gate: `LearnerDashboard` (the `/dashboard` index page) redirects to `/onboarding` in a `useEffect` when `user?.learnerOnboardingCompleted === false`. This is scoped to the dashboard index route only — it is not a global router-level guard, so other `/dashboard/*` child routes are not currently gated by onboarding status.
 - Security hardening: JWT filter, account-status checks, and error dispatch (consistent 401/403 JSON responses)
 
 Do not recreate or re-implement any of the above. The backend foundation is done.
@@ -84,6 +94,8 @@ What is in place:
 - `SettingsPage` instructor application panel: bio (required, max 1000 chars), expertise (required, max 500 chars), experience (optional), motivation (optional); on success re-fetches `/api/v1/auth/me` and refreshes `AuthContext`; surfaces null/pending/approved/rejected states; rejected state lazily fetches `/api/v1/instructor-profile/me` for `rejectionReason` and displays it inline; hidden for admin-only users (users with `ROLE_ADMIN` but without `INSTRUCTOR` in `availableProfiles`)
 - `SettingsPage` profile editing: learners can edit `displayName`, `bio`, and `profileImageUrl` via `GET`/`PATCH /api/v1/learner-profile/me`; instructors (when `INSTRUCTOR` is in `availableProfiles`) can edit `bio`, `expertise`, `experience`, and `motivation` via `PATCH /api/v1/instructor-profile/me`; uses `src/api/profile.ts`; the "Profile editing is not available yet" placeholder is removed
 - `SettingsPage` admin area entry point: renders `AdminAccessPanel` (links to `/admin/instructor-approvals`) for any user with `ROLE_ADMIN`
+- `SettingsPage` "Learning preferences" section (`LearningPreferencesSection.tsx`): edits the same `learningGoal`/`preferredLevel`/`weeklyGoalMinutes`/`preferredCategoryIds` record the onboarding wizard writes to, via `src/api/learningPreferences.ts`; no longer the "not available yet" placeholder
+- `OnboardingPage` (`src/features/onboarding/pages/OnboardingPage.tsx`) at `/onboarding`: 4-step wizard (goal → pace → categories → review) using `src/api/learningPreferences.ts` and `completeOnboarding()` in `src/api/profile.ts`; "Skip for now" available on every step; already-completed learners see a confirmation panel instead of the form
 - `DashboardLayout` sidebar: `Saved` nav item (`/dashboard/saved-courses`) is learner-only (`roleRequired: 'ROLE_LEARNER'`) and is hidden from admin-only users; instructor CTA hidden for admin-only users; shows "pending review" note when `instructorApprovalStatus === 'PENDING'`
 
 Still mocked or placeholder:
@@ -94,6 +106,11 @@ Still mocked or placeholder:
 - Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
 
 ## Known Gaps
+
+- No recommendation engine — learning preferences (goal, level, weekly time, categories) are captured during onboarding and editable in Settings, but nothing in the backend or frontend currently reads them back to recommend or filter courses; they prepare for future personalization without powering it today
+- No reminder/notification scheduling tied to the weekly learning goal
+- No personalization or learning-preference analytics for instructors or admins
+- The onboarding redirect (`LearnerDashboard` → `/onboarding`) is a page-level `useEffect`, not a router-level guard; it only fires from the `/dashboard` index route
 
 - No public syllabus/section previews, instructor bio endpoint, course duration/lesson count, media/video preview (blocked: no backend contract for any of these)
 - No certificate PDF generation (print/save-as-PDF via window.print() is available on the certificate view page; no server-side PDF generation)

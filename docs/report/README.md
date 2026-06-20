@@ -16,8 +16,8 @@ model where one account can act as both learner and instructor (see
 
 1. **[project-overview.md](./project-overview.md)** — start here for the big picture
 2. **[class-diagram.md](./class-diagram.md)** — the persistent domain model
-3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the three flagship flows
-4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all eight implemented workflows
+3. **[sequence-diagrams.md](./sequence-diagrams.md)** — call sequences for the flagship flows
+4. **[core-workflows.md](./core-workflows.md)** — step-by-step walkthroughs of all nine implemented workflows
 5. **[api-summary.md](./api-summary.md)** — the full REST surface, grouped by module
 6. **[testing-summary.md](./testing-summary.md)** — backend test coverage and frontend verification style
 7. **[limitations.md](./limitations.md)** — known gaps, read last so they land with full context
@@ -42,8 +42,9 @@ model where one account can act as both learner and instructor (see
 - **class-diagram.md** answers "how is the data modeled" — entities,
   relationships, and enums, taken directly from the JPA entity classes.
 - **sequence-diagrams.md** answers "how do the pieces actually talk to each
-  other" for the three flows most relevant to a live demo: instructor
-  approval, enrollment + lesson progress, and quiz scoring.
+  other" for the flows most relevant to a live demo: instructor
+  approval, enrollment + lesson progress, quiz scoring, and learner
+  onboarding.
 - **core-workflows.md** is the demo script — each workflow lists the exact
   endpoints and frontend routes involved, suitable for narrating a live
   walkthrough.
@@ -61,8 +62,9 @@ model where one account can act as both learner and instructor (see
 learner registration/login, instructor application and admin approval,
 instructor course/content/quiz authoring, learner enrollment, lesson study
 and progress tracking, learner quiz-taking with automatic scoring, wishlist
-/ saved courses, and profile self-editing for both learner and instructor
-profiles.
+/ saved courses, profile self-editing for both learner and instructor
+profiles, and learner onboarding (learning-preferences capture or skip, with
+completion tracking and a dashboard-entry redirect).
 
 **Not implemented / explicitly out of scope for this codebase:**
 - **Certificates** — owned by another developer; no certificate backend
@@ -91,6 +93,7 @@ See `limitations.md` for the complete, categorized list.
 | Instructor application and approval | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner enrollment and lesson progress | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 | Learner quiz attempt and scoring | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
+| Learner onboarding (preferences capture, skip, completion gate) | `sequence-diagrams.md` | Mermaid `sequenceDiagram` |
 
 All diagrams render directly from standard Mermaid syntax — no external
 tooling or generated image assets are required.
@@ -116,14 +119,14 @@ suite, see `testing-summary.md`).
 
 ## Testing Evidence Summary
 
-The backend test suite (`backend/src/test/java`) contains 27 test classes
+The backend test suite (`backend/src/test/java`) contains 29 test classes
 covering auth/security, course lifecycle, enrollment, lesson progress,
 instructor content authoring, instructor quiz read/authoring, learner quiz
-attempts, and profile editing. Exact current pass/fail counts are not stated
-here — run `./mvnw test` from `backend/` for the live number. The frontend
-has no automated test suite yet; verification is lint (`npm run lint`),
-build (`npm run build`), and manual browser QA. Full detail in
-`testing-summary.md`.
+attempts, profile editing, and learner onboarding/learning preferences. Exact
+current pass/fail counts are not stated here — run `./mvnw test` from
+`backend/` for the live number. The frontend has no automated test suite
+yet; verification is lint (`npm run lint`), build (`npm run build`), and
+manual browser QA. Full detail in `testing-summary.md`.
 
 ## Known Limitations Note
 

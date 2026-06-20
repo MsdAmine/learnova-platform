@@ -261,3 +261,32 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Result:** Updated `LearnerProfile` and/or `InstructorProfile` fields, scoped strictly to the authenticated user's own record.
 
 **Evidence:** `assets/screenshots/mobile-settings.png` (mobile viewport) (demo/report screenshot, not an automated test)
+
+---
+
+## 9. Learner Onboarding
+
+**Actor:** Newly-registered or returning Learner whose onboarding is not yet complete
+
+**Goal:** Capture learning preferences (or explicitly skip) once, then never see the wizard again.
+
+**Main steps:**
+1. Learner registers and logs in as usual (workflow 1). `LearnerProfile.onboardingCompleted` starts `false` by default (DB-level default, see note below).
+2. Learner reaches `/dashboard`. `LearnerDashboard` checks `user.learnerOnboardingCompleted` in a `useEffect`; if it is `false`, it redirects (`replace`) to `/onboarding`. This check lives on the dashboard index page itself, not in a router-level guard, so it only fires when the dashboard index route renders.
+3. `OnboardingPage` loads existing preferences (`GET /api/v1/learner-profile/me/preferences`) and the category list (`GET /api/v1/categories`), then walks the learner through 4 steps: learning goal, pace (preferred level + weekly goal minutes), preferred categories (up to 8), and a review step.
+4. **Finish onboarding** (last step): saves preferences via `PUT /api/v1/learner-profile/me/preferences`, then calls `POST /api/v1/learner-profile/me/onboarding/complete`, then navigates to `/dashboard`.
+5. **Skip for now** (available on every step): calls `POST /api/v1/learner-profile/me/onboarding/complete` directly, **without** saving any preferences first, then navigates to `/dashboard`. This exists specifically so skipping cannot leave the learner stuck in a redirect loop back to `/onboarding`.
+6. Completing onboarding is idempotent: calling the complete endpoint again after it is already `true` returns `200` and keeps the original `onboardingCompletedAt` timestamp unchanged.
+7. If a learner who has already completed onboarding navigates to `/onboarding` directly, the page detects `user.learnerOnboardingCompleted === true` and renders an "You're all set" confirmation panel with a link back to `/dashboard`, instead of the wizard.
+8. Preferences saved (or left as defaults) during onboarding are the same record editable later from `/dashboard/settings` (workflow 8's Settings page, "Learning preferences" section) — onboarding and Settings read and write the same `LearningPreference` row.
+
+**Backend endpoints:**
+- `GET /api/v1/learner-profile/me/preferences`, `PUT /api/v1/learner-profile/me/preferences`
+- `POST /api/v1/learner-profile/me/onboarding/complete`
+- `GET /api/v1/auth/me` (exposes `learnerOnboardingCompleted` for the dashboard-entry check)
+
+**Frontend routes:** `/onboarding` (under `ProtectedRoute`, rendered outside the `/dashboard` route group so `DashboardLayout` does not wrap it) → `/dashboard` (index route, under `ProtectedRoute` + `DashboardLayout`)
+
+**Result:** `LearnerProfile.onboardingCompleted = true` with `onboardingCompletedAt` set; learning preferences are saved only if the learner chose "Finish onboarding" rather than "Skip for now". The learner reaches `/dashboard` either way and is not redirected again. No recommendation or personalization currently consumes these preferences — they are stored for future use only.
+
+**DB-default note:** `LearnerProfile.onboardingCompleted` is `@Column(nullable = false, columnDefinition = "boolean default false")`. Without the explicit DB-level default, Hibernate's `ddl-auto: update` cannot add this `NOT NULL` column to a Postgres `learner_profiles` table that already has rows — existing rows would have no value to satisfy the new constraint. This was found and fixed during manual QA against a non-empty local database.
