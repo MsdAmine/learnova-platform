@@ -19,16 +19,20 @@ export function LandingPageSkeleton() {
         </div>
       </div>
 
-      {/* Hero — Salem full-bleed, mirrors BrandIntro / hero section */}
+      {/* Hero — Salem full-bleed, mirrors the search-first hero section */}
       <div className="flex-1 bg-salem flex items-center justify-center px-6">
         <div className="w-full max-w-2xl flex flex-col items-center gap-4 text-center">
-          <div className="h-3 w-24 rounded-full bg-white/10" aria-hidden="true" />
           <div className="h-14 w-full rounded-lg bg-white/10" aria-hidden="true" />
           <div className="h-8 w-4/5 rounded-lg bg-white/10" aria-hidden="true" />
           <div className="h-5 w-3/5 rounded-md bg-white/[0.07] mt-2" aria-hidden="true" />
-          <div className="flex gap-3 mt-6">
-            <div className="h-11 w-36 rounded-md bg-white/15" aria-hidden="true" />
-            <div className="h-11 w-28 rounded-md bg-white/10" aria-hidden="true" />
+          <div className="flex gap-3 mt-6 w-full max-w-md">
+            <div className="h-12 flex-1 rounded-md bg-white/15" aria-hidden="true" />
+            <div className="h-12 w-24 rounded-md bg-white/15" aria-hidden="true" />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <div className="h-7 w-20 rounded-full bg-white/10" aria-hidden="true" />
+            <div className="h-7 w-24 rounded-full bg-white/10" aria-hidden="true" />
+            <div className="h-7 w-16 rounded-full bg-white/10" aria-hidden="true" />
           </div>
         </div>
       </div>
