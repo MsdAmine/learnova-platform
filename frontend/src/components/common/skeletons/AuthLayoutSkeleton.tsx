@@ -2,8 +2,8 @@ import { Bone } from './Bone';
 
 export function AuthLayoutSkeleton() {
   return (
-    <div role="status" className="relative min-h-screen flex">
-      <span className="sr-only">Loading</span>
+    <div className="relative min-h-screen flex">
+      <output className="sr-only">Loading</output>
 
       {/* Logo placeholder — mirrors the absolute-positioned logo in AuthLayout */}
       <div className="absolute inset-x-0 top-8 flex justify-center z-10">

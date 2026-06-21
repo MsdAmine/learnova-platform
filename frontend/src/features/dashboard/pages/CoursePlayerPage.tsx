@@ -7,6 +7,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { Bone } from '../../../components/common/skeletons/Bone';
+import { QuizCard } from '../components/courseQuiz/QuizCard';
 import {
   getLearnerCourseContent,
   updateLessonProgress,
@@ -19,10 +20,12 @@ import {
   startQuizAttempt,
   submitQuizAttempt,
   getQuizAttempt,
+  listQuizAttempts,
   type LearnerQuizSummaryResponse,
   type LearnerQuizDetailResponse,
   type QuizAttemptResponse,
 } from '../../../api/learnerQuizzes';
+import { getMyCertificates, issueCertificate } from '../../../api/certificates';
 
 // ── HTTP status helper ──────────────────────────────────────────────────────
 // Reads the response status off an unknown Axios error without importing axios.
@@ -230,7 +233,7 @@ function CourseOutline({
                         'text-body-sm motion-safe:transition-colors duration-fast',
                         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem',
                         isSelected
-                          ? 'bg-salem-50 text-salem font-medium'
+                          ? 'bg-accent-soft text-accent-text font-medium'
                           : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary',
                       )}
                     >
@@ -259,6 +262,108 @@ function CourseOutline({
   );
 }
 
+// ── Certificate panel ─────────────────────────────────────────────────────────
+// Shown only once the learner has finished every lesson. Checks for an
+// existing certificate first so a learner who already issued one sees
+// "View certificate" instead of a redundant issue action.
+
+type CertificateStatus = 'checking' | 'none' | 'issuing' | 'issued' | 'error';
+
+function CertificatePanel({
+  courseId,
+  courseTitle,
+}: {
+  courseId: number;
+  courseTitle: string;
+}) {
+  const [status, setStatus] = useState<CertificateStatus>('checking');
+  const [certificateId, setCertificateId] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = { cancelled: false };
+    getMyCertificates()
+      .then(list => {
+        if (token.cancelled) return;
+        const existing = list.find(c => c.courseId === courseId);
+        if (existing) {
+          setCertificateId(existing.id);
+          setStatus('issued');
+        } else {
+          setStatus('none');
+        }
+      })
+      .catch(() => {
+        if (!token.cancelled) setStatus('none');
+      });
+    return () => {
+      token.cancelled = true;
+    };
+  }, [courseId]);
+
+  async function handleIssue() {
+    setStatus('issuing');
+    setErrorMessage(null);
+    try {
+      const certificate = await issueCertificate(courseId);
+      setCertificateId(certificate.id);
+      setStatus('issued');
+    } catch (err) {
+      setErrorMessage(
+        getStatus(err) === 409
+          ? 'This course is not fully completed yet, so a certificate cannot be issued.'
+          : 'We could not issue your certificate. Please try again.',
+      );
+      setStatus('error');
+    }
+  }
+
+  if (status === 'checking') return null;
+
+  return (
+    <section
+      aria-label="Certificate"
+      className="bg-surface border border-border-default rounded-lg p-4 mt-4"
+    >
+      <h2 className="text-title-sm font-semibold text-text-primary mb-1">
+        Course completed
+      </h2>
+      <p className="text-body-sm text-text-secondary mb-3">
+        {status === 'issued'
+          ? `You've earned a certificate for ${courseTitle}.`
+          : `You've finished every lesson in ${courseTitle}. You can issue a certificate of completion.`}
+      </p>
+
+      {status === 'error' && errorMessage && (
+        <p className="text-body-sm text-error mb-3" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      {status === 'issued' && certificateId != null ? (
+        <Button
+          variant="secondary"
+          size="sm"
+          asChild
+          aria-label={`View certificate for ${courseTitle}`}
+        >
+          <Link to={`/dashboard/certificates/${certificateId}`}>View certificate</Link>
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          loading={status === 'issuing'}
+          disabled={status === 'issuing'}
+          aria-label={`Issue certificate for ${courseTitle}`}
+          onClick={handleIssue}
+        >
+          Issue certificate
+        </Button>
+      )}
+    </section>
+  );
+}
+
 // ── Quiz list skeleton ────────────────────────────────────────────────────────
 
 function QuizListSkeleton() {
@@ -275,44 +380,6 @@ function QuizListSkeleton() {
         </div>
       ))}
     </div>
-  );
-}
-
-// ── Quiz card (list item) ──────────────────────────────────────────────────────
-
-function QuizCard({
-  quiz,
-  starting,
-  onStart,
-}: {
-  quiz: LearnerQuizSummaryResponse;
-  starting: boolean;
-  onStart: (id: number) => void;
-}) {
-  return (
-    <article className="bg-surface border border-border-default rounded-lg p-4">
-      <h3 className="text-title-sm font-semibold text-text-primary break-words">
-        {quiz.title}
-      </h3>
-      {quiz.description && (
-        <p className="text-body-sm text-text-secondary mt-1 break-words">
-          {quiz.description}
-        </p>
-      )}
-      <p className="text-caption text-text-muted mt-2">
-        Passing score: {quiz.passingScore}%
-      </p>
-      <div className="mt-3">
-        <Button
-          size="sm"
-          loading={starting}
-          disabled={starting}
-          onClick={() => onStart(quiz.id)}
-        >
-          Start quiz
-        </Button>
-      </div>
-    </article>
   );
 }
 
@@ -532,12 +599,15 @@ function QuizResultPanel({
 function QuizzesTab({ courseId, active }: { courseId: number; active: boolean }) {
   const [listStatus, setListStatus] = useState<'idle' | 'loaded' | 'error'>('idle');
   const [quizzes, setQuizzes] = useState<LearnerQuizSummaryResponse[]>([]);
+  const [attemptsByQuiz, setAttemptsByQuiz] = useState<Record<number, QuizAttemptResponse[]>>({});
 
   const [phase, setPhase] = useState<'list' | 'taking' | 'result'>('list');
   const [detail, setDetail] = useState<LearnerQuizDetailResponse | null>(null);
   const [attempt, setAttempt] = useState<QuizAttemptResponse | null>(null);
   const [startingId, setStartingId] = useState<number | null>(null);
   const [startError, setStartError] = useState<string | null>(null);
+  const [viewingAttemptId, setViewingAttemptId] = useState<number | null>(null);
+  const [viewError, setViewError] = useState<string | null>(null);
 
   const [selections, setSelections] = useState<Record<number, number>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -564,6 +634,41 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
     };
   }, [active, courseId, listStatus]);
 
+  // Attempt history per quiz is fetched once the quiz list loads. A failed
+  // fetch for a given quiz degrades gracefully — that card just shows
+  // "Not started" instead of blocking the rest of the tab, mirroring the
+  // non-blocking wishlist fetch pattern used elsewhere in this codebase.
+  useEffect(() => {
+    if (listStatus !== 'loaded' || quizzes.length === 0) return;
+    const token = { cancelled: false };
+    Promise.allSettled(
+      quizzes.map(q => listQuizAttempts(q.id).then(data => ({ quizId: q.id, data }))),
+    ).then(results => {
+      if (token.cancelled) return;
+      setAttemptsByQuiz(prev => {
+        const next = { ...prev };
+        for (const r of results) {
+          if (r.status === 'fulfilled') next[r.value.quizId] = r.value.data;
+        }
+        return next;
+      });
+    });
+    return () => {
+      token.cancelled = true;
+    };
+  }, [listStatus, quizzes]);
+
+  function upsertAttempt(quizId: number, updated: QuizAttemptResponse) {
+    setAttemptsByQuiz(prev => {
+      const list = prev[quizId] ?? [];
+      const idx = list.findIndex(a => a.id === updated.id);
+      const nextList = idx >= 0
+        ? list.map((a, i) => (i === idx ? updated : a))
+        : [updated, ...list];
+      return { ...prev, [quizId]: nextList };
+    });
+  }
+
   function handleListRetry() {
     setListStatus('idle');
   }
@@ -579,6 +684,7 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
       setSelections({});
       setSubmitError(null);
       setPhase('taking');
+      upsertAttempt(quizId, startedAttempt);
     } catch (err) {
       setStartError(
         getStatus(err) === 404
@@ -587,6 +693,26 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
       );
     } finally {
       setStartingId(null);
+    }
+  }
+
+  async function handleViewResult(quizId: number, attemptId: number) {
+    setViewingAttemptId(attemptId);
+    setViewError(null);
+    try {
+      const quizDetail = await getLearnerQuizDetail(quizId);
+      const attemptResult = await getQuizAttempt(attemptId);
+      setDetail(quizDetail);
+      setAttempt(attemptResult);
+      setPhase('result');
+    } catch (err) {
+      setViewError(
+        getStatus(err) === 404
+          ? 'This attempt is no longer available.'
+          : 'We could not load this result. Please try again.',
+      );
+    } finally {
+      setViewingAttemptId(null);
     }
   }
 
@@ -624,6 +750,7 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
       const result = await submitQuizAttempt(attempt.id, { answers });
       setAttempt(result);
       setPhase('result');
+      upsertAttempt(result.quizId, result);
     } catch (err) {
       const status = getStatus(err);
       if (status === 409) {
@@ -632,6 +759,7 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
           const existing = await getQuizAttempt(attempt.id);
           setAttempt(existing);
           setPhase('result');
+          upsertAttempt(existing.quizId, existing);
         } catch {
           setSubmitError('This attempt has already been submitted.');
         }
@@ -681,12 +809,20 @@ function QuizzesTab({ courseId, active }: { courseId: number; active: boolean })
           {startError}
         </p>
       )}
+      {viewError && (
+        <p className="text-body-sm text-error" role="alert">
+          {viewError}
+        </p>
+      )}
       {quizzes.map(quiz => (
         <QuizCard
           key={quiz.id}
           quiz={quiz}
+          attempts={attemptsByQuiz[quiz.id] ?? []}
           starting={startingId === quiz.id}
+          viewingAttemptId={viewingAttemptId}
           onStart={handleStart}
+          onViewResult={attemptId => handleViewResult(quiz.id, attemptId)}
         />
       ))}
     </div>
@@ -897,6 +1033,9 @@ export default function CoursePlayerPage() {
             </div>
           </>
         )}
+        {hasLessons && progressPercentage === 100 && (
+          <CertificatePanel courseId={courseId} courseTitle={content.courseTitle} />
+        )}
       </div>
 
       {/* Tabs: Lessons | Quizzes */}
@@ -921,7 +1060,7 @@ export default function CoursePlayerPage() {
                 'motion-safe:transition-colors duration-fast',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem rounded-sm',
                 selected
-                  ? 'border-salem text-salem'
+                  ? 'border-accent-primary text-accent-text'
                   : 'border-transparent text-text-secondary hover:text-text-primary',
               )}
             >

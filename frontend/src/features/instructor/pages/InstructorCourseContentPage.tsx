@@ -239,6 +239,9 @@ interface LessonEditFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingLessonId === lesson.id (see parent), and unmounts
+// on save/cancel — so the initial-value capture below never needs to re-sync
+// with a changed `lesson` prop; a different lesson means a fresh mount.
 function LessonEditForm({ lesson, sectionTitle, isPending, onSave, onCancel }: LessonEditFormProps) {
   const [draftTitle, setDraftTitle] = useState(lesson.title);
   const [editError, setEditError] = useState<string | null>(null);
@@ -375,7 +378,7 @@ function LessonRow({
             </div>
           </div>
           {rowError && (
-            <p className="px-2 pb-2 text-caption text-text-muted" role="alert">{rowError}</p>
+            <p className="px-2 pb-2 text-caption text-error" role="alert">{rowError}</p>
           )}
         </>
       )}
@@ -392,6 +395,9 @@ interface SectionEditFormProps {
   onCancel: () => void;
 }
 
+// Mounted only while editingSectionId === section.id (see parent), and
+// unmounts on save/cancel — so the initial-value capture below never needs to
+// re-sync with a changed `section` prop; a different section means a fresh mount.
 function SectionEditForm({ section, isPending, onSave, onCancel }: SectionEditFormProps) {
   const [draftTitle, setDraftTitle] = useState(section.title);
   const [editError, setEditError] = useState<string | null>(null);
@@ -582,7 +588,7 @@ function SectionCard({
         )}
 
         {sectionRowError && !isEditing && !isConfirmingDelete && (
-          <p className="text-caption text-text-muted mb-2" role="alert">{sectionRowError}</p>
+          <p className="text-caption text-error mb-2" role="alert">{sectionRowError}</p>
         )}
       </div>
 

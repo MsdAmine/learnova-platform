@@ -502,6 +502,127 @@ class LearnerQuizIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(1));
     }
 
+    // ─── 23. List attempts is empty when no attempts exist ────────────────────
+
+    @Test
+    void listAttemptsReturnsEmptyWhenNoAttemptsExist() throws Exception {
+        QuizFixture f = buildFixture("inst.lq24@quiz.test");
+        String learnerToken = registerAndLogin("learner.lq24@quiz.test", "password123");
+        enroll("learner.lq24@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", f.quiz().getId())
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    // ─── 24. List attempts returns retake history ordered most-recent-first ──
+
+    @Test
+    void listAttemptsReturnsRetakeHistoryOrderedMostRecentFirst() throws Exception {
+        QuizFixture f = buildFixture("inst.lq25@quiz.test");
+        String learnerToken = registerAndLogin("learner.lq25@quiz.test", "password123");
+        enroll("learner.lq25@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+
+        // First attempt: submitted with all-correct answers
+        Long firstAttemptId = startAttempt(learnerToken, f.quiz().getId());
+        mockMvc.perform(post("/api/v1/learner/quiz-attempts/{id}/submit", firstAttemptId)
+                        .header("Authorization", "Bearer " + learnerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(allCorrectBody(f)))
+                .andExpect(status().isOk());
+
+        // Retake: starting again creates a brand-new attempt, left IN_PROGRESS
+        Long secondAttemptId = startAttempt(learnerToken, f.quiz().getId());
+        assert !secondAttemptId.equals(firstAttemptId)
+                : "Retake must create a new attempt, not reuse the submitted one";
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", f.quiz().getId())
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].id").value(secondAttemptId))
+                .andExpect(jsonPath("$[0].status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$[0].answerResults").isEmpty())
+                .andExpect(jsonPath("$[1].id").value(firstAttemptId))
+                .andExpect(jsonPath("$[1].status").value("SUBMITTED"))
+                .andExpect(jsonPath("$[1].scorePercentage").value(100))
+                .andExpect(jsonPath("$[1].answerResults.length()").value(2));
+    }
+
+    // ─── 25. List attempts does not expose isCorrect ──────────────────────────
+
+    @Test
+    void listAttemptsDoesNotExposeIsCorrect() throws Exception {
+        QuizFixture f = buildFixture("inst.lq26@quiz.test");
+        String learnerToken = registerAndLogin("learner.lq26@quiz.test", "password123");
+        enroll("learner.lq26@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+
+        Long attemptId = startAttempt(learnerToken, f.quiz().getId());
+        mockMvc.perform(post("/api/v1/learner/quiz-attempts/{id}/submit", attemptId)
+                        .header("Authorization", "Bearer " + learnerToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(allCorrectBody(f)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", f.quiz().getId())
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString("isCorrect"))));
+    }
+
+    // ─── 26. List attempts is scoped to the requesting learner only ──────────
+
+    @Test
+    void listAttemptsIsScopedToOwnLearner() throws Exception {
+        QuizFixture f = buildFixture("inst.lq27@quiz.test");
+        String tokenA = registerAndLogin("learner.lq27a@quiz.test", "password123");
+        String tokenB = registerAndLogin("learner.lq27b@quiz.test", "password123");
+        enroll("learner.lq27a@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+        enroll("learner.lq27b@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+
+        startAttempt(tokenA, f.quiz().getId());
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", f.quiz().getId())
+                        .header("Authorization", "Bearer " + tokenB))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    // ─── 27. List attempts for a non-enrolled learner → 404 ───────────────────
+
+    @Test
+    void listAttemptsNotEnrolledReturns404() throws Exception {
+        QuizFixture f = buildFixture("inst.lq28@quiz.test");
+        String learnerToken = registerAndLogin("learner.lq28@quiz.test", "password123");
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", f.quiz().getId())
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isNotFound());
+    }
+
+    // ─── 28. List attempts for a DRAFT quiz → 404 ──────────────────────────────
+
+    @Test
+    void listAttemptsForDraftQuizReturns404() throws Exception {
+        QuizFixture f = buildFixture("inst.lq29@quiz.test");
+        Quiz draftQuiz = createMinimalQuiz(f.course(), "Draft Quiz", QuizStatus.DRAFT);
+        String learnerToken = registerAndLogin("learner.lq29@quiz.test", "password123");
+        enroll("learner.lq29@quiz.test", f.course(), EnrollmentStatus.ACTIVE);
+
+        mockMvc.perform(get("/api/v1/learner/quizzes/{id}/attempts", draftQuiz.getId())
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isNotFound());
+    }
+
+    // ─── 29. Unauthenticated cannot list attempts → 401 ───────────────────────
+
+    @Test
+    void unauthenticatedCannotListAttempts() throws Exception {
+        mockMvc.perform(get("/api/v1/learner/quizzes/999/attempts"))
+                .andExpect(status().isUnauthorized());
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     record QuizFixture(

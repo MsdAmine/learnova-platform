@@ -10,4 +10,6 @@ import java.util.List;
 public interface QuizAttemptAnswerRepository extends JpaRepository<QuizAttemptAnswer, Long> {
 
     List<QuizAttemptAnswer> findByAttemptId(Long attemptId);
+
+    List<QuizAttemptAnswer> findByAttemptIdIn(List<Long> attemptIds);
 }

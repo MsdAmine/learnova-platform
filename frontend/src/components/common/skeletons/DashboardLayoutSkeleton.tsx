@@ -3,8 +3,8 @@ import { Bone } from './Bone';
 
 export function DashboardLayoutSkeleton() {
   return (
-    <div role="status" className="flex flex-col h-screen overflow-hidden bg-bg-base">
-      <span className="sr-only">Loading</span>
+    <div className="flex flex-col h-screen overflow-hidden bg-bg-base">
+      <output className="sr-only">Loading</output>
 
       {/* Topbar — matches DashboardLayout's 60px header */}
       <header className="h-[60px] bg-surface border-b border-border-default flex items-center px-4 md:px-6 shrink-0">

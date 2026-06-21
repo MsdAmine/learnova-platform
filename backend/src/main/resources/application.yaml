@@ -20,6 +20,14 @@ spring:
     init:
       mode: never
 
+  servlet:
+    multipart:
+      # Above the largest accepted upload (5MB course thumbnails) so oversized
+      # requests are rejected by MediaValidator with a clear 400, not a generic
+      # container-level multipart exception.
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 server:
   port: ${SERVER_PORT:8080}
   error:
@@ -34,3 +42,8 @@ app:
     jwt:
       secret: ${JWT_SECRET:learnova-development-secret-key-for-jwt-authentication-minimum-32-characters}
       expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}

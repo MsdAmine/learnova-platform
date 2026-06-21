@@ -88,6 +88,20 @@ Dashboards should:
 * Use Coral and Anzac sparingly
 * Large surfaces should stay neutral
 
+## Purple/Blue Accent (restrained)
+
+A small indigo/blue-violet accent family was added on top of the existing palette per `docs/design/brand-refresh-purple-blue-spec.md` (Phase 1 + 2, visually approved as balanced). Treat it as a secondary emphasis tool, not a second brand color.
+
+Usage rule:
+
+* Neutral surfaces remain dominant on every page; the accent never becomes the majority color of a screen.
+* Use at most 1-2 accent touches per page (e.g., one badge variant plus one bordered card, not five accent elements competing for attention).
+* Do not stack Salem and accent treatments on the same component (no card with both a Salem border and an accent background).
+* Certificates stay gold/neutral — never apply the accent family to the Certificates page; that would dilute the Anzac "earned" signal.
+* Avoid marketing-heavy decoration (gradients, glassmorphism, full-bleed accent backgrounds) inside product, admin, and instructor pages — the accent is a fill/border/text touch in specific places, never a section background.
+
+Approved tone: calm educational SaaS with a quiet second voice, not a colorful or childish interface. If a page reads as "a blue app" rather than "a little blue," scale the accent back.
+
 ## Typography
 
 * Inter is the primary UI font

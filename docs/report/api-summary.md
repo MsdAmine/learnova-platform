@@ -20,7 +20,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type |
+| POST | `/api/v1/profile/switch` | Authenticated | Switch the caller's active profile type (validated against the caller's `availableProfiles`; `403` if not available); consumed by the frontend via `src/api/profile.ts` → `src/hooks/useProfileSwitch.ts`, called from `DashboardLayout`'s instructor switch card, `InstructorLayout`'s "back to learner" action, and `SettingsPage`'s "Go to teaching area" action |
 | GET | `/api/v1/learner-profile/me` | Authenticated | Get the caller's own learner profile (self-resolved, no id in URL); response includes `onboardingCompleted` and `onboardingCompletedAt` |
 | PATCH | `/api/v1/learner-profile/me` | Authenticated | Update `displayName`, `bio`, `profileImageUrl` on the caller's own learner profile |
 | POST | `/api/v1/learner-profile/me/onboarding/complete` | Authenticated | Mark the caller's learner onboarding complete; idempotent — repeat calls keep the first `onboardingCompletedAt` and return `200` unchanged; does not touch learning preferences |
@@ -29,6 +29,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | POST | `/api/v1/instructor-profile/request` | Authenticated | Submit an instructor profile request (status starts `PENDING`) |
 | GET | `/api/v1/instructor-profile/me` | Authenticated | Get the caller's own instructor profile |
 | PATCH | `/api/v1/instructor-profile/me` | INSTRUCTOR | Update `bio`, `expertise`, `experience`, `motivation` on the caller's own instructor profile (self-resolved, no id in URL) |
+| POST | `/api/v1/learner-profile/me/image` | Authenticated | Upload the caller's own learner profile image to Cloudinary (`multipart/form-data`, field name `file`); self-resolved, no id in URL |
 
 **Onboarding completion field:** `learnerOnboardingCompleted` (boolean, `GET /api/v1/auth/me`) and `onboardingCompleted` / `onboardingCompletedAt` (`GET`/`PATCH`/`POST .../onboarding/complete` on `/api/v1/learner-profile/me`) are the only places the onboarding flag is exposed. The underlying `LearnerProfile.onboardingCompleted` column has a DB-level default (`columnDefinition = "boolean default false"`), required for Hibernate `ddl-auto: update` to add a `NOT NULL` boolean column onto an already-populated Postgres `learner_profiles` table.
 
@@ -83,6 +84,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | PATCH | `/api/v1/instructor/courses/{courseId}` | INSTRUCTOR; ownership-checked | Update course fields |
 | POST | `/api/v1/instructor/courses/{courseId}/publish` | INSTRUCTOR; ownership-checked | `DRAFT → PUBLISHED` |
 | POST | `/api/v1/instructor/courses/{courseId}/archive` | INSTRUCTOR; ownership-checked | `DRAFT`/`PUBLISHED → ARCHIVED` |
+| POST | `/api/v1/instructor/courses/{courseId}/thumbnail` | INSTRUCTOR; ownership-checked | Upload a course thumbnail to Cloudinary (`multipart/form-data`, field name `file`); `403` for another instructor's course |
 
 ## Instructor Content Builder
 
@@ -119,9 +121,31 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 |---|---|---|---|
 | GET | `/api/v1/learner/courses/{courseId}/quizzes` | LEARNER; enrollment-gated | List `PUBLISHED` quizzes for an enrolled course (no `isCorrect` exposed) |
 | GET | `/api/v1/learner/quizzes/{quizId}` | LEARNER; enrollment-gated | Get learner-safe quiz detail (no `isCorrect` exposed) |
-| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt |
+| POST | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | Start or idempotently resume an `IN_PROGRESS` attempt; creates a new attempt (retake) if the existing one is already `SUBMITTED` |
 | POST | `/api/v1/learner/quiz-attempts/{attemptId}/submit` | LEARNER; own attempt only | Submit answers, compute score and pass/fail; 409 if already submitted |
 | GET | `/api/v1/learner/quiz-attempts/{attemptId}` | LEARNER; own attempt only | Retrieve a submitted attempt's result with per-question correctness |
+| GET | `/api/v1/learner/quizzes/{quizId}/attempts` | LEARNER; enrollment-gated | List the caller's own attempts for a quiz, most-recent-first; `SUBMITTED` attempts include per-question results, `IN_PROGRESS` attempts never expose correctness; no pagination |
+
+## Live Sessions
+
+| Method | Path | Access | Purpose |
+|---|---|---|---|
+| POST | `/api/v1/instructor/courses/{courseId}/live-sessions` | INSTRUCTOR; ownership-checked (`403` for another instructor's course) | Schedule a session for an owned course; generates a Jitsi room (`https://meet.jit.si/learnova-live-<secure-random>`) and returns it in the response |
+| GET | `/api/v1/instructor/live-sessions` | INSTRUCTOR | List the caller's own sessions across all owned courses |
+| POST | `/api/v1/instructor/live-sessions/{sessionId}/cancel` | INSTRUCTOR; own session only | Cancel a `SCHEDULED` session (`status → CANCELLED`) |
+| GET | `/api/v1/learner/live-sessions/upcoming` | LEARNER | List upcoming sessions for courses where the caller has an ACTIVE or COMPLETED enrollment; response omits `meetingUrl`/`meetingRoomName` |
+| POST | `/api/v1/learner/live-sessions/{sessionId}/join` | LEARNER; enrollment-gated | Validate enrollment (`404` if not enrolled) and session status (`409` if cancelled), record attendance idempotently, and return the Jitsi meeting URL — **the only response that ever includes `meetingUrl`** |
+
+> v1 is Jitsi-only (`MeetingProvider.JITSI`). No `/leave` endpoint exists. No
+> recurring sessions, reminders, or past-session history endpoint exist.
+
+## Certificates
+
+| Method | Path | Access | Purpose |
+|---|---|---|---|
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment (`201` first issue, `200` idempotent repeat; `409` if not completed) |
+| GET | `/api/v1/learner/certificates` | LEARNER; self-scoped | List the caller's own certificates |
+| GET | `/api/v1/learner/certificates/{certificateId}` | LEARNER; self-scoped | Get one certificate owned by the caller (`404` if not found or not owned) |
 
 ## Admin
 

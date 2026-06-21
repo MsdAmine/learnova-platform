@@ -164,6 +164,9 @@ The palette divides into two zones. The Forest: Salem and Azure, deep and purpos
 ### Secondary
 - **Scholar Blue** (#3C57B8): Azure. Reserved for data-heavy contexts: analytics panels, learning metrics charts, informational callouts, secondary highlights in dashboards. Never a button color outside analytics-specific UI. OKLCH canonical: oklch(43% 0.18 264).
 
+### Accent (purple/blue, restrained)
+- **Indigo accent** (`--color-accent-primary` #5B5FE3, plus `-hover`/`-active`/`-soft`/`-border`/`-text` companions): a small interactive-accent family added per `docs/design/brand-refresh-purple-blue-spec.md` (Phase 1 + 2, shipped and visually approved). Used for active/selected surfaces (dashboard sidebar nav, Course Player active tab and selected lesson row) and an `accent` Badge variant (category tags, "In progress", "Draft" status). Never a filled-button color and never the focus-ring color; Salem keeps both of those roles unchanged. `--color-learning`/`--color-learning-soft` are aliases of Azure/Azure-50 for learning-metric contexts, not a third blue.
+
 ### Tertiary
 - **Alert Ember** (#FF7A59): Coral. Sparing accent for warning states, high-priority notifications, active streak indicators, and CTA emphasis in marketing contexts. Appears only in status-bearing contexts on product surfaces, never decoratively. OKLCH canonical: oklch(67% 0.17 34).
 
@@ -291,8 +294,13 @@ The primary browsable unit. Appears in catalog grids and "continue learning" das
 ### Progress Bars
 
 - **Track:** Surface-elevated (#F1F5F9), 4px height, radius-full.
-- **Fill:** Salem (#032117) for learning progress; Scholar Blue (#3C57B8) for analytics and metrics views.
+- **Fill:** Salem (#032117) for learning progress; Scholar Blue (#3C57B8) for analytics and metrics views, via the `ProgressBar` component's `learning` variant.
 - **No label inside the bar.** Percentage text lives below, in Caption type.
+
+### Badges
+
+- `Badge` variants: `default` (neutral), `salem` (success/active/enrolled), `coral` (warning/notification), `anzac` (achievement/completion), `azure` (informational/analytics), `accent` (in-progress/pending/info — purple/blue refresh, distinct from azure and salem, never used for achievement).
+- Selected learning, category, draft, and pending states may use the `accent` variant; achievement and completion states stay on `anzac`/`salem`.
 
 ## 6. Do's and Don'ts
 
@@ -321,3 +329,4 @@ The primary browsable unit. Appears in catalog grids and "continue learning" das
 - **Don't** use the hero-metric template: big number, small label, supporting stat, gradient accent. It is the SaaS cliché that signals AI output immediately.
 - **Don't** write em dashes in UI copy. Use commas, colons, semicolons, or periods instead.
 - **Don't** use Salem as an ambient background on product surfaces. It is a full-bleed decision on brand pages, not a dashboard color.
+- **Don't** stack the indigo accent and Salem on the same component, or use the accent on more than one "active" indicator per view. The one documented exception (Course Player's active tab plus selected lesson row, which describe different hierarchy levels) is narrow and is not grounds for adding further simultaneous accent indicators elsewhere — see `docs/design/brand-refresh-purple-blue-spec.md` §0.

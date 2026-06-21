@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/learner-profile")
@@ -33,6 +34,14 @@ public class LearnerProfileController {
             @Valid @RequestBody LearnerProfileUpdateRequest request
     ) {
         return learnerProfileService.updateMyProfile(currentUser, request);
+    }
+
+    @PostMapping("/me/image")
+    public LearnerProfileResponse uploadMyProfileImage(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return learnerProfileService.uploadProfileImage(currentUser, file);
     }
 
     @PostMapping("/me/onboarding/complete")

@@ -9,62 +9,20 @@ import { useEnrollments } from '../../../hooks/useEnrollments';
 import { enrollmentToCourse } from '../../../api/enrollments';
 import type { Course } from '../../../components/dashboard/courseCardUtils';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-interface DayActivity {
-  label: string;
-  active: boolean;
-}
-
-// ── Local placeholder data ──────────────────────────────────────────────────────
-// Weekly activity has no backend source yet. Kept as a static local placeholder
-// so the page structure is preserved; replace once a learning-activity endpoint
-// exists. Not derived from real enrollments.
-const WEEK_ACTIVITY: DayActivity[] = [
-  { label: 'M', active: true  },
-  { label: 'T', active: true  },
-  { label: 'W', active: false },
-  { label: 'T', active: true  },
-  { label: 'F', active: false },
-  { label: 'S', active: false },
-  { label: 'S', active: false },
-];
-
 // ── Sub-components ────────────────────────────────────────────────────────────
-
-function WeekStrip({ days }: { days: DayActivity[] }) {
-  const activeDays = days.filter(d => d.active).length;
-  return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-body-sm font-medium text-text-secondary">This week</span>
-        <span className="text-caption text-text-secondary">{activeDays} of 7 days active</span>
-      </div>
-      <div className="flex items-center gap-2" aria-hidden="true">
-        {days.map((day, i) => (
-          <div key={i} className="flex flex-col items-center gap-1.5 w-8 sm:w-9">
-            <div
-              className={`w-7 h-7 rounded-full ${
-                day.active ? 'bg-salem' : 'bg-surface-elevated'
-              }`}
-            />
-            <span className="text-caption text-text-secondary">{day.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function InProgressRow({ course }: { course: Course }) {
   return (
     <li className="px-5 py-4">
       <div className="flex items-start justify-between gap-4 mb-2.5">
         <div className="min-w-0 flex-1">
-          <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-0.5">
+          <h3 className="text-body-sm font-semibold text-text-primary line-clamp-1 mb-1">
             {course.title}
           </h3>
-          <p className="text-caption text-text-secondary">{course.instructor}</p>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="accent">In progress</Badge>
+            <p className="text-caption text-text-secondary">{course.instructor}</p>
+          </div>
         </div>
         <Link
           to={`/dashboard/courses/${course.id}`}
@@ -186,10 +144,7 @@ export default function ProgressPage() {
             </span>
           </div>
 
-          {/* 3. Weekly activity strip (local placeholder) ───────────────── */}
-          <WeekStrip days={WEEK_ACTIVITY} />
-
-          {/* 4. In progress ─────────────────────────────────────────────── */}
+          {/* 3. In progress ─────────────────────────────────────────────── */}
           {inProgress.length > 0 && (
             <section className="mb-6" aria-label="In progress courses">
               <h2 className="text-body-sm font-medium text-text-secondary mb-3">
@@ -203,7 +158,7 @@ export default function ProgressPage() {
             </section>
           )}
 
-          {/* 5. Completed ───────────────────────────────────────────────── */}
+          {/* 4. Completed ───────────────────────────────────────────────── */}
           {completed.length > 0 && (
             <section className="mb-6" aria-label="Completed courses">
               <h2 className="text-body-sm font-medium text-text-secondary mb-3">
@@ -214,16 +169,16 @@ export default function ProgressPage() {
                   <CompletedRow key={course.id} course={course} />
                 ))}
               </ul>
-              <button
-                type="button"
+              <Link
+                to="/dashboard/certificates"
                 className="flex items-center gap-1 text-body-sm font-medium text-salem min-h-[44px] rounded-sm hover:text-salem-400 motion-safe:transition-colors duration-fast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
               >
                 View certificates <ArrowRight size={13} aria-hidden="true" />
-              </button>
+              </Link>
             </section>
           )}
 
-          {/* 6. Not started ─────────────────────────────────────────────── */}
+          {/* 5. Not started ─────────────────────────────────────────────── */}
           {notStarted.length > 0 && (
             <section className="mb-6" aria-label="Not started courses">
               <h2 className="text-body-sm font-medium text-text-secondary mb-3">

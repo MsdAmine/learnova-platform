@@ -1,4 +1,10 @@
 import api from './axios';
+import type { ProfileType, ProfileSwitchResponse } from '../types/profile';
+
+export async function switchActiveProfile(profileType: ProfileType): Promise<ProfileSwitchResponse> {
+  const { data } = await api.post<ProfileSwitchResponse>('/api/v1/profile/switch', { profileType });
+  return data;
+}
 
 export interface LearnerProfileResponse {
   id: number;
@@ -54,6 +60,13 @@ export async function updateMyLearnerProfile(
 
 export async function completeOnboarding(): Promise<LearnerProfileResponse> {
   const { data } = await api.post<LearnerProfileResponse>('/api/v1/learner-profile/me/onboarding/complete');
+  return data;
+}
+
+export async function uploadLearnerProfileImage(file: File): Promise<LearnerProfileResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const { data } = await api.post<LearnerProfileResponse>('/api/v1/learner-profile/me/image', formData);
   return data;
 }
 

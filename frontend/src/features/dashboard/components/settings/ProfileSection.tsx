@@ -1,7 +1,8 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from 'react';
 import {
   getMyLearnerProfile,
   updateMyLearnerProfile,
+  uploadLearnerProfileImage,
   type LearnerProfileResponse,
 } from '../../../../api/profile';
 import { Avatar } from '../../../../components/ui/Avatar';
@@ -11,6 +12,31 @@ import { FormField, Input } from '../../../../components/ui/Input';
 import type { ProfileType } from '../../../../types/profile';
 import { SettingsCard, InfoRow } from './shared';
 import { textareaInputClass, profileVariant, profileLabel, type SettingsUser } from './settingsHelpers';
+
+const MAX_PROFILE_IMAGE_BYTES = 2 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+function validateImageFile(file: File, maxBytes: number): string | null {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return 'Please choose a JPG, PNG, or WEBP image.';
+  }
+  if (file.size > maxBytes) {
+    return `Image must be ${Math.round(maxBytes / (1024 * 1024))}MB or smaller.`;
+  }
+  return null;
+}
+
+function extractErrorMessage(err: unknown, fallback: string): string {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'response' in err &&
+    typeof (err as { response?: { data?: { message?: string } } }).response?.data?.message === 'string'
+  ) {
+    return (err as { response: { data: { message: string } } }).response.data.message;
+  }
+  return fallback;
+}
 
 interface LearnerProfileFormErrors {
   displayName?: string;
@@ -33,6 +59,9 @@ export function ProfileSection({ user, activeProfile }: ProfileSectionProps) {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -91,6 +120,29 @@ export function ProfileSection({ user, activeProfile }: ProfileSectionProps) {
     }
   }
 
+  async function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+
+    const hintError = validateImageFile(file, MAX_PROFILE_IMAGE_BYTES);
+    if (hintError) {
+      setImageUploadError(hintError);
+      return;
+    }
+
+    setImageUploadError(null);
+    setIsUploadingImage(true);
+    try {
+      const updated = await uploadLearnerProfileImage(file);
+      setProfile(updated);
+    } catch (err) {
+      setImageUploadError(extractErrorMessage(err, 'We could not upload your photo. Please try again.'));
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
   const displayLabel = profile?.displayName || user.fullName || user.email;
 
   return (
@@ -106,6 +158,29 @@ export function ProfileSection({ user, activeProfile }: ProfileSectionProps) {
               <Badge variant={profileVariant(activeProfile)}>{profileLabel(activeProfile)}</Badge>
             </div>
           )}
+          <div className="mt-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              aria-label="Choose profile image"
+              onChange={handleImageChange}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              loading={isUploadingImage}
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Upload profile photo"
+            >
+              Upload photo
+            </Button>
+            <p className="text-caption text-text-muted mt-1">JPG, PNG, or WEBP. Max 2MB.</p>
+            {imageUploadError && (
+              <p className="text-caption text-error mt-1" role="alert">{imageUploadError}</p>
+            )}
+          </div>
         </div>
       </div>
 

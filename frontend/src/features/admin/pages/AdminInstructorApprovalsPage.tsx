@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Badge } from '../../../components/ui/Badge';
-import { Button } from '../../../components/ui/Button';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
-import { Bone } from '../../../components/common/skeletons/Bone';
+import { InstructorRequestCard } from '../components/InstructorRequestCard';
+import { InstructorRequestRowSkeleton } from '../components/InstructorRequestRowSkeleton';
 import {
   getPendingInstructorProfiles,
   approveInstructorProfile,
@@ -10,48 +9,9 @@ import {
   type InstructorProfileReviewItem,
 } from '../../../api/adminInstructorProfiles';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function formatRelativeDate(isoString: string): string {
-  const date = new Date(isoString);
-  const diffMs = Date.now() - date.getTime();
-  const diffMinutes = Math.floor(diffMs / 60_000);
-  const diffHours = Math.floor(diffMs / 3_600_000);
-  const diffDays = Math.floor(diffMs / 86_400_000);
-  if (diffMinutes < 1) return 'just now';
-  if (diffMinutes < 60) return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`;
-  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
-  if (diffDays < 30) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-}
-
 function getHttpStatus(err: unknown): number | undefined {
   return (err as { response?: { status?: number } })?.response?.status;
 }
-
-// ── Skeleton ──────────────────────────────────────────────────────────────────
-
-function RequestRowSkeleton() {
-  return (
-    <div className="bg-surface border border-border-default rounded-lg p-4">
-      <div className="flex items-start justify-between gap-3 mb-2">
-        <Bone className="h-4 w-40" />
-        <Bone className="h-4 w-16 rounded-full" />
-      </div>
-      <Bone className="h-3 w-56 mb-4" />
-      <Bone className="h-3 w-20 mb-1" />
-      <Bone className="h-4 w-full mb-2" />
-      <Bone className="h-3 w-16 mb-1" />
-      <Bone className="h-12 w-full mb-4" />
-      <div className="flex justify-end gap-2">
-        <Bone className="h-11 w-20 rounded-md" />
-        <Bone className="h-11 w-16 rounded-md" />
-      </div>
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AdminInstructorApprovalsPage() {
   const [isLoading, setIsLoading] = useState(true); // true on first render; set false in async callback
@@ -120,6 +80,20 @@ export default function AdminInstructorApprovalsPage() {
 
   function removeRequest(profileId: number) {
     setRequests(prev => prev.filter(r => r.id !== profileId));
+  }
+
+  function registerApproveTrigger(profileId: number, el: HTMLButtonElement | null) {
+    if (el) approveTriggerRefs.current.set(profileId, el);
+    else approveTriggerRefs.current.delete(profileId);
+  }
+
+  function registerRejectTrigger(profileId: number, el: HTMLButtonElement | null) {
+    if (el) rejectTriggerRefs.current.set(profileId, el);
+    else rejectTriggerRefs.current.delete(profileId);
+  }
+
+  function handleReasonChange(profileId: number, value: string) {
+    setRejectReasonById(prev => ({ ...prev, [profileId]: value }));
   }
 
   // ── Actions ────────────────────────────────────────────────────────────────
@@ -234,7 +208,7 @@ export default function AdminInstructorApprovalsPage() {
 
       {isLoading ? (
         <div aria-hidden="true" className="flex flex-col gap-3">
-          {[0, 1, 2, 3].map(i => <RequestRowSkeleton key={i} />)}
+          {[0, 1, 2, 3].map(i => <InstructorRequestRowSkeleton key={i} />)}
         </div>
       ) : loadError ? (
         <StatePanel message={loadError} onRetry={handleRetry} />
@@ -260,187 +234,27 @@ export default function AdminInstructorApprovalsPage() {
             />
           ) : (
             <ul role="list" className="flex flex-col gap-3">
-              {requests.map(item => {
-                const applicantName = item.fullName || item.email;
-                const isActionPending = actionPendingId === item.id;
-                const isRejecting = rejectingId === item.id;
-                const isConfirmingApprove = confirmingApproveId === item.id;
-                const rawReason = rejectReasonById[item.id] ?? '';
-                const reasonValid = rawReason.trim().length > 0 && rawReason.length <= 1000;
-                const actionError = actionErrorById[item.id];
-
-                return (
-                  <li
-                    key={item.id}
-                    aria-label={`Instructor request from ${applicantName}`}
-                    className="bg-surface border border-border-default rounded-lg p-4"
-                  >
-                    {/* Identity row: name + status badge */}
-                    <div className="flex items-start justify-between gap-3 mb-1">
-                      <p className="text-body-sm font-semibold text-text-primary line-clamp-1">
-                        {applicantName}
-                      </p>
-                      <Badge variant="default">Pending</Badge>
-                    </div>
-
-                    {/* Meta line: email + request date */}
-                    <p className="text-caption text-text-secondary mb-3">
-                      {item.email}
-                      {' · Requested '}
-                      {formatRelativeDate(item.requestedAt)}
-                    </p>
-
-                    {/* Application details */}
-                    <dl className="space-y-1.5">
-                      {item.expertise && (
-                        <div>
-                          <dt className="text-caption font-medium text-text-primary">Expertise</dt>
-                          <dd className="text-body-sm text-text-secondary">{item.expertise}</dd>
-                        </div>
-                      )}
-                      {item.bio && (
-                        <div>
-                          <dt className="text-caption font-medium text-text-primary">Bio</dt>
-                          <dd className="text-body-sm text-text-secondary">{item.bio}</dd>
-                        </div>
-                      )}
-                      {item.experience && (
-                        <div>
-                          <dt className="text-caption font-medium text-text-primary">Experience</dt>
-                          <dd className="text-body-sm text-text-secondary">{item.experience}</dd>
-                        </div>
-                      )}
-                      {item.motivation && (
-                        <div>
-                          <dt className="text-caption font-medium text-text-primary">Motivation</dt>
-                          <dd className="text-body-sm text-text-secondary">{item.motivation}</dd>
-                        </div>
-                      )}
-                    </dl>
-
-                    {/* Inline reject reason field */}
-                    {isRejecting && (
-                      <div className="mt-3">
-                        <label
-                          htmlFor={`reject-reason-${item.id}`}
-                          className="block text-caption font-medium text-text-primary mb-1"
-                        >
-                          Reason for rejection (required)
-                        </label>
-                        <textarea
-                          id={`reject-reason-${item.id}`}
-                          ref={rejectTextareaRef}
-                          value={rawReason}
-                          onChange={e =>
-                            setRejectReasonById(prev => ({ ...prev, [item.id]: e.target.value }))
-                          }
-                          disabled={isActionPending}
-                          aria-describedby={`reject-reason-${item.id}-hint`}
-                          maxLength={1000}
-                          rows={3}
-                          placeholder="Explain why this request is being rejected"
-                          className="w-full bg-surface text-text-primary text-body border border-border-default rounded-md py-3 px-4 placeholder:text-text-muted focus:outline-none focus:border-salem focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-salem disabled:bg-surface-elevated disabled:text-text-muted resize-none transition-colors duration-fast"
-                        />
-                        <p
-                          id={`reject-reason-${item.id}-hint`}
-                          className="text-caption text-text-muted mt-1"
-                        >
-                          The applicant may see this reason. {rawReason.length}/1000 characters.
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Inline approve confirmation */}
-                    {isConfirmingApprove && (
-                      <p className="text-body-sm text-text-primary mt-3">
-                        Approve this instructor request?
-                      </p>
-                    )}
-
-                    {/* Row-level action error */}
-                    {actionError && (
-                      <p role="alert" className="text-caption text-error mt-2">
-                        {actionError}
-                      </p>
-                    )}
-
-                    {/* Action buttons */}
-                    {isRejecting ? (
-                      <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          loading={isActionPending}
-                          disabled={!reasonValid || isActionPending}
-                          onClick={() => handleReject(item)}
-                          aria-label={`Confirm rejection of ${applicantName}`}
-                        >
-                          Confirm rejection
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => cancelReject(item.id)}
-                          disabled={isActionPending}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : isConfirmingApprove ? (
-                      <div className="flex items-center gap-2 mt-3 flex-wrap">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          loading={isActionPending}
-                          disabled={isActionPending}
-                          onClick={() => handleApprove(item)}
-                          aria-label={`Approve instructor request from ${applicantName}`}
-                        >
-                          Approve instructor
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => cancelApprove(item.id)}
-                          disabled={isActionPending}
-                          aria-label={`Cancel approval of instructor request from ${applicantName}`}
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-end gap-2 mt-3 flex-wrap">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          ref={(el) => {
-                            if (el) approveTriggerRefs.current.set(item.id, el);
-                            else approveTriggerRefs.current.delete(item.id);
-                          }}
-                          onClick={() => openApproveConfirm(item.id)}
-                          disabled={isActionPending}
-                          aria-label={`Approve instructor request from ${applicantName}`}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          ref={(el) => {
-                            if (el) rejectTriggerRefs.current.set(item.id, el);
-                            else rejectTriggerRefs.current.delete(item.id);
-                          }}
-                          onClick={() => openRejectForm(item.id)}
-                          disabled={isActionPending}
-                          aria-label={`Reject instructor request from ${applicantName}`}
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
+              {requests.map(item => (
+                <InstructorRequestCard
+                  key={item.id}
+                  item={item}
+                  isActionPending={actionPendingId === item.id}
+                  isRejecting={rejectingId === item.id}
+                  isConfirmingApprove={confirmingApproveId === item.id}
+                  rawReason={rejectReasonById[item.id] ?? ''}
+                  actionError={actionErrorById[item.id]}
+                  rejectTextareaRef={rejectTextareaRef}
+                  onReasonChange={handleReasonChange}
+                  onOpenApproveConfirm={openApproveConfirm}
+                  onCancelApprove={cancelApprove}
+                  onApprove={handleApprove}
+                  onOpenRejectForm={openRejectForm}
+                  onCancelReject={cancelReject}
+                  onReject={handleReject}
+                  registerApproveTrigger={registerApproveTrigger}
+                  registerRejectTrigger={registerRejectTrigger}
+                />
+              ))}
             </ul>
           )}
         </>

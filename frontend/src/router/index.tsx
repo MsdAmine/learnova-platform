@@ -37,6 +37,7 @@ const InstructorLayout             = lazy(() => import('../features/instructor/c
 const InstructorCoursesPage        = lazy(() => import('../features/instructor/pages/InstructorCoursesPage'));
 const InstructorCourseContentPage  = lazy(() => import('../features/instructor/pages/InstructorCourseContentPage'));
 const InstructorQuizzesPage        = lazy(() => import('../features/instructor/pages/InstructorQuizzesPage'));
+const InstructorLiveSessionsPage   = lazy(() => import('../features/instructor/pages/InstructorLiveSessionsPage'));
 
 const AdminLayout                    = lazy(() => import('../features/admin/components/AdminLayout'));
 const AdminInstructorApprovalsPage   = lazy(() => import('../features/admin/pages/AdminInstructorApprovalsPage'));
@@ -242,6 +243,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<DashboardPageSkeleton />}>
                 <InstructorQuizzesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'live-sessions',
+            element: (
+              <Suspense fallback={<DashboardPageSkeleton />}>
+                <InstructorLiveSessionsPage />
               </Suspense>
             ),
           },

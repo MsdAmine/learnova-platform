@@ -9,6 +9,7 @@ public record QuizAttemptResponse(
         Long id,
         Long quizId,
         QuizAttemptStatus status,
+        Instant startedAt,
         Integer earnedPoints,
         Integer totalPoints,
         Integer scorePercentage,
