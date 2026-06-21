@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Award } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { Button } from '../../../components/ui/Button';
@@ -30,8 +30,19 @@ function formatIssuedAt(isoString: string): string {
 
 export default function LearnerDashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<FilterValue>('all');
   const { enrollments, loading, error, reload } = useEnrollments();
+
+  // Entry-point gate: a learner who hasn't completed onboarding lands here
+  // (e.g. via a stored session) and is redirected once. This is scoped to
+  // the dashboard index only, not a global route guard — see onboarding
+  // report for the documented limitation.
+  useEffect(() => {
+    if (user?.learnerOnboardingCompleted === false) {
+      navigate('/onboarding', { replace: true });
+    }
+  }, [user, navigate]);
 
   const [certificates, setCertificates] = useState<CertificateResponse[]>([]);
   const [certsLoading, setCertsLoading] = useState(true);

@@ -27,11 +27,14 @@ profile, with instructor access gated behind an admin approval step.
 
 ## Target Users
 
-**Learner** — browses the public course catalog, enrolls in published
-courses, studies lessons at their own pace, takes quizzes and receives a
-score, retakes quizzes and reviews full attempt history, saves courses to a
-wishlist for later, edits their own profile, and can issue and view a
-certificate of completion once a course reaches 100% progress.
+**Learner** — completes a short onboarding wizard on first dashboard visit
+(learning goal, pace, preferred categories, or skips it), browses the public
+course catalog, enrolls in published courses, studies lessons at their own
+pace, takes quizzes and receives a score, retakes quizzes and reviews full
+attempt history, saves courses to a wishlist for later, edits their own
+profile (including the same learning preferences captured during onboarding),
+and can issue and view a certificate of completion once a course reaches 100%
+progress.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -48,7 +51,7 @@ implemented; there is no broader user-management console.
 |---|---|
 | `auth` | Registration, login, JWT issuance, `/auth/me` |
 | `user` | `User` entity, roles, account status, role seeding |
-| `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing |
+| `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing, learning preferences, onboarding-completion tracking |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
 | `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
@@ -91,6 +94,7 @@ where applicable, a wired frontend screen). Each is documented in detail in
   multipart uploads validated for MIME type, size, and non-empty content,
   with the prior Cloudinary asset deleted on replacement when the public ID
   changes (see `core-workflows.md` §12–13)
+- Learner onboarding (learning preferences capture or skip, with completion tracking that gates a one-time dashboard redirect) (see `core-workflows.md` §14)
 
 ## Current Limitations
 
@@ -117,7 +121,7 @@ These areas are intentionally **not** presented as complete:
   for both the learner profile image and instructor course thumbnail flows;
   Cloudinary dashboard (web console) verification was not performed.
 - **Frontend automated testing is minimal** — a Vitest + React Testing
-  Library + jsdom harness now exists (27 tests covering `useProfileSwitch`,
+  Library + jsdom harness now exists (covering `useProfileSwitch`,
   the dashboard's certificate section, the `learnerQuizzes` API client, the
   `CoursePlayer` quiz history UI extracted into `QuizCard`/`AttemptHistory`,
   and the `liveSessions` API client / `LiveSessionsPage` UI), but there is no
@@ -129,6 +133,10 @@ These areas are intentionally **not** presented as complete:
   card, the instructor area's "back to learner" action, and `SettingsPage`'s
   "Go to teaching area" action) call `POST /api/v1/profile/switch` through
   the shared `useProfileSwitch` hook.
+- **No recommendation engine or personalization** — onboarding and Settings
+  capture learning preferences (goal, level, weekly minutes, categories), but
+  no feature currently reads them back to recommend courses, send reminders,
+  or drive any analytics. They exist for future personalization only.
 
 A full breakdown of known gaps is in `docs/report/limitations.md`.
 

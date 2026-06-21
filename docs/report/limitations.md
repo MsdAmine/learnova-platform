@@ -120,6 +120,14 @@ limitations:
   save/unsave controls; the wishlist action exists only on the course detail
   page and the saved-courses dashboard page.
 
+## Onboarding and learning preferences
+
+- **No recommendation engine** — learning preferences (`learningGoal`, `preferredLevel`, `weeklyGoalMinutes`, `preferredCategoryIds`) are captured during onboarding and editable later in Settings, but nothing in the backend or frontend currently reads these values back to recommend, rank, or filter courses. They are stored for future personalization, not used by any feature today.
+- **No reminder/notification scheduling** — `weeklyGoalMinutes` is stored but no reminder, email, or notification system is wired to it.
+- **No personalization analytics** — there is no dashboard or report surfacing aggregate learner preference data to instructors or admins.
+- **Skip-for-now does not save preferences** — choosing "Skip for now" in the onboarding wizard marks onboarding complete (`POST /api/v1/learner-profile/me/onboarding/complete`) without calling the preferences endpoint at all; only "Finish onboarding" (the last step) saves preferences via `PUT /api/v1/learner-profile/me/preferences`.
+- **Onboarding redirect is page-scoped, not a router guard** — `LearnerDashboard` (the `/dashboard` index page) redirects to `/onboarding` from a `useEffect` when `learnerOnboardingCompleted === false`. This is not implemented as a route-level guard comparable to `ProtectedRoute`/`InstructorRoute`/`AdminRoute`, so it only fires when the dashboard index route itself renders.
+
 ## Profiles and admin
 
 - The profile switcher is wired end-to-end across all three UI entry

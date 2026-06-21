@@ -78,7 +78,7 @@ export default function RegisterPage() {
     try {
       const { token, user } = await registerUser(fullName.trim(), email.trim(), password);
       login(token, user);
-      navigate('/dashboard');
+      navigate(user.learnerOnboardingCompleted === false ? '/onboarding' : '/dashboard');
     } catch (err) {
       if (isAxiosError(err)) {
         const status = err.response?.status;

@@ -8,6 +8,7 @@ interface User {
   roles: string[];
   availableProfiles: ProfileType[];
   instructorApprovalStatus: string | null;
+  learnerOnboardingCompleted: boolean | null;
 }
 
 export interface LoginResult {

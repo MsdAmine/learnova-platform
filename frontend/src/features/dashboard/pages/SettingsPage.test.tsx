@@ -52,6 +52,8 @@ const PROFILE: LearnerProfileResponse = {
   displayName: 'Jane Doe',
   bio: null,
   profileImageUrl: null,
+  onboardingCompleted: true,
+  onboardingCompletedAt: '2026-01-01T00:00:00Z',
   createdAt: '2026-01-01T00:00:00Z',
   updatedAt: '2026-01-01T00:00:00Z',
 };
@@ -154,6 +156,9 @@ describe('SettingsPage instructor profile editing', () => {
       .mockResolvedValueOnce(updatedProfile);
 
     render(<MemoryRouter><SettingsPage /></MemoryRouter>);
+
+    // Settings is a sectioned shell: activate the Instructor section first.
+    fireEvent.click(screen.getByRole('button', { name: 'Instructor' }));
 
     expect(await screen.findByText('Current instructor bio')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Edit instructor profile' }));

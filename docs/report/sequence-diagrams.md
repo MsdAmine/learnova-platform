@@ -7,7 +7,7 @@ they are derived from the actual controllers and services under
 `backend/src/main/java`, not from planned or aspirational behavior. They
 complement `docs/report/core-workflows.md` (textual workflow descriptions)
 and `docs/report/class-diagram.md` (domain model) with a call-sequence view
-for the nine flows most relevant to the PFA demo. Internal helper method
+for the ten flows most relevant to the PFA demo. Internal helper method
 calls are omitted in favor of readability; only the participant-to-participant
 calls relevant to each flow are shown.
 
@@ -598,3 +598,59 @@ sequenceDiagram
 - **Edit mode only.** This upload path exists only once a course (and its `courseId`) already exists; course creation remains URL-only for the thumbnail field.
 - **Ownership-gated, same pattern as other course mutations.** A non-owning instructor's upload attempt returns `403`, mirroring the ownership checks on `PATCH /api/v1/instructor/courses/{courseId}` and the section/lesson/quiz endpoints.
 - **Live upload verified with real credentials.** As with the learner profile image flow, manual QA against real Cloudinary credentials (cloud `dnd5pu5me`) confirmed the upload succeeds, persists after reload, and renders on both the public catalog card and the course detail page. Cloudinary dashboard verification (the web console itself) was not performed.
+
+---
+
+## 10. Learner Onboarding
+
+```mermaid
+sequenceDiagram
+    actor Learner
+    participant Dashboard as LearnerDashboard (/dashboard)
+    participant OnbPage as OnboardingPage (/onboarding)
+    participant PrefsCtrl as LearnerProfileController (preferences)
+    participant OnbCtrl as LearnerProfileController (onboarding)
+    participant DB as LearnerProfile/LearningPreference persistence
+
+    Learner->>Dashboard: Open /dashboard after login/register
+    Dashboard->>Dashboard: check user.learnerOnboardingCompleted (from /auth/me)
+
+    alt learnerOnboardingCompleted === false
+        Dashboard->>Learner: redirect (replace) to /onboarding
+        Learner->>OnbPage: Land on onboarding wizard
+        OnbPage->>PrefsCtrl: GET /api/v1/learner-profile/me/preferences
+        PrefsCtrl->>DB: load (or default) preferences
+        DB-->>PrefsCtrl: preferences
+        PrefsCtrl-->>OnbPage: 200 LearningPreferencesResponse
+        OnbPage-->>Learner: render step 1 (goal) -> step 4 (review)
+
+        alt Learner clicks "Finish onboarding"
+            OnbPage->>PrefsCtrl: PUT /api/v1/learner-profile/me/preferences
+            PrefsCtrl->>DB: upsert LearningPreference
+            DB-->>PrefsCtrl: saved
+            OnbPage->>OnbCtrl: POST /api/v1/learner-profile/me/onboarding/complete
+            OnbCtrl->>DB: set onboardingCompleted = true, onboardingCompletedAt = now (first call only)
+            DB-->>OnbCtrl: saved profile
+            OnbCtrl-->>OnbPage: 200 LearnerProfileResponse (onboardingCompleted: true)
+            OnbPage->>Learner: navigate to /dashboard
+        else Learner clicks "Skip for now"
+            Note over OnbPage,OnbCtrl: Preferences endpoint is NOT called on this path
+            OnbPage->>OnbCtrl: POST /api/v1/learner-profile/me/onboarding/complete
+            OnbCtrl->>DB: set onboardingCompleted = true, onboardingCompletedAt = now (first call only)
+            DB-->>OnbCtrl: saved profile
+            OnbCtrl-->>OnbPage: 200 LearnerProfileResponse (onboardingCompleted: true)
+            OnbPage->>Learner: navigate to /dashboard
+        end
+    else learnerOnboardingCompleted === true
+        Dashboard-->>Learner: render dashboard normally (no redirect)
+    end
+
+    Note over Learner,OnbPage: If the learner navigates to /onboarding again after completion,<br/>OnboardingPage shows an "already completed" panel linking back to /dashboard<br/>instead of re-running the wizard.
+```
+
+**Notes:**
+- **Completion is idempotent** — calling `POST /api/v1/learner-profile/me/onboarding/complete` after `onboardingCompleted` is already `true` returns `200` unchanged and does not overwrite the original `onboardingCompletedAt`.
+- **Skip saves nothing** — "Skip for now" deliberately calls only the completion endpoint, never the preferences endpoint, so a learner who skips keeps whatever preferences (or lack thereof) existed before onboarding.
+- **Redirect is page-scoped** — the gate in this diagram lives inside `LearnerDashboard`'s own `useEffect`, not in a router-level guard; it only triggers when the `/dashboard` index route renders.
+- **Settings reuse, not a separate flow** — the `LearningPreferencesSection` on `/dashboard/settings` reads and writes the exact same `GET`/`PUT /api/v1/learner-profile/me/preferences` endpoints shown above; it is the same `LearningPreference` row, just edited from a different screen after onboarding.
+- **DB-default fix** — `LearnerProfile.onboardingCompleted` carries a DB-level default (`columnDefinition = "boolean default false"`), required for Hibernate `ddl-auto: update` to add this `NOT NULL` column to an already-populated `learner_profiles` table.
