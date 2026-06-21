@@ -166,13 +166,13 @@ The right column is pinned at `320px` on desktop. The left column fills remainin
 │ │ ─────────────────────────────────  │  │ Available         [L] [I]      │    │
 │ │ Email            user@email.com    │  │ Roles             [L] [I] [A]  │    │
 │ │ ─────────────────────────────────  │  │                                │    │
-│ │ Profile editing is not available   │  │ Instructor application         │    │
-│ │ yet.                               │  │ ────────────────────────────   │    │
+│ │ Edit profile / Save changes        │  │ Instructor application         │    │
+│ │ (displayName, bio, image URL)      │  │ ────────────────────────────   │    │
 │ │                                    │  │ [state-dependent content]      │    │
 │ │ Learning preferences               │  │                                │    │
 │ │ ─────────────────────────────────  │  │ Account actions                │    │
-│ │ Learning preferences are not       │  │ ────────────────────────────   │    │
-│ │ available yet.                     │  │ [Refresh account data (sec)]   │    │
+│ │ Learning preferences (editable,    │  │ ────────────────────────────   │    │
+│ │ saved to your account)             │  │ [Refresh account data (sec)]   │    │
 │ │                                    │  │ [Sign out (ghost)]             │    │
 │ └────────────────────────────────────┘  └────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────────────────────┘
@@ -334,14 +334,9 @@ A compact, full-width informational card between the page header and the setting
 | Full name | `user.fullName` | "Not set" |
 | Email | `user.email` | none (always present) |
 
-**Read-only notice:** Below the `<dl>`, add:
-```tsx
-<p className="text-caption text-text-muted mt-3">
-  Profile editing is not available yet.
-</p>
-```
+**Account identity is read-only.** Full name (`user.fullName`) and email (`user.email`) are account-identity fields with no self-edit endpoint, so they stay as definition-list rows. A definition list is semantically correct for read-only data and does not mislead assistive technology into expecting interaction. Do not render `Input` components for these two fields.
 
-Do not render `Input` components for these fields. A definition list row is semantically correct for read-only data and does not mislead assistive technology into expecting interaction. When a backend profile update endpoint is added, replace the definition-list rows with `FormField` + `Input` components and a `Button variant="primary" size="sm"` — "Save changes" action (see §10.1).
+**Editable learner profile (shipped).** Below the identity `<dl>`, the section renders the learner's own profile fields — `displayName`, `bio`, and `profileImageUrl` — loaded from `GET /api/v1/learner-profile/me`. A read view shows the current values with an "Edit profile" button; activating it swaps to a `FormField` + `Input` / `<textarea>` form with a `Button` — "Save changes" action that persists via `PATCH /api/v1/learner-profile/me` (self-edit only; no profile id in the URL). Loading, field-validation, and save-error states are handled inline. This resolves the former open decision (§10.1).
 
 ### 5.3 Active Profile and Role Status
 
@@ -526,7 +521,7 @@ Whether to offer resubmission is §10.3.
 
 ### 5.5 Learning Preferences
 
-**Purpose:** Placeholder section for future per-user preferences. No backend persistence exists. No Toggle or Switch component exists in the UI library.
+**Purpose:** Editable per-user preferences (learning goal, preferred level, weekly goal minutes, preferred categories), backed by `GET/PUT /api/v1/learner-profile/me/preferences`. The same `LearningPreference` record is read and written by the onboarding wizard (`/onboarding`) — Settings is the persistent edit surface for whatever the learner set (or skipped) during onboarding.
 
 **Shell:** Same pattern as §5.2. `aria-labelledby="learning-prefs-heading"`.
 
@@ -534,21 +529,9 @@ Whether to offer resubmission is §10.3.
 
 **Description:** "Customize your learning experience."
 
-**Content (v1 placeholder):**
-```tsx
-<div className="mt-4">
-  <p className="text-body-sm text-text-secondary">
-    Learning preferences are not available yet.
-  </p>
-  <p className="text-caption text-text-muted mt-1">
-    Email notifications, course reminders, and pace settings will appear here when available.
-  </p>
-</div>
-```
+**Content:** A form (`LearningPreferencesSection`) with a learning-goal select, preferred-level select, weekly-goal-minutes number input, and a checkbox set of up to 8 preferred categories, each defaulting to "No preference set" / unselected when unset. A "Save preferences" button submits via the preferences endpoint; loading, save-error, and success states are handled inline.
 
-Do not render disabled toggles or checkboxes without a functional persistence path. A visible-but-nonfunctional control is more confusing than an honest placeholder. If local-only storage is acceptable for at least one preference, see §10.2.
-
-**Future shape (for reference only, not for implementation):** When preference endpoints and a Toggle component exist, this section would become a `<dl>` of preference rows, each row pairing a label with a toggle and a `text-caption text-text-muted` helper line.
+No recommendation engine or course filtering currently reads these values back, and no reminder/notification scheduling is wired to `weeklyGoalMinutes` — they are stored for future personalization only. Do not imply either capability exists in any copy added to this section.
 
 ### 5.6 Account Actions
 
@@ -723,7 +706,7 @@ Field values are preserved. The form remains visible. Clear `applyError` on the 
 
 **Buttons vs. links.** All non-navigating actions must use `<button>`. Sign out, "Apply to become an instructor", and "Refresh account data" do not navigate to a new URL and must not use `<a>`.
 
-**Disabled controls.** If any `Input` is rendered as disabled (future editable fields), include a `FormField` `hint` prop explaining why: "Profile editing is not available yet." `FormField` wires `aria-describedby` automatically.
+**Form field hints.** The editable learner-profile fields (`displayName`, `bio`, `profileImageUrl`) use the `FormField` `hint` prop for guidance (e.g. character limits) and the `error` prop for validation messages; `FormField` wires `aria-describedby` automatically. The read-only identity rows (full name, email) are `<dl>` rows, not disabled `Input`s, so no "disabled because…" hint is needed.
 
 **Badge text.** All `Badge` components render visible text. Status is not communicated through color alone. The `Badge` component's `uppercase` CSS transforms text visually; the DOM content retains the case written in JSX, which screen readers announce.
 
@@ -783,18 +766,11 @@ Field values are preserved. The form remains visible. Clear `applyError` on the 
 
 The following items require a decision before or during implementation. None block the spec; each must be resolved before the relevant feature ships.
 
-**1. Profile editing: read-only or editable?**
-The current spec defines name and email as read-only (no update endpoint). Options:
-- **Option A (as specced).** Definition-list rows with a "not available yet" notice. When a backend update endpoint is added, replace rows with `FormField` + `Input` and a `Button variant="primary" size="sm"` — "Save changes".
-- **Option B.** Omit the Profile Information section entirely for v1; add it only when editing is supported. The account overview card still shows name and email.
-Recommended: Option A. The read-only section informs the user of their current identity even without editing.
+**1. Profile editing: read-only or editable? — RESOLVED (shipped).**
+Profile editing is shipped for the learner's own editable fields — `displayName`, `bio`, and `profileImageUrl` — via `GET`/`PATCH /api/v1/learner-profile/me` (self-edit only; no profile id in the URL). The Personal information section (§5.2) shows these in a read view with an "Edit profile" button that swaps to a `FormField` + `Input` form with a "Save changes" action. Account-identity fields — full name and email — remain read-only definition-list rows because no self-edit endpoint exists for them.
 
-**2. Learning preferences: local-only, hidden, or placeholder?**
-Options:
-- **Option A (as specced).** "Learning preferences are not available yet" placeholder. No interactive controls.
-- **Option B.** Store one preference (e.g., an email notification toggle) in `localStorage` only, with a visible "Stored locally on this device" `text-caption text-text-muted` note. No backend required.
-- **Option C.** Hide the section entirely until backend persistence exists.
-Recommended: Option A for v1 unless local-only behavior is genuinely useful. If Option B is chosen, require that a Toggle or accessible Switch component exists in the UI library before implementing the toggle control.
+**2. Learning preferences: local-only, hidden, or placeholder? — RESOLVED (shipped, backend-persisted).**
+Learning preferences are backend-persisted and editable in Settings (§5.5), not a placeholder. The `LearningPreferencesSection` form reads and writes the learner's `LearningPreference` record via the learner-profile preferences endpoint; the onboarding wizard (`/onboarding`) reuses the same record/API, so Settings is the persistent edit surface for whatever was set (or skipped) during onboarding. Caveats that still hold: no recommendation engine or course filtering reads these values back yet, no reminder/notification scheduling is wired to `weeklyGoalMinutes`, and copy must not imply any personalization that does not exist.
 
 **3. Rejected instructor application: resubmission allowed?**
 The spec shows only a rejection message and a contact-support note. Options:
