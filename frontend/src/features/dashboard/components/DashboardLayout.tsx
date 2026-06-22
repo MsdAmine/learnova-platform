@@ -2,6 +2,7 @@ import { type ComponentType, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Compass,
   BookOpen,
   Bookmark,
   TrendingUp,
@@ -29,6 +30,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard',      path: '/dashboard',                end: true  },
+  { icon: Compass,         label: 'Browse courses', path: '/courses',                  end: false },
   { icon: BookOpen,        label: 'My Courses',     path: '/dashboard/courses',        end: false },
   { icon: Bookmark,        label: 'Saved',          path: '/dashboard/saved-courses',  end: false, roleRequired: 'ROLE_LEARNER' },
   { icon: TrendingUp,      label: 'Progress',       path: '/dashboard/progress',       end: false },
