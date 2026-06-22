@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../ui/Button';
 import { cn } from '../../../lib/cn';
+import { useAuth } from '../../../context/AuthContext';
 import logoWhiteUrl from '../../../assets/logo-white.png';
 import logoPrimaryUrl from '../../../assets/logo-primary.png';
 
@@ -10,6 +11,18 @@ const NAV_LINKS = [
   { label: 'How it works',   href: '/#how-it-works' },
   { label: 'About',          href: '/#brand-intro-section' },
 ] as const;
+
+// Mirrors the existing route conventions in router/index.tsx: admin shell
+// entry is /admin/instructor-approvals, instructor shell entry is
+// /instructor/courses, learner home is /dashboard.
+function getAuthenticatedHomeRoute(
+  roles: string[] | undefined,
+  activeProfile: string | null,
+): string {
+  if (roles?.includes('ROLE_ADMIN')) return '/admin/instructor-approvals';
+  if (activeProfile === 'INSTRUCTOR') return '/instructor/courses';
+  return '/dashboard';
+}
 
 // ── Scroll detection via useSyncExternalStore ────────────────────────────────
 // Reads element position on every scroll event; getBoundingClientRect is
@@ -40,6 +53,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ forceSolid = false }: NavbarProps) {
+  const { isAuthenticated, user, activeProfile } = useAuth();
+  const homeRoute = getAuthenticatedHomeRoute(user?.roles, activeProfile);
   const pastHero = useSyncExternalStore(subscribeScroll, getScrollSnap, () => false);
   const scrolled = forceSolid || pastHero;
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -186,7 +201,9 @@ export function Navbar({ forceSolid = false }: NavbarProps) {
               scrolled ? 'focus-visible:outline-salem' : 'focus-visible:outline-white',
             )}
           >
-            <Link to="/login">Login</Link>
+            <Link to={isAuthenticated ? homeRoute : '/login'}>
+              {isAuthenticated ? 'Go to dashboard' : 'Login'}
+            </Link>
           </Button>
 
           {/* Mobile hamburger */}
@@ -287,11 +304,11 @@ export function Navbar({ forceSolid = false }: NavbarProps) {
           ))}
         </nav>
 
-        {/* Login CTA pinned to bottom */}
+        {/* Auth CTA pinned to bottom */}
         <div className="px-8 pb-12 flex-shrink-0">
           <Button variant="inverted" size="md" asChild className="w-full justify-center">
-            <Link to="/login" onClick={closeMobile}>
-              Login
+            <Link to={isAuthenticated ? homeRoute : '/login'} onClick={closeMobile}>
+              {isAuthenticated ? 'Go to dashboard' : 'Login'}
             </Link>
           </Button>
         </div>
