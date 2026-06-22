@@ -227,7 +227,14 @@ export default function LearnerDashboard() {
         ) : error ? (
           <StatePanel message="We could not load your enrollments." onRetry={reload} />
         ) : courses.length === 0 ? (
-          <StatePanel message="You are not enrolled in any courses yet." />
+          <StatePanel
+            message="You are not enrolled in any courses yet."
+            action={
+              <Button variant="secondary" size="sm" asChild>
+                <Link to="/courses">Browse courses</Link>
+              </Button>
+            }
+          />
         ) : filteredCourses.length === 0 ? (
           <p className="text-body-sm text-text-muted py-10 text-center">
             No courses match this filter.
