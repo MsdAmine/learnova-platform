@@ -87,10 +87,12 @@ public class InstructorCourseContentService {
         Section section = resolveSectionForInstructor(instructor, sectionId);
         rejectIfArchived(section.getCourse());
 
-        Lesson lesson = lessonRepository.save(
-                Lesson.builder().title(request.title().trim()).section(section).build());
+        Lesson lesson = Lesson.builder().title(request.title().trim()).section(section).build();
+        applyContent(lesson, request.contentType(), request.textContent(),
+                request.contentUrl(), request.durationSeconds());
+        lessonRepository.save(lesson);
 
-        return new InstructorLessonResponse(lesson.getId(), lesson.getTitle());
+        return toLessonResponse(lesson);
     }
 
     @Transactional
@@ -101,9 +103,11 @@ public class InstructorCourseContentService {
         rejectIfArchived(lesson.getSection().getCourse());
 
         lesson.setTitle(request.title().trim());
+        applyContent(lesson, request.contentType(), request.textContent(),
+                request.contentUrl(), request.durationSeconds());
         lessonRepository.save(lesson);
 
-        return new InstructorLessonResponse(lesson.getId(), lesson.getTitle());
+        return toLessonResponse(lesson);
     }
 
     @Transactional
@@ -182,8 +186,40 @@ public class InstructorCourseContentService {
         List<InstructorLessonResponse> lessons = lessonRepository
                 .findBySectionIdOrderByIdAsc(section.getId())
                 .stream()
-                .map(l -> new InstructorLessonResponse(l.getId(), l.getTitle()))
+                .map(this::toLessonResponse)
                 .toList();
         return new InstructorSectionResponse(section.getId(), section.getTitle(), lessons);
+    }
+
+    private InstructorLessonResponse toLessonResponse(Lesson lesson) {
+        return new InstructorLessonResponse(
+                lesson.getId(),
+                lesson.getTitle(),
+                lesson.getContentType(),
+                lesson.getTextContent(),
+                lesson.getContentUrl(),
+                lesson.getDurationSeconds());
+    }
+
+    /**
+     * Normalizes lesson content onto the entity so the stored row is internally
+     * consistent: TEXT keeps body text and clears the URL; URL-based types keep
+     * the URL and clear the body; a null type clears both. Keeps the learner
+     * renderer simple — at most one populated content field per lesson.
+     */
+    private void applyContent(Lesson lesson, LessonContentType contentType,
+            String textContent, String contentUrl, Integer durationSeconds) {
+        lesson.setContentType(contentType);
+        lesson.setDurationSeconds(durationSeconds);
+        if (contentType == LessonContentType.TEXT) {
+            lesson.setTextContent(textContent == null ? null : textContent.strip());
+            lesson.setContentUrl(null);
+        } else if (contentType != null) {
+            lesson.setContentUrl(contentUrl == null ? null : contentUrl.strip());
+            lesson.setTextContent(null);
+        } else {
+            lesson.setTextContent(null);
+            lesson.setContentUrl(null);
+        }
     }
 }

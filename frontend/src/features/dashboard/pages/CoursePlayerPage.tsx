@@ -13,6 +13,7 @@ import {
   updateLessonProgress,
   type CourseContentResponse,
   type LessonContentResponse,
+  type LessonContentType,
 } from '../../../api/courseContent';
 import {
   listLearnerCourseQuizzes,
@@ -47,6 +48,72 @@ function formatSeconds(s: number): string {
 function formatTimeSpent(s: number): string {
   if (s < 60) return `${s}s spent`;
   return `${Math.floor(s / 60)}m spent`;
+}
+
+function formatDuration(seconds: number): string {
+  const m = Math.round(seconds / 60);
+  if (m < 1) return '< 1 min';
+  return `${m} min`;
+}
+
+// Only http(s) URLs are ever turned into a clickable resource link, so a stored
+// value like "javascript:..." can never become an anchor href.
+function isSafeHttpUrl(value: string | null): value is string {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+const RESOURCE_LABELS: Record<Exclude<LessonContentType, 'TEXT'>, string> = {
+  VIDEO: 'Open video resource',
+  PDF: 'Open PDF resource',
+  LINK: 'Open resource',
+};
+
+// ── Lesson content view ───────────────────────────────────────────────────────
+// Renders the saved lesson body. Text is shown with preserved line breaks (no
+// HTML injection — never dangerouslySetInnerHTML). URL-based content is offered
+// as an external link that opens in a new tab; no third-party iframe embeds.
+
+function LessonContentView({ lesson }: { lesson: LessonContentResponse }) {
+  if (lesson.contentType === 'TEXT' && lesson.textContent && lesson.textContent.trim()) {
+    return (
+      <div className="bg-surface-elevated rounded-md p-4 mb-4">
+        <p className="text-body text-text-primary whitespace-pre-wrap break-words">
+          {lesson.textContent}
+        </p>
+      </div>
+    );
+  }
+
+  if (
+    lesson.contentType &&
+    lesson.contentType !== 'TEXT' &&
+    isSafeHttpUrl(lesson.contentUrl)
+  ) {
+    return (
+      <div className="bg-surface-elevated rounded-md p-6 mb-4 flex flex-col items-start gap-2">
+        <p className="text-body-sm text-text-secondary break-all">{lesson.contentUrl}</p>
+        <Button variant="secondary" size="sm" asChild>
+          <a href={lesson.contentUrl} target="_blank" rel="noopener noreferrer">
+            {RESOURCE_LABELS[lesson.contentType]}
+          </a>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-surface-elevated rounded-md p-6 text-center mb-4">
+      <p className="text-body-sm text-text-secondary">
+        No lesson content has been added yet.
+      </p>
+    </div>
+  );
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -106,16 +173,21 @@ function LessonPanel({
         {lesson.title}
       </h2>
 
-      {lesson.completed ? (
-        <div className="mb-3">
+      <div className="flex items-center gap-3 flex-wrap mb-3">
+        {lesson.completed ? (
           <Badge variant="anzac" className="gap-1">
             <Check size={10} aria-hidden="true" />
             Done
           </Badge>
-        </div>
-      ) : (
-        <p className="text-caption text-text-muted mb-3">Not completed yet</p>
-      )}
+        ) : (
+          <span className="text-caption text-text-muted">Not completed yet</span>
+        )}
+        {lesson.durationSeconds != null && lesson.durationSeconds > 0 && (
+          <span className="text-caption text-text-muted">
+            {formatDuration(lesson.durationSeconds)}
+          </span>
+        )}
+      </div>
 
       {showTimeDetail && (
         <p className="text-caption text-text-secondary mb-3">
@@ -131,11 +203,7 @@ function LessonPanel({
         </p>
       )}
 
-      <div className="bg-surface-elevated rounded-md p-6 text-center mb-4">
-        <p className="text-body-sm text-text-secondary">
-          Lesson content will appear here when lesson materials are available.
-        </p>
-      </div>
+      <LessonContentView lesson={lesson} />
 
       {saveError && (
         <p

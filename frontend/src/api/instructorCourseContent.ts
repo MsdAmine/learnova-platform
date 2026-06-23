@@ -2,9 +2,17 @@ import api from './axios';
 
 // ── Types (mirror backend DTOs exactly) ───────────────────────────────────────
 
+// Mirrors backend LessonContentType. TEXT carries body text; VIDEO/PDF/LINK carry
+// an external http(s) URL. A lesson may have no content type yet (null).
+export type LessonContentType = 'TEXT' | 'VIDEO' | 'PDF' | 'LINK';
+
 export type InstructorLessonResponse = {
   id: number;
   title: string;
+  contentType: LessonContentType | null;
+  textContent: string | null;
+  contentUrl: string | null;
+  durationSeconds: number | null;
 };
 
 export type InstructorSectionResponse = {
@@ -20,7 +28,16 @@ export type InstructorCourseContentResponse = {
 };
 
 export type SectionTitlePayload = { title: string };
-export type LessonTitlePayload = { title: string };
+
+// Lesson create/update payload. Content fields are optional; omit contentType
+// (or send null) for a structural placeholder lesson with no body yet.
+export type LessonPayload = {
+  title: string;
+  contentType?: LessonContentType | null;
+  textContent?: string | null;
+  contentUrl?: string | null;
+  durationSeconds?: number | null;
+};
 
 // ── API functions ─────────────────────────────────────────────────────────────
 
@@ -61,7 +78,7 @@ export async function deleteSection(sectionId: number): Promise<void> {
 
 export async function createLesson(
   sectionId: number,
-  payload: LessonTitlePayload,
+  payload: LessonPayload,
 ): Promise<InstructorLessonResponse> {
   const { data } = await api.post<InstructorLessonResponse>(
     `/api/v1/instructor/courses/sections/${sectionId}/lessons`,
@@ -72,7 +89,7 @@ export async function createLesson(
 
 export async function updateLesson(
   lessonId: number,
-  payload: LessonTitlePayload,
+  payload: LessonPayload,
 ): Promise<InstructorLessonResponse> {
   const { data } = await api.patch<InstructorLessonResponse>(
     `/api/v1/instructor/courses/lessons/${lessonId}`,

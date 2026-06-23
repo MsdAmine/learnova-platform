@@ -4,9 +4,17 @@ import api from './axios';
 // Content payload: LessonContentResponse uses `completed` (boolean, no `is` prefix).
 // Progress request/response: uses `isCompleted`. Do not conflate the two.
 
+// Mirrors backend LessonContentType. TEXT carries body text; VIDEO/PDF/LINK carry
+// an external http(s) URL. A lesson may have no content type yet (null).
+export type LessonContentType = 'TEXT' | 'VIDEO' | 'PDF' | 'LINK';
+
 export type LessonContentResponse = {
   id: number;
   title: string;
+  contentType: LessonContentType | null;
+  textContent: string | null;
+  contentUrl: string | null;
+  durationSeconds: number | null;
   completed: boolean;
   lastPositionSeconds: number | null;
   timeSpentSeconds: number | null;
