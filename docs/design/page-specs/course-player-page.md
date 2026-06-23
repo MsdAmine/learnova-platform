@@ -15,7 +15,7 @@
   - **Cancelled enrollment** (`EnrollmentStatus.CANCELLED`) returns **404**.
   - **ACTIVE or COMPLETED enrollment** returns the content payload.
   - **Archived courses remain accessible** if the learner holds an ACTIVE or COMPLETED enrollment. The service inspects only the enrollment, never `course.status`, so archival does not revoke an enrolled learner's access. See §12 for the open question of whether to surface an "archived" notice (the content payload does not currently carry course status, so v1 cannot surface it without a contract change).
-- The **first version focuses on course structure and progress**, not rich media playback. The backend does not return lesson body, video URL, content URL, duration, lesson type, attachments, or quiz counts, so this page does not render or imply any of those.
+- The **first version focuses on course structure, progress, and lightweight lesson content**, not rich media playback. The backend now returns `contentType` (`TEXT` \| `VIDEO` \| `PDF` \| `LINK`), `textContent`, `contentUrl`, and `durationSeconds` on each lesson (see §2/§6). `TEXT` content renders as plain text; `VIDEO`/`PDF`/`LINK` render as a safe outbound link (`target="_blank" rel="noopener noreferrer"`), never an embedded player or iframe. There is still no file upload pipeline and no Cloudinary lesson attachments — `contentUrl` is a plain string field, not an upload. Quiz counts are not part of this payload.
 - The page consumes data the frontend does **not yet have a client for**. There is currently **no** `src/api/courseContent.ts` and **no** `useCourseContent` hook (verified: no frontend file references `learner/courses/{id}/content`). Both are net-new and are part of the follow-up implementation task, not this spec.
 
 ---
@@ -93,6 +93,10 @@ Auth: Authenticated (enrolled learner only; enrollment checked server-side)
         {
           "id": 1001,
           "title": "Course Overview",
+          "contentType": "TEXT",
+          "textContent": "Welcome to the course...",
+          "contentUrl": null,
+          "durationSeconds": null,
           "completed": true,
           "lastPositionSeconds": 42,
           "timeSpentSeconds": 180
@@ -115,11 +119,15 @@ Auth: Authenticated (enrolled learner only; enrollment checked server-side)
 | Section | `lessons` | array | May be empty for a section. Ordered by lesson id ascending. |
 | Lesson | `id` | number (Long) | |
 | Lesson | `title` | string | |
+| Lesson | `contentType` | string \| null | One of `TEXT`, `VIDEO`, `PDF`, `LINK` (`LessonContentType` enum). |
+| Lesson | `textContent` | string \| null | Plain text body. Populated when `contentType === 'TEXT'`. Render as plain text only — no markdown/HTML parsing, no rich text editor support. |
+| Lesson | `contentUrl` | string \| null | Plain string field, not a file upload. Populated when `contentType` is `VIDEO`, `PDF`, or `LINK`. Render as a safe outbound link (`target="_blank" rel="noopener noreferrer"`) — never an embedded video player or `<iframe>`. |
+| Lesson | `durationSeconds` | number \| null | `Integer`, nullable. Author-supplied lesson duration; not derived from any media inspection (no media processing exists). |
 | Lesson | `completed` | boolean | JSON key is `completed` (record component `boolean completed`). |
 | Lesson | `lastPositionSeconds` | number \| null | `Integer`, nullable. `null` when no progress row exists yet. |
 | Lesson | `timeSpentSeconds` | number \| null | `Integer`, nullable. `null` when no progress row exists yet. |
 
-> **Fields that DO NOT exist** in any of these DTOs and must not be rendered or implied: lesson duration, video URL, content URL, lesson body/HTML, lesson type, attachments, quiz count, section description, course status, instructor name, category.
+> **Fields that DO NOT exist** in any of these DTOs and must not be rendered or implied: lesson file attachments, Cloudinary-hosted lesson media, embedded video/PDF playback, rich text/HTML lesson bodies, quiz count, section description, course status, instructor name, category.
 
 ### Progress mutation
 
@@ -171,9 +179,15 @@ Frontend types mirror the backend DTOs exactly. No invented fields.
 
 ```ts
 // src/api/courseContent.ts (net-new)
+export type LessonContentType = 'TEXT' | 'VIDEO' | 'PDF' | 'LINK';
+
 export type LessonContentResponse = {
   id: number;
   title: string;
+  contentType: LessonContentType | null;
+  textContent: string | null;
+  contentUrl: string | null;
+  durationSeconds: number | null;
   completed: boolean;
   lastPositionSeconds: number | null;
   timeSpentSeconds: number | null;
@@ -315,7 +329,7 @@ Do not show fabricated duration, rating, certificate promises, price, XP, streak
 
 ## 6. Lesson Content Panel
 
-Because the backend returns **no** lesson body, video, or media, v1 is deliberately honest: it shows lesson identity, completion, and the small amount of real progress data, plus a calm placeholder.
+The backend now returns lightweight lesson content (`contentType`, `textContent`, `contentUrl`, `durationSeconds`) alongside identity and progress data. There is still no rich media player, no file upload pipeline, and no Cloudinary lesson attachments: `TEXT` content renders as plain text, and `VIDEO`/`PDF`/`LINK` content renders as a single safe outbound link — never an embedded player, never an `<iframe>`.
 
 ### Panel container
 
@@ -335,9 +349,11 @@ No shadow at rest (Flat-At-Rest Rule).
    - `lastPositionSeconds` → "Resumed at M:SS" (format seconds to `M:SS`).
    - `timeSpentSeconds` → "{n}m spent" (or "{s}s spent" under 60s).
    - When both are `null`, render nothing here (do not show "0:00" or "not started" noise). `text-caption text-text-secondary`.
-4. **Placeholder panel** — a nested calm block on `bg-surface-elevated rounded-md p-6 text-center`:
-   - Body: "Lesson content will appear here when lesson materials are available." `text-body-sm text-text-secondary`.
-   - No spinner, no illustration, no faux video frame. This matches the calm tone of `StatePanel`.
+4. **Lesson content** — rendered according to `contentType`:
+   - `TEXT` with non-empty `textContent`: render the text as plain text (no markdown/HTML parsing, no rich text editor) inside `bg-surface-elevated rounded-md p-6`.
+   - `VIDEO` / `PDF` / `LINK` with a `contentUrl`: render a single safe outbound link (`target="_blank" rel="noopener noreferrer"`), labeled by content type (for example "Open video", "Open PDF", "Open link"). Never an embedded player, never an `<iframe>`.
+   - `durationSeconds`, when present, may be shown as a small meta line (for example "12m"); it is author-supplied, not derived from media inspection.
+   - When `contentType` is `null` or the relevant field is empty: fall back to the calm placeholder block on `bg-surface-elevated rounded-md p-6 text-center` — "Lesson content will appear here when lesson materials are available." `text-body-sm text-text-secondary`. No spinner, no illustration, no faux video frame.
 5. **Actions row** (`mt-4`, `flex items-center justify-between gap-2`):
    - **Mark as complete** action (§8). Implementable in v1 because the PATCH contract is fully defined.
    - **Previous lesson** / **Next lesson** navigation (see below).
@@ -354,7 +370,7 @@ Flatten all sections' lessons in order into a single `flatLessonOrder` array, th
 
 On load, select the **first lesson whose `completed === false`** (resume point). If all are complete, select the **first lesson**. If there are no lessons, render the empty state (§9) instead of the panel.
 
-Do not invent a video player, transcript, notes, or lesson body.
+Do not invent an embedded video player, transcript, notes, file upload, or Cloudinary attachment beyond the plain-text/safe-link rendering described above.
 
 ---
 
@@ -503,7 +519,7 @@ Use `StatePanel` (no retry; retrying a 404 is pointless):
 
 - **Product learning workspace, not marketing/catalog.** Uses the dashboard shell (`px-8 py-8 pb-14 max-w-container mx-auto`) inside `DashboardLayout`. Deliberately avoids `Container`, `SectionHeader`, and `Stat` (the marketing primitives).
 - **No catalog/marketing pattern reuse.** No public course cards, no hero band, no price/rating/discount language, no gradient text, no glassmorphism, no large Salem backgrounds.
-- **No fake content.** No invented video player, lesson body, duration, ratings, or certificate promises. The placeholder panel states honestly that materials are not yet available.
+- **No fake content.** No invented embedded video player, file uploads, Cloudinary attachments, ratings, or certificate promises. `durationSeconds` is rendered only when the backend supplies it; the placeholder panel states honestly when no lesson content exists yet.
 - **No large metric cards.** Progress is a compact `text-body-sm` strip plus a thin `ProgressBar`, never a `Stat` hero number.
 - **No gamification.** No XP, streaks, leaderboards, levels, or points.
 - **No trophy-heavy completion visuals.** Completion is a quiet `Badge variant="anzac"` ("Done") and a `Check` icon, consistent with the existing completed-course treatment. No confetti, no trophies.
@@ -519,7 +535,7 @@ Use `StatePanel` (no retry; retrying a 404 is pointless):
 | # | Decision | v1 recommendation | Notes / blocker |
 |---|---|---|---|
 | 1 | Exact route: `/dashboard/courses/:courseId` vs another | **`/dashboard/courses/:courseId`** | Clean sibling of the existing `courses` index; no conflict in `router/index.tsx`. |
-| 2 | Should a lesson content/body endpoint exist before full player implementation | **Yes, eventually** | v1 ships the structure-and-progress player honestly with a placeholder. Rich playback is **blocked** until the backend exposes lesson body/media (no such field exists today). |
+| 2 | Should a lesson content/body endpoint exist before full player implementation | **Done** | The backend now exposes `contentType`/`textContent`/`contentUrl`/`durationSeconds`. Rendering is intentionally limited to plain text and safe outbound links; embedded media playback, file uploads, and Cloudinary attachments remain **blocked** pending a future contract. |
 | 3 | Use `PATCH /lessons/{lessonId}/progress` in v1 | **Yes** | Contract is fully defined (`isCompleted` required). "Mark as complete" is buildable now. |
 | 4 | Can completed lessons be manually toggled (un-completed) | **No in v1 (one-way)** | Endpoint accepts `isCompleted:false`; can be enabled later with no contract change. Product decision. |
 | 5 | Include quizzes in the player now or later | **Later** | Quiz authoring exists for instructors, but there is no learner quiz-taking/attempt endpoint and the content payload carries no quiz data. **Blocked** for the player until a learner-facing quiz contract exists. |
@@ -532,6 +548,6 @@ Use `StatePanel` (no retry; retrying a 404 is pointless):
 
 ## Implementation Readiness Summary (for the next session)
 
-- **Build now:** the player shell, header + compact progress strip, content panel with placeholder, "Mark as complete" (optimistic + rollback), course outline with selectable rows, Prev/Next, and all four render states (loading/empty/404/generic). Net-new files expected: `src/api/courseContent.ts`, a `useCourseContent(courseId)` hook, the page under `src/features/dashboard/pages/`, and a route entry in `router/index.tsx`.
+- **Build now:** the player shell, header + compact progress strip, content panel rendering `TEXT`/`VIDEO`/`PDF`/`LINK` lesson content (plain text or safe outbound link, with a placeholder fallback), "Mark as complete" (optimistic + rollback), course outline with selectable rows, Prev/Next, and all four render states (loading/empty/404/generic). Net-new files expected: `src/api/courseContent.ts`, a `useCourseContent(courseId)` hook, the page under `src/features/dashboard/pages/`, and a route entry in `router/index.tsx`.
 - **Reuse:** `ProgressBar`, `Badge` (`anzac`), `Button`, `StatePanel`, and the dashboard shell/header conventions.
-- **Blocked (needs backend contract first):** rich lesson playback/body, learner quizzes, and any archived-status notice.
+- **Blocked (needs backend contract first):** embedded video/PDF playback, lesson file uploads, Cloudinary lesson attachments, learner quizzes, and any archived-status notice.

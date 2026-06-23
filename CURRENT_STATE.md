@@ -24,17 +24,18 @@ The backend is feature-complete for the current phase. These modules exist and a
 - Public course catalog: `GET /api/v1/courses` and `GET /api/v1/courses/{courseId}` (published courses only)
 - Learner enrollment: enroll in published courses (drafts blocked), list enrollments, look up enrollment by course
 - Lesson progress: patch per-lesson progress, get per-course progress; `PATCH /api/v1/lessons/{lessonId}/progress` now atomically syncs `enrollment.progressPercentage` in the same transaction — dashboard enrollment data reflects lesson completion immediately; enrollment status transitions to `COMPLETED` with `completedAt` when all lessons are done. Access to both lesson-progress endpoints is enrollment-gated: only learners with an ACTIVE or COMPLETED enrollment may call them; non-enrolled or CANCELLED-enrollment requests receive 404 (content enumeration protection, consistent with the learner course content endpoint). `CourseAccessService.canUserAccessCourseContent()` is no longer a stub — it performs a real enrollment status check.
-- Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields for enrolled learners; wired to `CoursePlayerPage` via `src/api/courseContent.ts`
+- Learner course content: `GET /api/v1/learner/courses/{courseId}/content` — returns section and lesson structure with per-lesson progress fields and lesson content fields (`contentType`, `textContent`, `contentUrl`, `durationSeconds`) for enrolled learners; wired to `CoursePlayerPage` via `src/api/courseContent.ts`. The player renders `TEXT` content inline and renders `VIDEO`/`PDF`/`LINK` content as a labeled external link (opens in a new tab); a lesson with no `contentType` shows no body content.
 - Instructor course content management: CRUD for sections and lessons within own courses
   - `GET  /api/v1/instructor/courses/{courseId}/content` — lists sections and lessons for own course
   - `POST /api/v1/instructor/courses/{courseId}/sections` — creates a section
   - `PATCH /api/v1/instructor/courses/sections/{sectionId}` — updates section title
   - `DELETE /api/v1/instructor/courses/sections/{sectionId}` — deletes section and its lessons
-  - `POST /api/v1/instructor/courses/sections/{sectionId}/lessons` — creates a lesson
-  - `PATCH /api/v1/instructor/courses/lessons/{lessonId}` — updates lesson title
+  - `POST /api/v1/instructor/courses/sections/{sectionId}/lessons` — creates a lesson; accepts `title`, optional `contentType` (`TEXT`, `VIDEO`, `PDF`, `LINK`), `textContent` (TEXT only), `contentUrl` (URL types only), and `durationSeconds`
+  - `PATCH /api/v1/instructor/courses/lessons/{lessonId}` — updates lesson title and content fields
   - `DELETE /api/v1/instructor/courses/lessons/{lessonId}` — deletes a lesson
   - Security: requires INSTRUCTOR role + approved profile + course ownership; mutations on ARCHIVED courses return 409
-  - Wired to `InstructorCourseContentPage` via `src/api/instructorCourseContent.ts`; inline edit/delete with confirm and optimistic state are all implemented
+  - Lesson content (v1): `Lesson.contentType` (nullable enum `LessonContentType`: `TEXT`, `VIDEO`, `PDF`, `LINK`), `textContent` (populated only for `TEXT`), `contentUrl` (an external http(s) resource URL, populated only for `VIDEO`/`PDF`/`LINK`), `durationSeconds` (optional learner-facing hint). `LessonContentValidation` enforces the content-type/field pairing. A lesson with no `contentType` is a structural placeholder with no body yet. No file uploads — URL-based types store a link to an externally hosted resource only.
+  - Wired to `InstructorCourseContentPage` via `src/api/instructorCourseContent.ts`; inline edit/delete with confirm and optimistic state, plus content-type/body fields in the lesson form, are all implemented
 - Quiz authoring: instructor CRUD for quizzes, questions, and answer options, plus publish/archive
   - `GET /api/v1/instructor/courses/{courseId}/quizzes` — lists all quizzes for an instructor-owned course; consumed by `InstructorQuizzesPage` on load
   - `GET /api/v1/instructor/courses/quizzes/{quizId}` — returns quiz detail with questions and answer options; consumed by `InstructorQuizzesPage` on expand
@@ -120,7 +121,6 @@ What is in place:
 Still mocked or placeholder:
 
 - `ProgressPage` shows enrollment-level progress only (no per-lesson breakdown display); its fake weekly activity strip (`WEEK_ACTIVITY`) has been removed entirely — the page no longer renders any weekly-activity data, fake or real, since no learning-activity/analytics endpoint exists — the learner dashboard's own mocked sections (live sessions, certificates) have already been removed, per above
-- Course player lesson content area is a placeholder panel; no rich content, video, or lesson body rendering
 
 ## Known Gaps
 
@@ -148,6 +148,7 @@ Still mocked or placeholder:
 - No lesson attachment upload
 - No certificate PDF generation or certificate media storage (the certificate backend module was not touched by the media upload feature)
 - No direct/unsigned frontend-to-Cloudinary upload — all uploads go through the backend, which holds the Cloudinary credentials
+- Lesson content v1 supports `TEXT` (rendered inline) and `VIDEO`/`PDF`/`LINK` (rendered as an external resource link only); no lesson file uploads, no Cloudinary lesson attachments, no embedded video player, no arbitrary iframe embeds, and no rich text editor for authoring `textContent`
 
 ## Current Priority
 

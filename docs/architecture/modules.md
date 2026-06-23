@@ -68,7 +68,8 @@ Responsible for:
 - Sections
 - Lessons
 - Lesson ordering
-- Lesson content
+- Lesson content (`TEXT`, `VIDEO`, `PDF`, `LINK`; URL-based types link to an
+  externally hosted resource — no file upload)
 
 Main endpoints:
 

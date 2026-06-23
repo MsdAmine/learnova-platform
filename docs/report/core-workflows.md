@@ -80,7 +80,11 @@ endpoints and routes are taken directly from the controllers under
 1. Instructor creates a course (title, description, level, category,
    optional thumbnail URL) in `DRAFT` status.
 2. Instructor adds sections, then lessons within each section, from the
-   course content builder.
+   course content builder. Each lesson can optionally carry content: `TEXT`
+   (a body typed directly into a plain text field, no rich text editor) or
+   `VIDEO`/`PDF`/`LINK` (an external http(s) URL to the resource), plus an
+   optional duration hint in seconds. A lesson with no content type is a
+   structural placeholder with no body yet.
 3. Instructor creates a quiz (title, optional description, passing score,
    optional section scope), adds questions (content, points, type:
    `MULTIPLE_CHOICE` or `TRUE_FALSE`), and adds answer options per question,
@@ -159,7 +163,7 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 
 **Frontend routes:** `/dashboard/courses/:courseId` (Lessons tab)
 
-**Result:** Per-lesson completion state persisted; enrollment-level progress percentage kept in sync; note that the lesson content area itself is a placeholder panel — there is no rich text/video rendering of lesson bodies.
+**Result:** Per-lesson completion state persisted; enrollment-level progress percentage kept in sync. Each lesson may also carry content set by the instructor (`contentType` of `TEXT`, `VIDEO`, `PDF`, or `LINK`): `TEXT` renders inline in the player; `VIDEO`/`PDF`/`LINK` render as a labeled external link that opens the resource in a new tab. There is no embedded video player, no lesson file upload, no Cloudinary lesson attachments, and no arbitrary iframe embedding — URL-based content is always a plain outbound link.
 
 **Evidence:** `assets/screenshots/03-course-player-lessons.png`; also `assets/screenshots/mobile-course-player.png` (mobile viewport) (demo/report screenshots, not automated tests)
 

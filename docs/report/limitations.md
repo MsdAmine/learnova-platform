@@ -57,8 +57,19 @@ limitations:
 
 ## Course content and player
 
-- The course player's lesson content area is a placeholder panel — no rich
-  text, video, or lesson-body rendering exists.
+- Lesson content (v1): a lesson may carry one content type — `TEXT`,
+  `VIDEO`, `PDF`, or `LINK` — set by the instructor in the content builder.
+  `TEXT` renders inline in the course player; `VIDEO`/`PDF`/`LINK` render as
+  a labeled external link that opens the resource in a new browser tab, not
+  an embedded player. A lesson with no content type set is a structural
+  placeholder with no body.
+  - **No lesson file uploads and no Cloudinary lesson attachments** —
+    `VIDEO`/`PDF`/`LINK` content is always a link to an externally hosted
+    resource; the platform does not host or upload lesson files.
+  - **No embedded video playback and no arbitrary iframe embeds** — URL-based
+    lesson content always opens as a plain outbound link.
+  - **No rich text editor** — `TEXT` content is authored as plain text in
+    the instructor content form.
 - No public syllabus/section previews, instructor bio endpoint, course
   duration, or lesson count on the public catalog/detail pages (no backend
   contract for any of these).

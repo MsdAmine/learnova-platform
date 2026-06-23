@@ -531,8 +531,10 @@ and should not be presented as verified in the report:
   fetching, start/submit flow) is not component-tested and remains covered
   by manual browser QA only. The `learnerQuizzes` API client's
   attempt-history contract is covered by `learnerQuizzes.test.ts`.
-- **Rich lesson body/media** — the course player's lesson content area is a
-  placeholder panel; there is no video/rich-text rendering to test.
+- **Lesson content rendering** — the course player renders `TEXT` lesson
+  content inline and `VIDEO`/`PDF`/`LINK` lesson content as an external
+  resource link, but this rendering is not covered by an automated test;
+  verification is manual browser QA only.
 - **Live Cloudinary upload success** — verified by manual QA against real
   Cloudinary credentials (cloud `dnd5pu5me`) for the learner profile image
   and instructor course thumbnail flows (see "Cloudinary media upload — live
