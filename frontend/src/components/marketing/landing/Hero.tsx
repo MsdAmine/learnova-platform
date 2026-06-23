@@ -4,6 +4,7 @@ import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { HeroProductPreview } from './HeroProductPreview';
 import type { CategoryResponse } from '../../../api/categories';
+import heroBackground from '../../../assets/hero-background.jpg';
 
 // Checked once at module load; stable for the lifetime of the page.
 const prefersReduced =
