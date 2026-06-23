@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import type { CategoryResponse } from '../../../api/categories';
+import heroBackground from '../../../assets/hero-background.jpg';
 
 // Checked once at module load; stable for the lifetime of the page.
 const prefersReduced =
@@ -76,9 +77,11 @@ export function Hero({ categories }: HeroProps) {
     <section
       id="hero-section"
       aria-labelledby="hero-heading"
-      className="w-full bg-salem pt-[100px] pb-20 lg:pt-[132px] lg:pb-28"
+      className="relative w-full bg-salem pt-[100px] pb-20 lg:pt-[132px] lg:pb-28 bg-cover bg-center"
+      style={{ backgroundImage: `url(${heroBackground})` }}
     >
-      <div className="px-6 md:px-12 lg:px-16 max-w-container-wide mx-auto w-full">
+      <div className="absolute inset-0 bg-salem/70" aria-hidden="true" />
+      <div className="relative px-6 md:px-12 lg:px-16 max-w-container-wide mx-auto w-full">
         <div className="text-left">
           <h1
             id="hero-heading"
