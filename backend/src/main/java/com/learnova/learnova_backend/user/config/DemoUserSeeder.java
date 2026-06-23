@@ -36,6 +36,21 @@ public class DemoUserSeeder implements CommandLineRunner {
     public void run(String... args) {
         seedLearner();
         seedInstructor();
+        seedInstructor(
+                "demo.instructor2@learnova.dev", "Demo Instructor Data",
+                "Demo instructor account focused on data and business analytics courses.",
+                "Data Analytics & Business Strategy",
+                "8+ years working in business intelligence and analytics training.");
+        seedInstructor(
+                "demo.instructor3@learnova.dev", "Demo Instructor Management",
+                "Demo instructor account focused on management and workplace skills courses.",
+                "Project Management, Leadership & Communication",
+                "10+ years managing teams and coaching first-time managers.");
+        seedInstructor(
+                "demo.instructor4@learnova.dev", "Demo Instructor Product",
+                "Demo instructor account focused on security, product, and marketing courses.",
+                "Cybersecurity, Product Design & Digital Marketing",
+                "7+ years across security engineering and product/marketing roles.");
         seedAdmin();
     }
 
@@ -51,18 +66,25 @@ public class DemoUserSeeder implements CommandLineRunner {
     }
 
     private void seedInstructor() {
-        String email = "demo.instructor@learnova.dev";
+        seedInstructor(
+                "demo.instructor@learnova.dev", "Demo Instructor",
+                "Demo instructor account seeded for local development and testing.",
+                "Software Engineering & Cloud/DevOps",
+                "5+ years teaching online courses.");
+    }
+
+    private void seedInstructor(String email, String fullName, String bio, String expertise, String experience) {
         if (userRepository.existsByEmailIgnoreCase(email)) {
             return;
         }
 
-        User user = newUser("Demo Instructor", email, RoleName.ROLE_LEARNER, RoleName.ROLE_INSTRUCTOR);
-        user.attachLearnerProfile(LearnerProfile.builder().displayName("Demo Instructor").build());
+        User user = newUser(fullName, email, RoleName.ROLE_LEARNER, RoleName.ROLE_INSTRUCTOR);
+        user.attachLearnerProfile(LearnerProfile.builder().displayName(fullName).build());
         user.attachInstructorProfile(
                 InstructorProfile.builder()
-                        .bio("Demo instructor account seeded for local development and testing.")
-                        .expertise("Software Engineering")
-                        .experience("5+ years teaching online courses.")
+                        .bio(bio)
+                        .expertise(expertise)
+                        .experience(experience)
                         .motivation("Seeded demo account.")
                         .approvalStatus(InstructorApprovalStatus.APPROVED)
                         .build()
