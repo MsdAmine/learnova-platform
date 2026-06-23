@@ -3,7 +3,7 @@ import { Navbar } from '../../../components/marketing/landing/Navbar';
 import { Hero } from '../../../components/marketing/landing/Hero';
 import { CategoryShortcutRow } from '../../../components/marketing/landing/CategoryShortcutRow';
 import { RecentCourses } from '../../../components/marketing/landing/RecentCourses';
-import { PlatformCapabilities } from '../../../components/marketing/landing/PlatformCapabilities';
+import { HowItWorks } from '../../../components/marketing/landing/HowItWorks';
 import { InstructorCta } from '../../../components/marketing/landing/InstructorCta';
 import { Footer } from '../../../components/marketing/landing/Footer';
 import { getCategories, type CategoryResponse } from '../../../api/categories';
@@ -40,9 +40,9 @@ export default function LandingPage() {
       <Navbar />
       <main id="main-content" tabIndex={-1}>
         <Hero categories={categories} />
-        <CategoryShortcutRow categories={categories} />
         <RecentCourses />
-        <PlatformCapabilities />
+        <CategoryShortcutRow categories={categories} />
+        <HowItWorks />
         <InstructorCta />
       </main>
       <Footer />
