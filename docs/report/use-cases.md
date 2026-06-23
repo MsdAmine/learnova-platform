@@ -331,7 +331,7 @@ replaces "Learner" capabilities — it's additive.
   2. Frontend calls `GET /api/v1/learner/courses/{courseId}/content`; backend's `CourseAccessService.canUserAccessCourseContent()` performs the real enrollment check.
   3. Player renders section/lesson structure with per-lesson progress and auto-selects the first incomplete lesson.
 - **Alternative/error flows:** Not enrolled or `CANCELLED` enrollment → `404` → enrollment-specific error panel in the UI.
-- **Postconditions:** None (read access). Lesson content body itself is a placeholder panel — no video/rich text rendering exists yet.
+- **Postconditions:** None (read access). If the lesson has a `contentType` set, the body renders: `TEXT` inline, `VIDEO`/`PDF`/`LINK` as an external resource link opening in a new tab. A lesson with no `contentType` shows no body content. No embedded video playback, no lesson file uploads, and no arbitrary iframe embeds.
 - **Frontend routes:** `/dashboard/courses/:courseId` (Lessons tab, under `ProtectedRoute`)
 - **Backend endpoints:** `GET /api/v1/learner/courses/{courseId}/content`
 - **Entities/tables:** `Enrollment`, `Section`, `Lesson`, `LessonProgress`
@@ -580,9 +580,10 @@ replaces "Learner" capabilities — it's additive.
 - **Goal:** Add and maintain lessons within a section.
 - **Preconditions:** Caller owns the course; course/section not `ARCHIVED`.
 - **Main success flow:**
-  1. Within `/instructor/courses/:courseId/content`, instructor creates a lesson under a section (`POST .../sections/{sectionId}/lessons`), edits its title (`PATCH .../lessons/{lessonId}`), or deletes it (`DELETE .../lessons/{lessonId}`).
+  1. Within `/instructor/courses/:courseId/content`, instructor creates a lesson under a section (`POST .../sections/{sectionId}/lessons`), edits its title and content (`PATCH .../lessons/{lessonId}`), or deletes it (`DELETE .../lessons/{lessonId}`).
+  2. Instructor optionally sets a content type — `TEXT` (plain text typed into the form, no rich text editor) or `VIDEO`/`PDF`/`LINK` (an external http(s) URL) — plus an optional duration in seconds.
 - **Alternative/error flows:** Mutation on an `ARCHIVED` course → `409`.
-- **Postconditions:** `Lesson` rows created/updated/deleted under the section. **Planned / not fully implemented:** lessons carry only a title in the management UI in terms of structured content — there is no rich body, video, or attached-resource authoring; the course player's lesson content area is a placeholder.
+- **Postconditions:** `Lesson` rows created/updated/deleted under the section, including content fields. **Not implemented:** no lesson file upload, no Cloudinary lesson attachments, no embedded video playback, no arbitrary iframe embeds, no rich text editor.
 - **Frontend routes:** `/instructor/courses/:courseId/content`
 - **Backend endpoints:** `POST /api/v1/instructor/courses/sections/{sectionId}/lessons`, `PATCH/DELETE /api/v1/instructor/courses/lessons/{lessonId}`
 - **Entities/tables:** `Lesson`, `Section`
@@ -879,7 +880,7 @@ replaces "Learner" capabilities — it's additive.
 ### Planned / future extension
 - Instructor profile image upload (no image URL field on `InstructorProfile`)
 - Pagination on the quiz attempt-history endpoint (currently returns the full unbounded list)
-- Rich lesson content (video, text body, attachments) — the course player's lesson content area is a placeholder panel
+- Lesson file uploads and Cloudinary lesson attachments — lesson content v1 (`TEXT`/`VIDEO`/`PDF`/`LINK`) supports only inline text or a link to an externally hosted resource; no embedded video playback, no arbitrary iframe embeds, no rich text editor
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
 - Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28), plus PDF download/sharing beyond the existing browser print

@@ -82,8 +82,11 @@ with completion tracking and a dashboard-entry redirect).
 - **Live sessions v1 limitations** — no `/leave` endpoint, no recurring
   sessions, no reminders, no past-session history view, no iframe
   embedding (Jitsi opens in a new browser tab), and no Jitsi JWT/JaaS.
-- **Lesson video/rich content** — the course player's lesson content area is
-  a placeholder panel; no video or rich-body rendering exists.
+- **Lesson content (v1)** — instructors set a lesson's content type (`TEXT`,
+  `VIDEO`, `PDF`, or `LINK`); `TEXT` renders inline in the course player,
+  `VIDEO`/`PDF`/`LINK` render as an external resource link. No lesson file
+  uploads, no Cloudinary lesson attachments, no embedded video player, no
+  arbitrary iframe embeds, no rich text editor.
 - **File upload** — `thumbnailUrl` and `profileImageUrl` accept plain URL
   strings only; there is no upload pipeline.
 - **Quiz attempt-history pagination** — the attempt-history endpoint returns

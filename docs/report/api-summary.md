@@ -63,7 +63,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| GET | `/api/v1/learner/courses/{courseId}/content` | Authenticated; enrollment-gated (ACTIVE/COMPLETED) | Get section/lesson structure with per-lesson progress |
+| GET | `/api/v1/learner/courses/{courseId}/content` | Authenticated; enrollment-gated (ACTIVE/COMPLETED) | Get section/lesson structure with per-lesson progress and lesson content (`contentType`, `textContent`, `contentUrl`, `durationSeconds`); `TEXT` renders inline in the player, `VIDEO`/`PDF`/`LINK` render as an external link |
 | PATCH | `/api/v1/lessons/{lessonId}/progress` | LEARNER; enrollment-gated | Update a lesson's completion/position/time-spent; syncs `Enrollment.progressPercentage` atomically |
 | GET | `/api/v1/lessons/course/{courseId}/progress` | LEARNER; enrollment-gated | Get aggregate course progress |
 
@@ -94,8 +94,8 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | POST | `/api/v1/instructor/courses/{courseId}/sections` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Create a section |
 | PATCH | `/api/v1/instructor/courses/sections/{sectionId}` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Update section title |
 | DELETE | `/api/v1/instructor/courses/sections/{sectionId}` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Delete section (cascades lessons) |
-| POST | `/api/v1/instructor/courses/sections/{sectionId}/lessons` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Create a lesson |
-| PATCH | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Update lesson title |
+| POST | `/api/v1/instructor/courses/sections/{sectionId}/lessons` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Create a lesson; accepts `title`, optional `contentType` (`TEXT`/`VIDEO`/`PDF`/`LINK`), `textContent` (TEXT only), `contentUrl` (URL types only, external http(s) link), `durationSeconds` |
+| PATCH | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Update lesson title and content fields |
 | DELETE | `/api/v1/instructor/courses/lessons/{lessonId}` | INSTRUCTOR; ownership-checked; 409 if ARCHIVED | Delete a lesson |
 
 ## Instructor Quiz Authoring

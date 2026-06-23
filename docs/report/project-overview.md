@@ -108,8 +108,12 @@ These areas are intentionally **not** presented as complete:
 - **Certificate issuance is manual, not automatic**, and offers only a
   browser print/save-as-PDF option — no server-generated PDF, sharing, QR
   code, or revocation flow exists. See `limitations.md` for the full list.
-- **Lesson content body** — the course player's lesson content area is a
-  placeholder panel; there is no rich text, video, or media rendering.
+- **Lesson content (v1)** — instructors can set a lesson's content type
+  (`TEXT`, `VIDEO`, `PDF`, or `LINK`) from the content builder; `TEXT`
+  renders inline in the course player, while `VIDEO`/`PDF`/`LINK` render as
+  an external resource link only. There is no lesson file upload, no
+  Cloudinary lesson attachments, no embedded video player, no arbitrary
+  iframe embedding, and no rich text editor for authoring `TEXT` content.
 - **Content ordering** — sections, lessons, questions, and answer options are
   always appended; there is no drag-reorder or explicit ordering field.
 - **File upload** — Cloudinary-backed v1 exists for learner profile images
