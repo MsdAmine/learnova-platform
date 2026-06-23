@@ -93,7 +93,7 @@ export function CategoryShortcutRow({ categories }: CategoryShortcutRowProps) {
                   <Icon size={20} className="text-salem" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-body-sm font-semibold text-text-primary truncate">
+                  <span className="block text-body-sm font-semibold text-text-primary">
                     {category.name}
                   </span>
                   {category.description && (
