@@ -80,14 +80,18 @@ public class LearnerCourseContentService {
     }
 
     private LessonContentResponse toLessonResponse(Lesson lesson, LessonProgress progress) {
-        if (progress == null) {
-            return new LessonContentResponse(lesson.getId(), lesson.getTitle(), false, null, null);
-        }
+        boolean completed = progress != null && progress.isCompleted();
+        Integer lastPosition = progress == null ? null : progress.getLastPositionSeconds();
+        Integer timeSpent = progress == null ? null : progress.getTimeSpentSeconds();
         return new LessonContentResponse(
                 lesson.getId(),
                 lesson.getTitle(),
-                progress.isCompleted(),
-                progress.getLastPositionSeconds(),
-                progress.getTimeSpentSeconds());
+                lesson.getContentType(),
+                lesson.getTextContent(),
+                lesson.getContentUrl(),
+                lesson.getDurationSeconds(),
+                completed,
+                lastPosition,
+                timeSpent);
     }
 }

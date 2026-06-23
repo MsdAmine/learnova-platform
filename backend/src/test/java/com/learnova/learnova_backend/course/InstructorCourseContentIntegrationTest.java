@@ -8,6 +8,7 @@ import com.learnova.learnova_backend.course.dto.CreateLessonRequest;
 import com.learnova.learnova_backend.course.dto.CreateSectionRequest;
 import com.learnova.learnova_backend.course.dto.UpdateLessonRequest;
 import com.learnova.learnova_backend.course.dto.UpdateSectionRequest;
+import com.learnova.learnova_backend.course.entity.LessonContentType;
 import com.learnova.learnova_backend.course.entity.*;
 import com.learnova.learnova_backend.course.repository.*;
 import com.learnova.learnova_backend.enrollment.entity.Enrollment;
@@ -80,7 +81,7 @@ class InstructorCourseContentIntegrationTest {
         Long courseId = createCourse(ctx.profile, CourseStatus.DRAFT);
         Long sectionId = createSectionViaApi(courseId, "Chapter 1", ctx.token);
 
-        CreateLessonRequest req = new CreateLessonRequest("What is Spring Boot?");
+        CreateLessonRequest req = new CreateLessonRequest("What is Spring Boot?", null, null, null, null);
 
         mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
                         .header("Authorization", "Bearer " + ctx.token)
@@ -160,7 +161,7 @@ class InstructorCourseContentIntegrationTest {
         Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
         Long lessonId = createLessonViaApi(sectionId, "Old Lesson Title", ctx.token);
 
-        UpdateLessonRequest req = new UpdateLessonRequest("New Lesson Title");
+        UpdateLessonRequest req = new UpdateLessonRequest("New Lesson Title", null, null, null, null);
 
         mockMvc.perform(patch("/api/v1/instructor/courses/lessons/{id}", lessonId)
                         .header("Authorization", "Bearer " + ctx.token)
@@ -169,6 +170,153 @@ class InstructorCourseContentIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("New Lesson Title"))
                 .andExpect(jsonPath("$.id").value(lessonId));
+    }
+
+    // ─── 6a. Create TEXT lesson with body content ─────────────────────────────
+
+    @Test
+    void instructorCanCreateTextLessonWithBody() throws Exception {
+        InstructorContext ctx = setupInstructor("inst.sc6a@content.test");
+        Long courseId = createCourse(ctx.profile, CourseStatus.DRAFT);
+        Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
+
+        CreateLessonRequest req = new CreateLessonRequest(
+                "Intro", LessonContentType.TEXT, "Line one\nLine two", null, 120);
+
+        Long lessonId = objectMapper.readTree(
+                mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
+                                .header("Authorization", "Bearer " + ctx.token)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(req)))
+                        .andExpect(status().isCreated())
+                        .andExpect(jsonPath("$.contentType").value("TEXT"))
+                        .andExpect(jsonPath("$.textContent").value("Line one\nLine two"))
+                        .andExpect(jsonPath("$.contentUrl").doesNotExist())
+                        .andExpect(jsonPath("$.durationSeconds").value(120))
+                        .andReturn().getResponse().getContentAsString())
+                .get("id").asLong();
+
+        // Persists and is returned by the content endpoint
+        mockMvc.perform(get("/api/v1/instructor/courses/{id}/content", courseId)
+                        .header("Authorization", "Bearer " + ctx.token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sections[0].lessons[0].id").value(lessonId))
+                .andExpect(jsonPath("$.sections[0].lessons[0].contentType").value("TEXT"))
+                .andExpect(jsonPath("$.sections[0].lessons[0].textContent").value("Line one\nLine two"));
+    }
+
+    // ─── 6b. Update lesson to URL-based content ────────────────────────────────
+
+    @Test
+    void instructorCanUpdateLessonToUrlContent() throws Exception {
+        InstructorContext ctx = setupInstructor("inst.sc6b@content.test");
+        Long courseId = createCourse(ctx.profile, CourseStatus.DRAFT);
+        Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
+        Long lessonId = createLessonViaApi(sectionId, "Watch this", ctx.token);
+
+        UpdateLessonRequest req = new UpdateLessonRequest(
+                "Watch this", LessonContentType.VIDEO, null, "https://example.com/video", 300);
+
+        mockMvc.perform(patch("/api/v1/instructor/courses/lessons/{id}", lessonId)
+                        .header("Authorization", "Bearer " + ctx.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contentType").value("VIDEO"))
+                .andExpect(jsonPath("$.contentUrl").value("https://example.com/video"))
+                .andExpect(jsonPath("$.textContent").doesNotExist())
+                .andExpect(jsonPath("$.durationSeconds").value(300));
+    }
+
+    // ─── 6c. TEXT lesson without body → 400 ────────────────────────────────────
+
+    @Test
+    void textLessonWithoutBodyIsRejected() throws Exception {
+        InstructorContext ctx = setupInstructor("inst.sc6c@content.test");
+        Long courseId = createCourse(ctx.profile, CourseStatus.DRAFT);
+        Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
+
+        CreateLessonRequest req = new CreateLessonRequest(
+                "Empty text", LessonContentType.TEXT, "   ", null, null);
+
+        mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
+                        .header("Authorization", "Bearer " + ctx.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isBadRequest());
+    }
+
+    // ─── 6d. URL lesson without URL → 400 ──────────────────────────────────────
+
+    @Test
+    void urlLessonWithoutValidUrlIsRejected() throws Exception {
+        InstructorContext ctx = setupInstructor("inst.sc6d@content.test");
+        Long courseId = createCourse(ctx.profile, CourseStatus.DRAFT);
+        Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
+
+        // Missing URL
+        CreateLessonRequest missing = new CreateLessonRequest(
+                "No url", LessonContentType.PDF, null, null, null);
+        mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
+                        .header("Authorization", "Bearer " + ctx.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(missing)))
+                .andExpect(status().isBadRequest());
+
+        // Non-http(s) URL
+        CreateLessonRequest badScheme = new CreateLessonRequest(
+                "Bad url", LessonContentType.LINK, null, "ftp://example.com/file", null);
+        mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
+                        .header("Authorization", "Bearer " + ctx.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(badScheme)))
+                .andExpect(status().isBadRequest());
+    }
+
+    // ─── 6e. Learner content includes lesson content fields ────────────────────
+
+    @Test
+    void learnerContentIncludesLessonContent() throws Exception {
+        InstructorContext ctx = setupInstructor("inst.sc6e@content.test");
+        Long courseId = createCourse(ctx.profile, CourseStatus.PUBLISHED);
+        Long sectionId = createSectionViaApi(courseId, "Section", ctx.token);
+
+        CreateLessonRequest req = new CreateLessonRequest(
+                "Read me", LessonContentType.TEXT, "Body text for learner", null, null);
+        mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
+                        .header("Authorization", "Bearer " + ctx.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isCreated());
+
+        String learnerToken = registerAndLogin("learner.sc6e@content.test", "password123");
+        enrollDirectly("learner.sc6e@content.test", courseId);
+
+        mockMvc.perform(get("/api/v1/learner/courses/{id}/content", courseId)
+                        .header("Authorization", "Bearer " + learnerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sections[0].lessons[0].contentType").value("TEXT"))
+                .andExpect(jsonPath("$.sections[0].lessons[0].textContent").value("Body text for learner"));
+    }
+
+    // ─── 6f. Non-owner instructor cannot edit another's lesson content → 403 ───
+
+    @Test
+    void nonOwnerInstructorCannotEditLessonContent() throws Exception {
+        InstructorContext owner = setupInstructor("inst.sc6fowner@content.test");
+        InstructorContext other = setupInstructor("inst.sc6fother@content.test");
+        Long courseId = createCourse(owner.profile, CourseStatus.DRAFT);
+        Long sectionId = createSectionViaApi(courseId, "Section", owner.token);
+        Long lessonId = createLessonViaApi(sectionId, "Owned lesson", owner.token);
+
+        UpdateLessonRequest req = new UpdateLessonRequest(
+                "Hijacked", LessonContentType.TEXT, "Sneaky body", null, null);
+
+        mockMvc.perform(patch("/api/v1/instructor/courses/lessons/{id}", lessonId)
+                        .header("Authorization", "Bearer " + other.token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden());
     }
 
     // ─── 7. Learner cannot create section → 403 ──────────────────────────────
@@ -363,7 +511,7 @@ class InstructorCourseContentIntegrationTest {
     }
 
     private Long createLessonViaApi(Long sectionId, String title, String token) throws Exception {
-        CreateLessonRequest req = new CreateLessonRequest(title);
+        CreateLessonRequest req = new CreateLessonRequest(title, null, null, null, null);
         String response = mockMvc.perform(post("/api/v1/instructor/courses/sections/{id}/lessons", sectionId)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)

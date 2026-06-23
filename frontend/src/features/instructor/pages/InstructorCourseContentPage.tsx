@@ -6,6 +6,8 @@ import {
   type InstructorCourseContentResponse,
   type InstructorLessonResponse,
   type InstructorSectionResponse,
+  type LessonContentType,
+  type LessonPayload,
   createLesson,
   createSection,
   deleteLesson,
@@ -39,6 +41,267 @@ function validateTitle(value: string): string | null {
   if (!value.trim()) return 'Title is required.';
   if (value.length > 200) return 'Title must not exceed 200 characters.';
   return null;
+}
+
+// ── Lesson content helpers ──────────────────────────────────────────────────────
+
+// '' represents "no content yet" (a structural placeholder lesson).
+type ContentTypeChoice = '' | LessonContentType;
+
+const CONTENT_TYPE_OPTIONS: { value: ContentTypeChoice; label: string }[] = [
+  { value: '', label: 'No content yet' },
+  { value: 'TEXT', label: 'Text' },
+  { value: 'VIDEO', label: 'Video (external link)' },
+  { value: 'PDF', label: 'PDF (external link)' },
+  { value: 'LINK', label: 'Resource link' },
+];
+
+const URL_CONTENT_TYPES: ContentTypeChoice[] = ['VIDEO', 'PDF', 'LINK'];
+
+interface LessonDraft {
+  title: string;
+  contentType: ContentTypeChoice;
+  textContent: string;
+  contentUrl: string;
+  durationMinutes: string;
+}
+
+interface LessonFieldErrors {
+  title?: string;
+  textContent?: string;
+  contentUrl?: string;
+  durationMinutes?: string;
+}
+
+const EMPTY_LESSON_DRAFT: LessonDraft = {
+  title: '',
+  contentType: '',
+  textContent: '',
+  contentUrl: '',
+  durationMinutes: '',
+};
+
+function draftFromLesson(lesson: InstructorLessonResponse): LessonDraft {
+  return {
+    title: lesson.title,
+    contentType: lesson.contentType ?? '',
+    textContent: lesson.textContent ?? '',
+    contentUrl: lesson.contentUrl ?? '',
+    durationMinutes:
+      lesson.durationSeconds != null ? String(Math.round(lesson.durationSeconds / 60)) : '',
+  };
+}
+
+function isHttpUrl(value: string): boolean {
+  const v = value.trim();
+  if (!v) return false;
+  try {
+    const url = new URL(v);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function validateLessonDraft(d: LessonDraft): LessonFieldErrors {
+  const errors: LessonFieldErrors = {};
+  const titleError = validateTitle(d.title);
+  if (titleError) errors.title = titleError;
+
+  if (d.contentType === 'TEXT' && !d.textContent.trim()) {
+    errors.textContent = 'Lesson body is required for text lessons.';
+  }
+  if (URL_CONTENT_TYPES.includes(d.contentType) && !isHttpUrl(d.contentUrl)) {
+    errors.contentUrl = 'Enter a valid http:// or https:// URL.';
+  }
+  const minutes = d.durationMinutes.trim();
+  if (minutes && (!/^\d+$/.test(minutes) || Number(minutes) < 0)) {
+    errors.durationMinutes = 'Enter a whole number of minutes.';
+  }
+  return errors;
+}
+
+function buildLessonPayload(d: LessonDraft): LessonPayload {
+  const contentType = d.contentType === '' ? null : d.contentType;
+  const minutes = d.durationMinutes.trim();
+  return {
+    title: d.title.trim(),
+    contentType,
+    textContent: contentType === 'TEXT' ? d.textContent : null,
+    contentUrl: contentType && contentType !== 'TEXT' ? d.contentUrl.trim() : null,
+    durationSeconds: minutes ? Number(minutes) * 60 : null,
+  };
+}
+
+// Shared field styling, matching the Input component's stroke-only-at-rest look.
+const fieldClass = cn(
+  'w-full bg-surface text-text-primary text-body',
+  'border border-border-default rounded-md py-3 px-4',
+  'placeholder:text-text-muted transition-colors duration-fast ease-out',
+  'focus:outline-none focus:border-salem',
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-salem',
+);
+
+// ── Shared lesson fields form (title + content) ─────────────────────────────────
+// Self-contained: owns draft + inline validation state. Parent handles the API
+// call and any server/network error via onSubmit + serverError. Remount with a
+// new `key` to reset (used by the add form after a successful create).
+
+interface LessonFieldsFormProps {
+  initial: LessonDraft;
+  submitLabel: string;
+  submitVariant: 'primary' | 'secondary';
+  isPending: boolean;
+  idPrefix: string;
+  ariaContext: string;
+  serverError: string | null;
+  onSubmit: (payload: LessonPayload) => void;
+  onCancel: () => void;
+}
+
+function LessonFieldsForm({
+  initial,
+  submitLabel,
+  submitVariant,
+  isPending,
+  idPrefix,
+  ariaContext,
+  serverError,
+  onSubmit,
+  onCancel,
+}: LessonFieldsFormProps) {
+  const [draft, setDraft] = useState<LessonDraft>(initial);
+  const [errors, setErrors] = useState<LessonFieldErrors>({});
+  const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => { titleRef.current?.focus(); }, []);
+
+  function update<K extends keyof LessonDraft>(key: K, value: LessonDraft[K]) {
+    setDraft(prev => ({ ...prev, [key]: value }));
+    if (errors[key as keyof LessonFieldErrors]) {
+      setErrors(prev => { const next = { ...prev }; delete next[key as keyof LessonFieldErrors]; return next; });
+    }
+  }
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const found = validateLessonDraft(draft);
+    if (Object.keys(found).length > 0) { setErrors(found); return; }
+    setErrors({});
+    onSubmit(buildLessonPayload(draft));
+  }
+
+  const isUrlType = URL_CONTENT_TYPES.includes(draft.contentType);
+  const urlLabel =
+    draft.contentType === 'VIDEO' ? 'Video URL'
+      : draft.contentType === 'PDF' ? 'PDF URL'
+        : 'Resource URL';
+
+  return (
+    <form onSubmit={handleSubmit} noValidate className="px-2 py-3 flex flex-col gap-3">
+      <FormField label="Lesson title" htmlFor={`${idPrefix}-title`} error={errors.title}>
+        <Input
+          id={`${idPrefix}-title`}
+          ref={titleRef}
+          value={draft.title}
+          onChange={e => update('title', e.target.value)}
+          maxLength={210}
+          placeholder="Lesson title"
+          hasError={!!errors.title}
+          disabled={isPending}
+          aria-label={`Lesson title for ${ariaContext}`}
+        />
+      </FormField>
+
+      <FormField label="Content type" htmlFor={`${idPrefix}-type`}>
+        <select
+          id={`${idPrefix}-type`}
+          value={draft.contentType}
+          onChange={e => update('contentType', e.target.value as ContentTypeChoice)}
+          disabled={isPending}
+          className={fieldClass}
+        >
+          {CONTENT_TYPE_OPTIONS.map(opt => (
+            <option key={opt.value || 'none'} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
+      </FormField>
+
+      {draft.contentType === 'TEXT' && (
+        <FormField
+          label="Lesson body"
+          htmlFor={`${idPrefix}-text`}
+          error={errors.textContent}
+          hint="Plain text only. Line breaks are preserved for learners."
+        >
+          <textarea
+            id={`${idPrefix}-text`}
+            value={draft.textContent}
+            onChange={e => update('textContent', e.target.value)}
+            maxLength={20000}
+            rows={6}
+            placeholder="Write the lesson content here…"
+            aria-invalid={!!errors.textContent || undefined}
+            disabled={isPending}
+            className={cn(fieldClass, 'resize-y min-h-[120px]', errors.textContent && 'border-error focus:border-error focus-visible:outline-error')}
+          />
+        </FormField>
+      )}
+
+      {isUrlType && (
+        <FormField
+          label={urlLabel}
+          htmlFor={`${idPrefix}-url`}
+          error={errors.contentUrl}
+          hint="Paste an external link. File uploads are not supported yet."
+        >
+          <Input
+            id={`${idPrefix}-url`}
+            type="url"
+            inputMode="url"
+            value={draft.contentUrl}
+            onChange={e => update('contentUrl', e.target.value)}
+            maxLength={2048}
+            placeholder="https://…"
+            hasError={!!errors.contentUrl}
+            disabled={isPending}
+          />
+        </FormField>
+      )}
+
+      <FormField
+        label="Estimated duration (minutes, optional)"
+        htmlFor={`${idPrefix}-duration`}
+        error={errors.durationMinutes}
+      >
+        <Input
+          id={`${idPrefix}-duration`}
+          type="text"
+          inputMode="numeric"
+          value={draft.durationMinutes}
+          onChange={e => update('durationMinutes', e.target.value)}
+          maxLength={5}
+          placeholder="e.g. 10"
+          hasError={!!errors.durationMinutes}
+          disabled={isPending}
+          className="max-w-[160px]"
+        />
+      </FormField>
+
+      {serverError && (
+        <p className="text-body-sm text-error" role="alert">{serverError}</p>
+      )}
+
+      <div className="flex gap-2">
+        <Button type="submit" variant={submitVariant} size="sm" loading={isPending}>
+          {submitLabel}
+        </Button>
+        <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isPending}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
 }
 
 // ── Loading skeleton ───────────────────────────────────────────────────────────
@@ -164,27 +427,20 @@ interface AddLessonFormProps {
 }
 
 function AddLessonForm({ sectionId, sectionTitle, onCreated, onClose }: AddLessonFormProps) {
-  const [title, setTitle] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  // Bump to remount the fields form with a fresh, empty draft after a create.
+  const [formKey, setFormKey] = useState(0);
 
-  // Focus on mount — DOM-only side effect, no setState.
-  useEffect(() => { inputRef.current?.focus(); }, []);
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const validationError = validateTitle(title);
-    if (validationError) { setError(validationError); return; }
-    setError(null);
+  async function handleSubmit(payload: LessonPayload) {
+    setServerError(null);
     setSubmitting(true);
     try {
-      const lesson = await createLesson(sectionId, { title: title.trim() });
+      const lesson = await createLesson(sectionId, payload);
       onCreated(lesson);
-      setTitle('');
-      inputRef.current?.focus();
+      setFormKey(k => k + 1);
     } catch (err) {
-      setError(
+      setServerError(
         isHttpStatus(err, 409)
           ? 'Archived courses cannot be edited.'
           : 'Could not add lesson. Try again.',
@@ -196,35 +452,18 @@ function AddLessonForm({ sectionId, sectionTitle, onCreated, onClose }: AddLesso
 
   return (
     <li className="border-t border-border-default">
-      <form
+      <LessonFieldsForm
+        key={formKey}
+        initial={EMPTY_LESSON_DRAFT}
+        submitLabel="Add lesson"
+        submitVariant="secondary"
+        isPending={submitting}
+        idPrefix={`add-lesson-${sectionId}`}
+        ariaContext={`section ${sectionTitle}`}
+        serverError={serverError}
         onSubmit={handleSubmit}
-        noValidate
-        className="px-2 py-2 flex flex-wrap items-start gap-2"
-      >
-        <div className="flex-1 min-w-0">
-          <Input
-            ref={inputRef}
-            value={title}
-            onChange={e => { setTitle(e.target.value); if (error) setError(null); }}
-            maxLength={210}
-            placeholder="Lesson title"
-            hasError={!!error}
-            disabled={submitting}
-            aria-label={`New lesson title for section ${sectionTitle}`}
-          />
-          {error && (
-            <p className="text-body-sm text-error mt-1" role="alert">{error}</p>
-          )}
-        </div>
-        <div className="flex gap-2 flex-shrink-0 pt-px">
-          <Button type="submit" variant="secondary" size="sm" loading={submitting}>
-            Add
-          </Button>
-          <Button type="button" variant="ghost" size="sm" onClick={onClose} disabled={submitting}>
-            Cancel
-          </Button>
-        </div>
-      </form>
+        onCancel={onClose}
+      />
     </li>
   );
 }
@@ -235,58 +474,27 @@ interface LessonEditFormProps {
   lesson: InstructorLessonResponse;
   sectionTitle: string;
   isPending: boolean;
-  onSave: (title: string) => void;
+  serverError: string | null;
+  onSave: (payload: LessonPayload) => void;
   onCancel: () => void;
 }
 
 // Mounted only while editingLessonId === lesson.id (see parent), and unmounts
-// on save/cancel — so the initial-value capture below never needs to re-sync
-// with a changed `lesson` prop; a different lesson means a fresh mount.
-function LessonEditForm({ lesson, sectionTitle, isPending, onSave, onCancel }: LessonEditFormProps) {
-  const [draftTitle, setDraftTitle] = useState(lesson.title);
-  const [editError, setEditError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Focus on mount — DOM-only side effect, no setState.
-  useEffect(() => { inputRef.current?.focus(); }, []);
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const err = validateTitle(draftTitle);
-    if (err) { setEditError(err); return; }
-    setEditError(null);
-    onSave(draftTitle.trim());
-  }
-
+// on save/cancel — so the initial draft captured from `lesson` never needs to
+// re-sync with a changed prop; a different lesson means a fresh mount.
+function LessonEditForm({ lesson, sectionTitle, isPending, serverError, onSave, onCancel }: LessonEditFormProps) {
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="px-2 py-2 flex flex-wrap items-start gap-2"
-    >
-      <div className="flex-1 min-w-0">
-        <Input
-          ref={inputRef}
-          value={draftTitle}
-          onChange={e => { setDraftTitle(e.target.value); if (editError) setEditError(null); }}
-          maxLength={210}
-          hasError={!!editError}
-          disabled={isPending}
-          aria-label={`New title for lesson ${lesson.title} in section ${sectionTitle}`}
-        />
-        {editError && (
-          <p className="text-body-sm text-error mt-1" role="alert">{editError}</p>
-        )}
-      </div>
-      <div className="flex gap-2 flex-shrink-0 pt-px">
-        <Button type="submit" variant="secondary" size="sm" loading={isPending}>
-          Save
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isPending}>
-          Cancel
-        </Button>
-      </div>
-    </form>
+    <LessonFieldsForm
+      initial={draftFromLesson(lesson)}
+      submitLabel="Save"
+      submitVariant="secondary"
+      isPending={isPending}
+      idPrefix={`edit-lesson-${lesson.id}`}
+      ariaContext={`lesson ${lesson.title} in section ${sectionTitle}`}
+      serverError={serverError}
+      onSubmit={onSave}
+      onCancel={onCancel}
+    />
   );
 }
 
@@ -300,7 +508,7 @@ interface LessonRowProps {
   isPending: boolean;
   rowError: string | null;
   onEdit: () => void;
-  onSave: (title: string) => void;
+  onSave: (payload: LessonPayload) => void;
   onCancelEdit: () => void;
   onDeleteClick: () => void;
   onCancelDelete: () => void;
@@ -330,6 +538,7 @@ function LessonRow({
           lesson={lesson}
           sectionTitle={sectionTitle}
           isPending={isPending}
+          serverError={rowError}
           onSave={onSave}
           onCancel={onCancelEdit}
         />
@@ -465,7 +674,7 @@ interface SectionCardProps {
   onLessonCreated: (lesson: InstructorLessonResponse) => void;
   onCloseLessonForm: () => void;
   onEditLesson: (lessonId: number) => void;
-  onSaveLesson: (lessonId: number, title: string) => void;
+  onSaveLesson: (lessonId: number, payload: LessonPayload) => void;
   onCancelEditLesson: () => void;
   onDeleteLessonClick: (lessonId: number) => void;
   onCancelDeleteLesson: () => void;
@@ -609,7 +818,7 @@ function SectionCard({
               isPending={pendingIds.has(`lesson:${lesson.id}`)}
               rowError={rowErrors[`lesson:${lesson.id}`] ?? null}
               onEdit={() => onEditLesson(lesson.id)}
-              onSave={title => onSaveLesson(lesson.id, title)}
+              onSave={payload => onSaveLesson(lesson.id, payload)}
               onCancelEdit={onCancelEditLesson}
               onDeleteClick={() => onDeleteLessonClick(lesson.id)}
               onCancelDelete={onCancelDeleteLesson}
@@ -779,31 +988,32 @@ export default function InstructorCourseContentPage() {
     });
   }
 
-  async function handleSaveLesson(lessonId: number, title: string) {
+  async function handleSaveLesson(lessonId: number, payload: LessonPayload) {
     const key = `lesson:${lessonId}`;
     addPending(key);
     clearRowError(key);
     try {
-      const updated = await updateLesson(lessonId, { title });
+      const updated = await updateLesson(lessonId, payload);
       setContent(prev => {
         if (!prev) return prev;
         return {
           ...prev,
           sections: prev.sections.map(s => ({
             ...s,
-            lessons: s.lessons.map(l => l.id === lessonId ? { ...l, title: updated.title } : l),
+            lessons: s.lessons.map(l => l.id === lessonId ? updated : l),
           })),
         };
       });
       setEditingLessonId(null);
       setTimeout(() => lessonEditButtonRefs.current.get(lessonId)?.focus(), 0);
     } catch (err) {
-      setEditingLessonId(null);
+      // Keep the edit form open so the instructor's draft is not lost; the error
+      // is surfaced inline inside the form via the rowError → serverError prop.
       setRowError(
         key,
         isHttpStatus(err, 409)
           ? 'Archived courses cannot be edited.'
-          : 'Could not rename lesson. Try again.',
+          : 'Could not save lesson. Try again.',
       );
     } finally {
       removePending(key);
@@ -1018,7 +1228,10 @@ export default function InstructorCourseContentPage() {
                           setAddingLessonSectionId(null);
                         }}
                         onSaveLesson={handleSaveLesson}
-                        onCancelEditLesson={() => setEditingLessonId(null)}
+                        onCancelEditLesson={() => {
+                          if (editingLessonId !== null) clearRowError(`lesson:${editingLessonId}`);
+                          setEditingLessonId(null);
+                        }}
                         onDeleteLessonClick={lessonId => {
                           setDeletingLessonId(lessonId);
                           setEditingLessonId(null);
