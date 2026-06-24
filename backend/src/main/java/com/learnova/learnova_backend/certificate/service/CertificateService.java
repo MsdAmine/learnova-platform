@@ -34,6 +34,7 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
     private final QuizRepository quizRepository;
     private final QuizAttemptRepository quizAttemptRepository;
+    private final CertificatePdfService certificatePdfService;
 
     @Transactional
     public ResponseEntity<CertificateResponse> issueCertificateForCourse(Long courseId, CustomUserDetails userDetails) {
@@ -105,13 +106,27 @@ public class CertificateService {
 
     @Transactional(readOnly = true)
     public CertificateResponse getMyCertificate(Long certificateId, CustomUserDetails userDetails) {
+        return toResponse(getOwnedCertificate(certificateId, userDetails));
+    }
+
+    @Transactional(readOnly = true)
+    public Certificate getOwnedCertificate(Long certificateId, CustomUserDetails userDetails) {
         LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(userDetails.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Learner profile not found"));
 
-        Certificate cert = certificateRepository.findByIdAndLearnerProfileId(certificateId, learnerProfile.getId())
+        return certificateRepository.findByIdAndLearnerProfileId(certificateId, learnerProfile.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found"));
+    }
 
-        return toResponse(cert);
+    /**
+     * Renders the PDF inside the same transaction as the ownership lookup — the
+     * certificate's course/instructor/learner associations are lazy, and open-in-view
+     * is disabled, so they must be read while the Hibernate session is still open.
+     */
+    @Transactional(readOnly = true)
+    public byte[] generateOwnedCertificatePdf(Long certificateId, CustomUserDetails userDetails) {
+        Certificate certificate = getOwnedCertificate(certificateId, userDetails);
+        return certificatePdfService.generateCertificatePdf(certificate);
     }
 
     private CertificateResponse toResponse(Certificate cert) {

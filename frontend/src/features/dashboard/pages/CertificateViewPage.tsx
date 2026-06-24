@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCertificate } from '../../../api/certificates';
+import { downloadCertificatePdf, getCertificate } from '../../../api/certificates';
 import type { CertificateResponse } from '../../../api/certificates';
 import { Button } from '../../../components/ui/Button';
 
@@ -18,6 +18,8 @@ export default function CertificateViewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [certificate, setCertificate] = useState<CertificateResponse | null>(null);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
 
   useEffect(() => {
     const token = { cancelled: false };
@@ -38,6 +40,19 @@ export default function CertificateViewPage() {
       token.cancelled = true;
     };
   }, [certificateId]);
+
+  const handleDownloadPdf = async () => {
+    if (!certificate) return;
+    setDownloading(true);
+    setDownloadError(false);
+    try {
+      await downloadCertificatePdf(certificate.id, certificate.certificateCode);
+    } catch {
+      setDownloadError(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <>
@@ -138,19 +153,33 @@ export default function CertificateViewPage() {
             </div>
 
             {/* Action bar — hidden on print */}
-            <div className="cert-actions flex items-center gap-3 mt-xl">
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/dashboard/certificates')}
-              >
-                ← Back to my certificates
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => window.print()}
-              >
-                Print / Save as PDF
-              </Button>
+            <div className="cert-actions flex flex-col items-center gap-3 mt-xl">
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/dashboard/certificates')}
+                >
+                  ← Back to my certificates
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleDownloadPdf}
+                  loading={downloading}
+                >
+                  Download PDF
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => window.print()}
+                >
+                  Print certificate
+                </Button>
+              </div>
+              {downloadError && (
+                <p className="text-body-sm text-error">
+                  We could not download the PDF. Please try again.
+                </p>
+              )}
             </div>
           </>
         )}
