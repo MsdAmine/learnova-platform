@@ -8,7 +8,14 @@ import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { Bone } from '../../../components/common/skeletons/Bone';
 import { gradientForId } from '../../../components/dashboard/courseCardUtils';
 import { useAuth } from '../../../context/AuthContext';
-import { getPublishedCourse, type CourseCatalogItem, type CourseLevel } from '../../../api/courses';
+import {
+  getPublishedCourse,
+  type CourseDetail as CourseDetailData,
+  type CourseLevel,
+  type LessonContentType,
+  type PublicInstructor,
+  type PublicSectionPreview,
+} from '../../../api/courses';
 import { enrollInCourse, getMyEnrollments } from '../../../api/enrollments';
 import { getMyWishlist, addToWishlist, removeFromWishlist } from '../../../api/wishlist';
 
@@ -18,6 +25,22 @@ const LEVEL_LABELS: Record<CourseLevel, string> = {
   ADVANCED: 'Advanced',
   ALL_LEVELS: 'All levels',
 };
+
+const CONTENT_TYPE_LABELS: Record<LessonContentType, string> = {
+  TEXT: 'Text',
+  VIDEO: 'Video',
+  PDF: 'PDF',
+  LINK: 'Link',
+};
+
+function formatDuration(totalSeconds: number): string {
+  const totalMinutes = Math.round(totalSeconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  if (hours === 0) return `${minutes}m`;
+  if (minutes === 0) return `${hours}h`;
+  return `${hours}h ${minutes}m`;
+}
 
 // Mirrors the helper in CourseCatalogCard — 401/403 are interceptor-owned;
 // only enrollment/wishlist-specific statuses are handled here.
@@ -92,7 +115,7 @@ function BackLink() {
 // ── Wishlist action (secondary, below enroll CTA) ─────────────────────────────
 
 type WishlistActionProps = {
-  course: CourseCatalogItem;
+  course: CourseDetailData;
   isSaved: boolean;
   wishlistLoading: boolean;
   wishlistMutating: boolean;
@@ -171,7 +194,7 @@ function WishlistAction({
 // ── Side action panel ─────────────────────────────────────────────────────────
 
 type SideActionProps = {
-  course: CourseCatalogItem;
+  course: CourseDetailData;
   isAuthenticated: boolean;
   isLearner: boolean;
   isEnrolled: boolean;
@@ -293,7 +316,7 @@ function SideActionPanel({
 // ── Loaded course detail ──────────────────────────────────────────────────────
 
 type CourseDetailProps = {
-  course: CourseCatalogItem;
+  course: CourseDetailData;
   isAuthenticated: boolean;
   isLearner: boolean;
   isEnrolled: boolean;
@@ -309,6 +332,79 @@ type CourseDetailProps = {
   onSave: () => void;
   onRemove: () => void;
 };
+
+// ── Syllabus preview ────────────────────────────────────────────────────────────
+
+function SyllabusPreview({ sections }: { sections: PublicSectionPreview[] }) {
+  if (sections.length === 0) {
+    return (
+      <p className="text-body text-text-muted">Syllabus will be available soon.</p>
+    );
+  }
+
+  return (
+    <ol className="space-y-4">
+      {sections.map((section) => (
+        <li key={section.id} className="border border-border-default rounded-lg p-4">
+          <h3 className="text-body font-semibold text-text-primary">
+            {section.position}. {section.title}
+          </h3>
+          {section.lessons.length > 0 ? (
+            <ul className="mt-2 space-y-1.5">
+              {section.lessons.map((lesson) => (
+                <li
+                  key={lesson.id}
+                  className="flex items-center gap-2 text-body-sm text-text-secondary"
+                >
+                  <span className="flex-1">{lesson.title}</span>
+                  {lesson.contentType && (
+                    <Badge variant="default" className="flex-shrink-0">
+                      {CONTENT_TYPE_LABELS[lesson.contentType]}
+                    </Badge>
+                  )}
+                  {lesson.durationSeconds != null && lesson.durationSeconds > 0 && (
+                    <span className="text-caption text-text-muted flex-shrink-0">
+                      {formatDuration(lesson.durationSeconds)}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-2 text-body-sm text-text-muted">No lessons yet.</p>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+// ── Instructor card ──────────────────────────────────────────────────────────────
+
+function InstructorCard({ instructor }: { instructor: PublicInstructor }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-body font-semibold text-text-primary">{instructor.displayName}</p>
+      {instructor.bio ? (
+        <p className="text-body-sm text-text-secondary max-w-[72ch]">{instructor.bio}</p>
+      ) : (
+        <p className="text-body-sm text-text-muted">Instructor details will be available soon.</p>
+      )}
+      {instructor.expertise && (
+        <div className="flex gap-2 text-body-sm">
+          <span className="text-text-secondary w-24 flex-shrink-0">Expertise</span>
+          <span className="text-text-primary">{instructor.expertise}</span>
+        </div>
+      )}
+      {instructor.experience && (
+        <div className="flex gap-2 text-body-sm">
+          <span className="text-text-secondary w-24 flex-shrink-0">Experience</span>
+          <span className="text-text-primary">{instructor.experience}</span>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function CourseDetail({
   course,
@@ -375,12 +471,24 @@ function CourseDetail({
         )}
 
         <p className="text-body-sm text-text-secondary mt-4">
-          By {course.instructorName}
+          By {course.instructor.displayName}
         </p>
 
         {addedDate && (
           <p className="text-caption text-text-muted mt-1">Added {addedDate}</p>
         )}
+
+        <div className="flex flex-wrap items-center gap-4 mt-5 text-body-sm text-text-secondary">
+          <span>{course.sectionCount} {course.sectionCount === 1 ? 'section' : 'sections'}</span>
+          <span aria-hidden="true">·</span>
+          <span>{course.lessonCount} {course.lessonCount === 1 ? 'lesson' : 'lessons'}</span>
+          {course.totalDurationSeconds > 0 && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{formatDuration(course.totalDurationSeconds)} estimated duration</span>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Two-column body: main content left, side panel right on lg */}
@@ -419,9 +527,30 @@ function CourseDetail({
               </div>
               <div className="flex gap-2">
                 <dt className="text-text-secondary w-24 flex-shrink-0">Instructor</dt>
-                <dd className="text-text-primary">{course.instructorName}</dd>
+                <dd className="text-text-primary">{course.instructor.displayName}</dd>
               </div>
+              <div className="flex gap-2">
+                <dt className="text-text-secondary w-24 flex-shrink-0">Sections</dt>
+                <dd className="text-text-primary">{course.sectionCount}</dd>
+              </div>
+              <div className="flex gap-2">
+                <dt className="text-text-secondary w-24 flex-shrink-0">Lessons</dt>
+                <dd className="text-text-primary">{course.lessonCount}</dd>
+              </div>
+              {course.totalDurationSeconds > 0 && (
+                <div className="flex gap-2">
+                  <dt className="text-text-secondary w-24 flex-shrink-0">Estimated duration</dt>
+                  <dd className="text-text-primary">{formatDuration(course.totalDurationSeconds)}</dd>
+                </div>
+              )}
             </dl>
+          </section>
+
+          <section aria-labelledby="section-syllabus">
+            <h2 id="section-syllabus" className="text-title-sm font-semibold text-text-primary mb-2">
+              Course syllabus
+            </h2>
+            <SyllabusPreview sections={course.sections} />
           </section>
 
           <section aria-labelledby="section-access">
@@ -429,9 +558,24 @@ function CourseDetail({
               What you will access
             </h2>
             <div className="text-body text-text-secondary max-w-[72ch] space-y-2">
-              <p>After enrolling, this course appears in your learning dashboard.</p>
+              {course.lessonCount > 0 ? (
+                <p>
+                  After enrolling, you get access to {course.sectionCount}{' '}
+                  {course.sectionCount === 1 ? 'section' : 'sections'} and {course.lessonCount}{' '}
+                  {course.lessonCount === 1 ? 'lesson' : 'lessons'} from your learning dashboard.
+                </p>
+              ) : (
+                <p>After enrolling, this course appears in your learning dashboard.</p>
+              )}
               <p>Course lessons are available from the course player once you are enrolled.</p>
             </div>
+          </section>
+
+          <section aria-labelledby="section-instructor">
+            <h2 id="section-instructor" className="text-title-sm font-semibold text-text-primary mb-2">
+              About the instructor
+            </h2>
+            <InstructorCard instructor={course.instructor} />
           </section>
         </div>
 
@@ -475,7 +619,7 @@ export default function CourseDetailPage() {
   // save action when the user actually holds ROLE_LEARNER to avoid a 403.
   const isLearner = isAuthenticated && (user?.roles.includes('ROLE_LEARNER') ?? false);
 
-  const [course, setCourse] = useState<CourseCatalogItem | null>(null);
+  const [course, setCourse] = useState<CourseDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PageError>('none');
 

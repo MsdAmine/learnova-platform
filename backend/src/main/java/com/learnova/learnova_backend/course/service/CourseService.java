@@ -1,12 +1,18 @@
 package com.learnova.learnova_backend.course.service;
 
 import com.learnova.learnova_backend.course.dto.CourseCatalogResponse;
+import com.learnova.learnova_backend.course.dto.CourseDetailResponse;
 import com.learnova.learnova_backend.course.dto.CourseRequest;
 import com.learnova.learnova_backend.course.dto.CourseResponse;
 import com.learnova.learnova_backend.course.dto.CourseUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressUpdateRequest;
 import com.learnova.learnova_backend.course.dto.LessonProgressResponse;
 import com.learnova.learnova_backend.course.dto.CourseProgressResponse;
+import com.learnova.learnova_backend.course.dto.PublicInstructorResponse;
+import com.learnova.learnova_backend.course.dto.PublicLessonPreviewResponse;
+import com.learnova.learnova_backend.course.dto.PublicSectionPreviewResponse;
+import com.learnova.learnova_backend.course.entity.Section;
+import com.learnova.learnova_backend.course.repository.SectionRepository;
 import com.learnova.learnova_backend.media.MediaFolder;
 import com.learnova.learnova_backend.media.MediaStorageService;
 import com.learnova.learnova_backend.media.MediaUploadResult;
@@ -53,6 +59,7 @@ public class CourseService {
         private final InstructorProfileRepository instructorProfileRepository;
         private final WishlistItemRepository wishlistRepository;
         private final MediaStorageService mediaStorageService;
+        private final SectionRepository sectionRepository;
 
         // Nouvelles dépendances requises pour l'Issue #58 & #59
         private final LessonRepository lessonRepository;
@@ -204,12 +211,12 @@ public class CourseService {
          * id.
          */
         @Transactional(readOnly = true)
-        public CourseCatalogResponse getPublishedCourse(Long courseId) {
+        public CourseDetailResponse getPublishedCourse(Long courseId) {
                 Course course = courseRepository.findById(courseId)
                                 .filter(c -> c.getStatus() == CourseStatus.PUBLISHED)
                                 .orElseThrow(() -> new ResponseStatusException(
                                                 HttpStatus.NOT_FOUND, "Course not found"));
-                return toCatalogResponse(course);
+                return toDetailResponse(course);
         }
 
         private CourseCatalogResponse toCatalogResponse(Course course) {
@@ -223,6 +230,67 @@ public class CourseService {
                                 course.getCategory().getName(),
                                 course.getInstructorProfile().getUser().getFullName(),
                                 course.getCreatedAt());
+        }
+
+        private CourseDetailResponse toDetailResponse(Course course) {
+                List<Section> sections = sectionRepository.findByCourseIdOrderByIdAsc(course.getId());
+                List<Lesson> lessons = lessonRepository.findByCourseIdOrderBySectionIdAscIdAsc(course.getId());
+
+                java.util.Map<Long, List<Lesson>> lessonsBySectionId = new java.util.LinkedHashMap<>();
+                for (Lesson lesson : lessons) {
+                        lessonsBySectionId
+                                        .computeIfAbsent(lesson.getSection().getId(), id -> new java.util.ArrayList<>())
+                                        .add(lesson);
+                }
+
+                List<PublicSectionPreviewResponse> sectionPreviews = new java.util.ArrayList<>();
+                for (int sectionIndex = 0; sectionIndex < sections.size(); sectionIndex++) {
+                        Section section = sections.get(sectionIndex);
+                        List<Lesson> sectionLessons = lessonsBySectionId.getOrDefault(section.getId(), List.of());
+
+                        List<PublicLessonPreviewResponse> lessonPreviews = new java.util.ArrayList<>();
+                        for (int lessonIndex = 0; lessonIndex < sectionLessons.size(); lessonIndex++) {
+                                Lesson lesson = sectionLessons.get(lessonIndex);
+                                lessonPreviews.add(new PublicLessonPreviewResponse(
+                                                lesson.getId(),
+                                                lesson.getTitle(),
+                                                lessonIndex + 1,
+                                                lesson.getContentType(),
+                                                lesson.getDurationSeconds()));
+                        }
+
+                        sectionPreviews.add(new PublicSectionPreviewResponse(
+                                        section.getId(),
+                                        section.getTitle(),
+                                        sectionIndex + 1,
+                                        lessonPreviews));
+                }
+
+                long totalDurationSeconds = lessons.stream()
+                                .mapToLong(lesson -> lesson.getDurationSeconds() == null ? 0L : lesson.getDurationSeconds())
+                                .sum();
+
+                InstructorProfile instructorProfile = course.getInstructorProfile();
+                PublicInstructorResponse instructor = new PublicInstructorResponse(
+                                instructorProfile.getUser().getFullName(),
+                                instructorProfile.getBio(),
+                                instructorProfile.getExpertise(),
+                                instructorProfile.getExperience());
+
+                return new CourseDetailResponse(
+                                course.getId(),
+                                course.getTitle(),
+                                course.getDescription(),
+                                course.getLevel(),
+                                course.getStatus(),
+                                course.getThumbnailUrl(),
+                                course.getCategory().getName(),
+                                course.getCreatedAt(),
+                                instructor,
+                                sectionPreviews,
+                                sections.size(),
+                                lessons.size(),
+                                totalDurationSeconds);
         }
 
         // --- LOGIQUE MÉTIER DE L'ISSUE #58 ---

@@ -16,6 +16,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     List<Lesson> findBySectionIdOrderByIdAsc(Long sectionId);
 
+    // Ordered by section then lesson id, so callers can group by section without N+1 queries.
+    @Query("SELECT l FROM Lesson l WHERE l.section.course.id = :courseId ORDER BY l.section.id ASC, l.id ASC")
+    List<Lesson> findByCourseIdOrderBySectionIdAscIdAsc(@Param("courseId") Long courseId);
+
     // Bulk JPQL delete: call only after LessonProgress records are removed.
     // No clearAutomatically — the session retains stale entries but subsequent
     // collection queries still hit DB and return correct post-delete results.
