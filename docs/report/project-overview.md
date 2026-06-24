@@ -34,7 +34,8 @@ pace, takes quizzes and receives a score, retakes quizzes and reviews full
 attempt history, saves courses to a wishlist for later, edits their own
 profile (including the same learning preferences captured during onboarding),
 and can issue and view a certificate of completion once a course reaches 100%
-progress.
+progress and, if the course has any published quizzes, every one of them has
+been passed.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -54,7 +55,7 @@ implemented; there is no broader user-management console.
 | `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing, learning preferences, onboarding-completion tracking |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
-| `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
+| `certificate` | Certificate issuance (completed enrollment + all published course quizzes passed), listing, and self-scoped retrieval |
 | `livesession` | Live session scheduling (instructor, ownership-checked), enrollment-gated learner visibility, access-controlled join, idempotent attendance recording — powered by generated Jitsi room URLs |
 | `media` | Cloudinary-backed file upload abstraction (`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`) for learner profile images and course thumbnails |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
@@ -75,10 +76,11 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner wishlist (save-for-later) and saved-courses dashboard
 - Profile self-editing for both learner and instructor profiles
 - Learner certificate issuance and viewing, triggered manually from the
-  course player once a course reaches 100% progress (see
-  `core-workflows.md` §9); the learner dashboard also displays a learner's
-  already-issued certificates, with each card linking to the certificate
-  view route
+  course player once a course reaches 100% progress and (if the course has
+  any published quizzes) every published quiz has at least one passed
+  attempt (see `core-workflows.md` §9); the learner dashboard also displays
+  a learner's already-issued certificates, with each card linking to the
+  certificate view route
 - Approved-instructor profile switching between the learner and instructor
   areas from all three UI entry points (dashboard switch card, instructor
   layout back-to-learner action, and Settings page), backed by

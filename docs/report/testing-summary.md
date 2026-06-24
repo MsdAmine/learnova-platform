@@ -7,12 +7,14 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **33
+The backend test suite (`backend/src/test/java`) currently contains **34
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
-no external database is required. A full `./mvnw test` run currently reports
-**241 tests, 0 failures, 0 errors**.
+no external database is required. A full `./mvnw test` run previously
+reported **241 tests, 0 failures, 0 errors**; the certificate quiz-eligibility
+class added 10 more tests on top of that baseline — see **How to get exact
+numbers** below to confirm the current total.
 
 ### Test categories
 
@@ -63,12 +65,22 @@ no external database is required. A full `./mvnw test` run currently reports
 - `InstructorProfileUpdateIntegrationTest`
 - `LearnerProfileUpdateIntegrationTest`
 
-**Certificates** (1 class)
+**Certificates** (2 classes)
 - `CertificateIntegrationTest` — covers issuance on a completed enrollment,
   idempotent re-issuance, rejection on an incomplete enrollment (`409`),
   rejection with no enrollment (`404`), per-learner list scoping, ownership
   checks on certificate retrieval, certificate code uniqueness, and
   unauthenticated access (`401`)
+- `CertificateQuizEligibilityIntegrationTest` (10 tests) — covers the
+  assessment-aware eligibility rule: issuance succeeds once lessons are
+  complete and every published quiz has a passed attempt; issuance is
+  blocked (`409`, with a distinct message) when lessons are incomplete, when
+  a published quiz was never attempted, and when a published quiz has only
+  failed attempts; a later passed attempt after a failure unblocks issuance;
+  DRAFT/ARCHIVED quizzes never block; a course with no published quizzes
+  only needs lesson completion; all published quizzes must be passed when
+  more than one exists; repeat issuance stays idempotent with no duplicate
+  row; and a non-enrolled learner gets `404`
 
 **Live sessions** (1 class)
 - `LiveSessionIntegrationTest` — 10 tests covering: instructor can create a
@@ -262,13 +274,17 @@ lint, build, and manual browser QA:
   - Existing certificate: opening the course player for an already-issued
     course shows the "View certificate" state directly (no re-issue button).
   - Backend mismatch / `409` (e.g., issuing for a not-yet-completed
-    enrollment): an accessible (`role="alert"`) error message is shown in
-    the panel.
+    enrollment, or a completed enrollment with an unpassed published quiz):
+    an accessible (`role="alert"`) error message is shown in the panel, and
+    for the quiz-blocked case a "Go to Quizzes" button switches the course
+    player to the Quizzes tab.
 - No automated frontend component test was added for this UI in this
-  change — the claims above are manual QA only; the certificate panel is
+  change — the claims above are manual QA only; the certificate panel,
+  including the "Go to Quizzes" button added for the quiz-blocked case, is
   not covered by the frontend automated test harness described above.
   The backend behavior it depends on is covered by the automated
-  `CertificateIntegrationTest` listed above.
+  `CertificateIntegrationTest` and `CertificateQuizEligibilityIntegrationTest`
+  listed above.
 
 **Learner dashboard mock-content cleanup — manual verification:**
 - `npm run lint` passed.
