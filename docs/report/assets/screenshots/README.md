@@ -1,98 +1,224 @@
-# Screenshot Inventory
+# Screenshot Inventory (Desktop + Mobile, by Role)
 
-Final report/demo screenshots for the Learnova PFA report and presentation,
-captured from a running local dev instance (frontend `npm run dev` on
-`http://localhost:5173`, backend `./mvnw spring-boot:run` on
-`http://localhost:8080`) using the seeded demo accounts:
+Report-ready screenshot set for the Learnova PFA report, captured from a running local
+dev instance (frontend `npm run dev` on `http://localhost:5173`, backend
+`./mvnw spring-boot:run` on `http://localhost:8080`) using Playwright MCP browser
+automation.
 
-- `demo.learner@learnova.dev`
-- `demo.instructor@learnova.dev`
-- `demo.admin@learnova.dev`
-- Password for all three: `Password123!`
+This set supersedes the older flat/ungrouped screenshot files at the root of this
+folder (`01-public-catalog.png`, `02-learner-dashboard.png`, `03-course-player-lessons.png`,
+`04-course-player-quiz-result.png`, `05-instructor-content-builder.png`,
+`06-admin-instructor-approvals.png`, `mobile-course-player.png`, `mobile-settings.png`)
+and the desktop-only numbered set (`01-public-catalog-desktop.png` … `16-settings-profile-image-desktop.png`)
+from a prior capture pass. Those files are left in place since cleaning up
+`docs/report/README.md` references was out of scope for this task, but the
+`desktop/` and `mobile/` subfolders below are the current, complete, organized set.
 
-Desktop screenshots use a 1440×900 viewport; the mobile screenshot uses
-390×844. Each browser session started from a cleared `localStorage` (no
-stale session reused) before logging in with the relevant demo account.
+## Viewports
 
-This is manual browser-QA evidence of what the running application looks
-like — it is not an automated test and does not by itself prove backend
-correctness (see `docs/report/testing-summary.md` for that evidence).
+- **Desktop:** 1440×900
+- **Mobile:** 390×844
 
-The older screenshot set referenced from `docs/report/README.md`
-(`01-public-catalog.png`, `02-learner-dashboard.png`,
-`03-course-player-lessons.png`, `04-course-player-quiz-result.png`,
-`05-instructor-content-builder.png`, `06-admin-instructor-approvals.png`,
-`mobile-course-player.png`, `mobile-settings.png`) predates this pass and is
-left in place; it is superseded in coverage by the numbered set below but
-not deleted, since `docs/report/README.md` was not in scope for this task.
+## Accounts used
+
+| Account | Role | Password | Notes |
+|---|---|---|---|
+| `demo.learner@learnova.dev` | Learner | `Password123!` | Seeded demo account |
+| `demo.instructor@learnova.dev` | Instructor (Sofia Martin) | `Password123!` | Seeded demo account, owns "Cloud Infrastructure Essentials" (course 19) |
+| `demo.admin@learnova.dev` | Admin | `Password123!` | Seeded demo account |
+| `report.demo.learner@learnova.dev` | Learner (new) | `Password123!` | Created via real `/register` flow during this session, to capture the onboarding wizard (steps 1–4) on desktop since the seeded demo learner had already completed onboarding. Also used to submit a real instructor application captured on `desktop/admin/01`. |
+| `mobile.demo.learner@learnova.dev` | Learner (new) | `Password123!` | Created via real `/register` flow during this session, to capture the onboarding wizard step on mobile and to submit a second real instructor application captured on `mobile/admin/01`. |
+
+All five accounts are real backend-persisted users created through the actual
+registration/login flows — no fabricated frontend data, no direct database edits.
 
 ## Data side effects from this capture session
 
-Capturing certificate and content-builder evidence required two real,
-additive actions through the actual app flows (no direct database edits,
-no fabricated data):
+Several real, additive actions were taken through the actual app flows (no direct
+database edits, no fabricated data) specifically because the seeded demo data had
+empty states that needed to be filled to produce report-useful screenshots:
 
-1. **Course completion + certificate issuance** — as `demo.learner`, the two
-   remaining lessons in "React Fundamentals for Beginners" (course id 2)
-   were marked complete via the real "Mark as complete" button, then a
-   certificate was issued via the real "Issue certificate" action
-   (`POST /api/v1/learner/certificates/course/2/issue`). This is
-   irreversible demo-account state: the learner's enrollment is now 100%/
-   COMPLETED and a real certificate (id 4) exists. It directly produced
-   screenshots 07 and 08, and changed the on-screen stats in 03 and 04
-   (now showing 1 completed course and 1 certificate instead of 0).
-2. **Course content authoring** — as `demo.instructor`, one section
-   ("Course Overview") and one lesson ("Welcome to the Course") were added
-   to "QA Quiz Course" (course id 13) via the real instructor
-   content-builder form, because both of that instructor's existing
-   courses had zero sections/lessons. This produced screenshot 13. No
-   existing section/lesson was edited or deleted.
+1. **Course completion + certificate issuance (demo.learner, course 19 "Cloud
+   Infrastructure Essentials")** — all 3 lessons were marked complete via the real
+   "Mark as complete" button, then a certificate was issued via the real "Issue
+   certificate" action. This is irreversible demo-account state: the learner's
+   enrollment is now 100%/COMPLETED and certificate id 1 exists.
+2. **Lesson content authoring (demo.instructor, course 19)** — the two lessons that
+   had no content yet ("Networking basics in the cloud", "Managing cost and scaling")
+   were given real content via the instructor content builder: one TEXT lesson body,
+   one Video (external) URL. This was necessary because the seeded course only had
+   placeholder text on lesson 1 and no content at all on lessons 2–3.
+3. **Quiz authoring + publishing (demo.instructor, course 19)** — no course in the
+   seed data had any quiz at all. A quiz ("Cloud Infrastructure Knowledge Check") with
+   2 questions (1 multiple-choice, 1 true/false), each with answer options and a
+   marked-correct option, was created and published via the real instructor quiz
+   builder.
+4. **Quiz attempt (demo.learner, course 19)** — the learner started and submitted an
+   attempt on the quiz from (3), answering both questions correctly (100%, Passed),
+   to capture the in-progress and passed-result quiz states.
+5. **Wishlist save (demo.learner)** — "Building REST APIs with Spring Boot" (course 1)
+   was saved via the real "Save for later" action on the public course detail page,
+   because Saved Courses was otherwise empty.
+6. **New account registrations** — `report.demo.learner@learnova.dev` and
+   `mobile.demo.learner@learnova.dev` were created via the real `/register` flow
+   specifically to capture the onboarding wizard, since the seeded demo learner had
+   `learnerOnboardingCompleted = true` with no UI path to reset it.
+7. **Instructor applications + one approval** — both new accounts above submitted real
+   instructor applications via Settings → Instructor (because the instructor-approvals
+   queue was otherwise empty). The application from `report.demo.learner` was approved
+   by `demo.admin` (captured at both the pending and confirm-step states before
+   approving). The application from `mobile.demo.learner` was left pending to also
+   document the mobile pending-queue state.
 
-No instructor-approval requests were approved or rejected, no live session
-was created/cancelled/joined, and no other persistent demo data was
-modified.
+No existing seeded course, lesson, or quiz was deleted. No live session was
+created/cancelled/joined beyond what already existed in seed data (two real
+scheduled Jitsi-backed sessions were already present and captured as-is).
 
 ## Known data caveats
 
-- The public catalog (`/courses`) mixes a handful of genuine course entries
-  with leftover QA/test seed data (titles like "test", "amine preview",
-  "QA Test Published Course"). This is the cleanest available state without
-  fabricating new catalog data; screenshot 01 is captured as-is.
-- Screenshot 05 (course player — Lessons tab) was captured while course 2
-  was still at 33% (1 of 3 lessons complete), before the completion flow
-  described above. It is accurate for the moment it was captured and still
-  correctly demonstrates lesson navigation, progress, and the active-tab/
-  selected-row accent treatment; it is simply earlier in the same course's
-  timeline than screenshots 03/04/07/08.
-- Instructor live-session screenshot 10 shows real Jitsi meeting URLs
-  (`https://meet.jit.si/learnova-live-<random>`). Per the live-sessions
-  design, the unguessable room name is itself the v1 access boundary; these
-  are disposable demo rooms, not production secrets, and the instructor
-  viewing them is their own session owner.
+- Course thumbnails are stable Unsplash photo URLs from the seed data; no images were
+  added or changed.
+- Instructor live-session screenshots show real Jitsi meeting URLs
+  (`https://meet.jit.si/learnova-live-<random>`). Per the live-sessions design, the
+  unguessable room name is itself the v1 access boundary; these are disposable demo
+  rooms, not production secrets.
+- The "live seeion react" / "adsasd" session titles are pre-existing real seed/QA data
+  from earlier manual testing, not fabricated for this session.
+
+## Screens skipped (not implemented) and why
+
+- **Instructor course create/edit modal "Edit" variant** — only the Create form was
+  fully exercised; the Edit-course modal is the same component, so a separate
+  screenshot was judged redundant and skipped.
+- **Admin dashboard, admin users page, admin course/category moderation pages** — not
+  implemented. The router (`frontend/src/router/index.tsx`) only defines
+  `/admin/instructor-approvals` under `/admin`. No other admin surface exists to
+  capture.
+- **Instructor "main landing page"** — there is no separate instructor dashboard/index
+  route; `/instructor` has no index child, so `InstructorCoursesPage` at
+  `/instructor/courses` is the de facto landing surface and was captured as such.
+- **Mobile admin navigation drawer** — `AdminLayout` (like `InstructorLayout`) does not
+  use a collapsible drawer at any viewport; it's a single top bar with no nav links
+  besides "Back to learner dashboard" (only one admin route exists). No drawer screen
+  exists to capture.
+- **Mobile course content builder "Add a section" / lesson "URL content type" variant
+  screenshot** — covered once each in the desktop set; mobile inventory focuses on the
+  TEXT lesson-edit form (the more common content type) to avoid duplicating the same
+  form chrome twice for marginal value.
+- **Quiz tab "failed" result state** — only a "Passed" (100%) result was captured,
+  since the same quiz only had two real questions and creating a deliberately-wrong
+  second attempt was judged unnecessary noise; the per-question correct/incorrect
+  feedback UI is still fully visible in the passed-result screenshot.
 
 ## Inventory
 
-| # | Filename | Route / page | Actor | Viewport | Proves | Side effects / caveats | Status |
-|---|---|---|---|---|---|---|---|
-| 01 | `01-public-catalog-desktop.png` | `/courses` | Guest | 1440×900 | Real public course catalog, category filter, accent category badges, enrolled-vs-enroll CTA state | Catalog mixes real and QA/test seed courses (see caveats) | Report-ready, with caveat noted |
-| 02 | `02-public-course-detail-desktop.png` | `/courses/2` | Guest | 1440×900 | Public course detail info, accent category badge, honest CTA (no price/rating/duration claims) | None | Report-ready |
-| 03 | `03-learner-dashboard-desktop.png` | `/dashboard` | demo.learner | 1440×900 | Real learner dashboard: enrollment stats, Continue Learning, My Courses, real Certificates section (no mock live sessions) | Captured after course-2 completion; shows 1 completed course + 1 certificate | Report-ready |
-| 04 | `04-progress-page-desktop.png` | `/dashboard/progress` | demo.learner | 1440×900 | Real enrollment/progress data, no weekly-activity mock | Captured after course-2 completion | Report-ready |
-| 05 | `05-course-player-lessons-desktop.png` | `/dashboard/courses/2` (Lessons tab) | demo.learner | 1440×900 | Lesson layout, per-lesson progress, selected-lesson accent row, course outline | Captured at 33% complete, before the later completion flow (see caveats) | Report-ready |
-| 06 | `06-course-player-quiz-history-desktop.png` | `/dashboard/courses/13` (Quizzes tab) | demo.learner | 1440×900 | Quiz retake/attempt-history UI, passed result, expanded attempt history (2 attempts) | None (pre-existing real attempts, not fabricated for this session) | Report-ready |
-| 07 | `07-certificates-list-desktop.png` | `/dashboard/certificates` | demo.learner | 1440×900 | Real certificate list with one issued certificate; honest "no download/PDF/share" framing | Reflects the certificate issued in this session (see side effects) | Report-ready |
-| 08 | `08-certificate-view-desktop.png` | `/dashboard/certificates/4` | demo.learner | 1440×900 | Real certificate view page (name, course, instructor, issue date, verification code, Print/Save-as-PDF only) | Certificate was issued in this session via the real flow, not fabricated | Report-ready |
-| 09 | `09-learner-live-sessions-desktop.png` | `/dashboard/live-sessions` | demo.learner | 1440×900 | Real backend-backed upcoming session list with Join action; no fake links | None | Report-ready |
-| 10 | `10-instructor-live-sessions-desktop.png` | `/instructor/live-sessions` | demo.instructor | 1440×900 | Schedule/list/cancel UI for Jitsi-backed live sessions; SCHEDULED and CANCELLED states | Real Jitsi room URLs visible (disposable demo rooms, not production secrets — see caveats) | Report-ready |
-| 11 | `11-instructor-courses-desktop.png` | `/instructor/courses` | demo.instructor | 1440×900 | Instructor course management list; Draft and Published status badges with accent treatment | None | Report-ready |
-| 12 | `12-instructor-quizzes-desktop.png` | `/instructor/courses/13/quizzes` | demo.instructor | 1440×900 | Instructor quiz management; Draft and Published quiz badges | None | Report-ready |
-| 13 | `13-instructor-content-builder-desktop.png` | `/instructor/courses/13/content` | demo.instructor | 1440×900 | Course sections/lessons builder with a populated section and lesson | One section + one lesson added via the real authoring flow (see side effects) | Report-ready |
-| 14 | `14-admin-approvals-desktop.png` | `/admin/instructor-approvals` | demo.admin | 1440×900 | Admin instructor-approval workflow; Pending badges; Approve/Reject controls visible | Two real pending requests shown; neither was approved or rejected | Report-ready |
-| 15 | `15-instructor-mobile-nav-390.png` | `/instructor/courses` | demo.instructor | 390×844 | Mobile instructor nav exposes both "Courses" and "Live sessions" links | None | Report-ready |
-| 16 | `16-settings-profile-image-desktop.png` | `/dashboard/settings` | demo.learner | 1440×900 | Real Cloudinary-backed learner profile-image upload UI (preview placeholder + Upload photo control) | No upload was performed in this session; only the UI is shown | Report-ready |
+### desktop/shared
 
-## Skipped from the original request list
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-landing-page.png` | `/` | Public landing page, hero, category browse, how-it-works | Guest | None |
+| `02-course-catalog.png` | `/courses` | Public course catalog with filters | Guest | None |
+| `03-course-detail.png` | `/courses/1` | Public course detail for "Building REST APIs with Spring Boot" | Guest | None |
+| `04-login-page.png` | `/login` | Login form | Guest | None |
+| `05-register-page.png` | `/register` | Registration form | Guest | None |
 
-None of the 16 requested screenshots were skipped — all were captured,
-including the certificate view (08), which was conditional on a real
-certificate existing or being issuable safely.
+### desktop/learner
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-dashboard.png` | `/dashboard` | Learner dashboard with enrolled course + certificate | demo.learner | None (reflects effects #1 above) |
+| `02-my-courses.png` | `/dashboard/courses` | My Courses list | demo.learner | None |
+| `03-course-player-lessons.png` | `/dashboard/courses/19` (Lessons tab) | Lesson content (TEXT) with course outline | demo.learner | Reflects effect #2 |
+| `04-course-player-completed.png` | `/dashboard/courses/19` | 100% complete state with "Issue certificate" panel | demo.learner | Reflects effect #1 |
+| `05-progress.png` | `/dashboard/progress` | Progress page | demo.learner | None |
+| `06-certificates-list.png` | `/dashboard/certificates` | Certificates list with 1 issued certificate | demo.learner | Reflects effect #1 |
+| `07-certificate-view.png` | `/dashboard/certificates/1` | Full certificate view page | demo.learner | Reflects effect #1 |
+| `08-live-sessions.png` | `/dashboard/live-sessions` | Upcoming live session with Join action | demo.learner | None (pre-existing real session) |
+| `09-saved-courses.png` | `/dashboard/saved-courses` | Saved courses list | demo.learner | Reflects effect #5 |
+| `10-settings.png` | `/dashboard/settings` | Settings — My profile section | demo.learner | None |
+| `11-onboarding-already-completed.png` | `/onboarding` | "You're all set" state for an already-onboarded account | demo.learner | None |
+| `12-onboarding-step1-goal.png` | `/onboarding` | Step 1 of 4 — learning goal | report.demo.learner | New account registered for this capture (effect #6) |
+| `13-onboarding-step2-pace.png` | `/onboarding` | Step 2 of 4 — preferred level / weekly goal | report.demo.learner | None |
+| `14-onboarding-step3-categories.png` | `/onboarding` | Step 3 of 4 — preferred categories | report.demo.learner | None |
+| `15-onboarding-step4-review.png` | `/onboarding` | Step 4 of 4 — review and finish | report.demo.learner | None |
+| `16-quiz-tab-not-started.png` | `/dashboard/courses/19` (Quizzes tab) | Quiz tab, not-started state | demo.learner | Reflects effect #3 |
+| `17-quiz-in-progress.png` | `/dashboard/courses/19` (Quizzes tab) | Quiz attempt in progress, both answers selected | demo.learner | None |
+| `18-quiz-result-passed.png` | `/dashboard/courses/19` (Quizzes tab) | Quiz result: 100%, Passed, per-question feedback | demo.learner | Reflects effect #4 |
+
+### desktop/instructor
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-courses-list.png` | `/instructor/courses` | Teaching courses list (Draft + Published badges) | demo.instructor | None |
+| `02-create-course-modal.png` | `/instructor/courses` | Create course modal | demo.instructor | None (cancelled, no course created) |
+| `03-content-builder.png` | `/instructor/courses/19/content` | Content builder, sections/lessons, all 3 lessons populated | demo.instructor | Reflects effect #2 |
+| `04-lesson-edit-text.png` | `/instructor/courses/19/content` | Lesson edit form, TEXT content type | demo.instructor | None |
+| `05-lesson-edit-url.png` | `/instructor/courses/19/content` | Lesson edit form, Video (URL) content type | demo.instructor | None (cancelled, not saved in this exact form state) |
+| `06-quiz-create-form.png` | `/instructor/courses/19/quizzes` | Create quiz form | demo.instructor | Reflects effect #3 (in progress) |
+| `07-quiz-question-form.png` | `/instructor/courses/19/quizzes` | Add question form | demo.instructor | Reflects effect #3 (in progress) |
+| `08-quiz-management.png` | `/instructor/courses/19/quizzes` | Published quiz with 2 questions + options | demo.instructor | Reflects effect #3 |
+| `09-quiz-edit-form.png` | `/instructor/courses/19/quizzes` | Edit quiz metadata form | demo.instructor | None (cancelled) |
+| `10-live-sessions.png` | `/instructor/live-sessions` | Scheduled live sessions list | demo.instructor | None (pre-existing real sessions) |
+| `11-schedule-live-session-form.png` | `/instructor/live-sessions` | Schedule live session modal | demo.instructor | None (cancelled, no session created) |
+| `12-settings-instructor-profile.png` | `/dashboard/settings?section=instructor` | Instructor profile section in Settings | demo.instructor | None |
+
+### desktop/admin
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-instructor-approvals-pending.png` | `/admin/instructor-approvals` | Pending instructor request with full application detail | demo.admin | Reflects effect #7 (request from report.demo.learner) |
+| `02-instructor-approvals-confirm.png` | `/admin/instructor-approvals` | "Approve this instructor request?" confirmation step | demo.admin | None (request was approved immediately after this screenshot, effect #7) |
+
+### mobile/shared
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-landing-page.png` | `/` | Public landing page | Guest | None |
+| `02-course-catalog.png` | `/courses` | Public course catalog | Guest | None |
+| `03-course-detail.png` | `/courses/1` | Public course detail | Guest | None |
+| `04-login-page.png` | `/login` | Login form | Guest | None |
+| `05-register-page.png` | `/register` | Registration form | Guest | None |
+| `06-mobile-nav-menu.png` | `/` | Mobile hamburger nav menu (open) | Guest | None |
+
+### mobile/learner
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-dashboard.png` | `/dashboard` | Learner dashboard | demo.learner | None |
+| `02-nav-drawer.png` | `/dashboard` | Mobile learner nav drawer (open) | demo.learner | None |
+| `03-course-player-lessons.png` | `/dashboard/courses/19` (Lessons tab) | Lesson content, mobile layout with collapsible outline | demo.learner | Reflects effects #1, #2 |
+| `04-course-player-quiz-tab.png` | `/dashboard/courses/19` (Quizzes tab) | Quiz result (Passed, attempt history) on mobile | demo.learner | Reflects effects #3, #4 |
+| `05-progress.png` | `/dashboard/progress` | Progress page | demo.learner | None |
+| `06-certificates-list.png` | `/dashboard/certificates` | Certificates list | demo.learner | Reflects effect #1 |
+| `07-live-sessions.png` | `/dashboard/live-sessions` | Live sessions list | demo.learner | None |
+| `08-saved-courses.png` | `/dashboard/saved-courses` | Saved courses list | demo.learner | Reflects effect #5 |
+| `09-settings.png` | `/dashboard/settings` | Settings — My profile | demo.learner | None |
+| `10-onboarding-categories.png` | `/onboarding` | Step 3 of 4 — preferred categories, mobile layout | mobile.demo.learner | New account registered for this capture (effect #6) |
+
+### mobile/instructor
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-courses-list.png` | `/instructor/courses` | Teaching courses list (inline nav, no drawer needed) | demo.instructor | None |
+| `02-content-builder.png` | `/instructor/courses/19/content` | Content builder, mobile layout | demo.instructor | None |
+| `03-lesson-edit-form.png` | `/instructor/courses/19/content` | Lesson edit form (TEXT), mobile layout | demo.instructor | None (cancelled) |
+| `04-quiz-management.png` | `/instructor/courses/19/quizzes` | Quiz management, mobile layout | demo.instructor | None |
+| `05-live-sessions.png` | `/instructor/live-sessions` | Live sessions list, mobile layout | demo.instructor | None |
+
+### mobile/admin
+
+| Filename | Route | Description | Login | Side effects |
+|---|---|---|---|---|
+| `01-instructor-approvals.png` | `/admin/instructor-approvals` | Pending instructor request, mobile layout | demo.admin | Reflects effect #7 (request from mobile.demo.learner, left pending) |
+
+## Totals
+
+- desktop/shared: 5
+- desktop/learner: 18
+- desktop/instructor: 12
+- desktop/admin: 2
+- mobile/shared: 6
+- mobile/learner: 10
+- mobile/instructor: 5
+- mobile/admin: 1
+- **Total: 59 screenshots**
