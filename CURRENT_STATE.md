@@ -49,6 +49,7 @@ The backend is feature-complete for the current phase. These modules exist and a
   - `QuizAttemptResponse` now includes `startedAt`
   - Access control: enrollment must be ACTIVE or COMPLETED; CANCELLED → 404; DRAFT/ARCHIVED quiz → 404; non-enrolled → 404 (content enumeration protection)
   - New entities: `QuizAttempt`, `QuizAttemptAnswer`, `QuizAttemptStatus` (IN_PROGRESS, SUBMITTED); v1 supports one selected option per question
+- Certificate issuance: `POST /api/v1/learner/certificates/course/{courseId}/issue` checks idempotency first (an already-issued certificate is returned as-is, with no re-validation), then requires the enrollment to be `COMPLETED` (all lessons finished) and, if the course has any PUBLISHED quizzes, at least one SUBMITTED attempt with `passed = true` per published quiz; DRAFT/ARCHIVED quizzes never block, courses with no published quizzes need only lesson completion, and failed/in-progress attempts do not count (a later passed attempt after a failed one satisfies the rule); certificate PDF generation and certificate media storage remain unimplemented
 - Wishlist: list, add course, remove course
 - Profile self-editing: authenticated users can view and update their own profile data
   - `GET /api/v1/learner-profile/me` — returns the caller's learner profile
@@ -138,7 +139,6 @@ Still mocked or placeholder:
 - No pagination on the learner quiz attempt-history endpoint (`GET /api/v1/learner/quizzes/{quizId}/attempts` returns the full list, unbounded)
 - No timers or duration fields on quizzes
 - No quiz analytics or learner results dashboard
-- No certificate integration based on quiz passing
 - No multi-select (partial-credit) question type; v1 supports one selected option per question only
 - No question or answer option ordering support (new questions/options are always appended; no drag-reorder)
 - No unpublish or restore-from-archived quiz flow (publish is DRAFT→PUBLISHED; archive is terminal; no reverse transition in UI)

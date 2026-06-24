@@ -43,9 +43,13 @@ limitations:
   "Issue certificate" from the course player's certificate panel; there is no
   background job or completion hook that creates a `Certificate` row without
   that click.
-- **Certificate availability depends on course completion.** The panel only
-  appears once `Enrollment.progressPercentage` reaches 100%; issuing for a
-  non-`COMPLETED` enrollment is rejected by the backend with `409`.
+- **Certificate availability depends on course completion and, if present,
+  passing every published quiz.** The panel only appears once
+  `Enrollment.progressPercentage` reaches 100%; the backend additionally
+  rejects issuance with `409` if the course has any PUBLISHED quiz without
+  at least one SUBMITTED, passed attempt for it (DRAFT/ARCHIVED quizzes
+  never block, and a course with no published quizzes only needs lesson
+  completion).
 - **No PDF generation, download, sharing, QR code, or revocation.** The
   certificate view page offers only a browser "Print / Save as PDF" button
   (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
@@ -113,9 +117,6 @@ limitations:
   history empty without surfacing an error or blocking the rest of the tab.
 - No timers/duration fields on quizzes.
 - No quiz analytics or learner-results dashboard for instructors.
-- No certificate integration tied to quiz passing — certificate issuance
-  (see the **Certificates** section above) is keyed only to lesson/course
-  progress reaching 100%, not to quiz results.
 - v1 supports exactly one selected option per question — no multi-select /
   partial-credit question type.
 - No unpublish or restore-from-archived flow for quizzes; publish is

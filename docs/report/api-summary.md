@@ -143,7 +143,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment (`201` first issue, `200` idempotent repeat; `409` if not completed) |
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment, requiring every published course quiz to have a passed attempt (`201` first issue, `200` idempotent repeat without re-validation; `409` if lessons incomplete or a published quiz is unpassed) |
 | GET | `/api/v1/learner/certificates` | LEARNER; self-scoped | List the caller's own certificates |
 | GET | `/api/v1/learner/certificates/{certificateId}` | LEARNER; self-scoped | Get one certificate owned by the caller (`404` if not found or not owned) |
 
