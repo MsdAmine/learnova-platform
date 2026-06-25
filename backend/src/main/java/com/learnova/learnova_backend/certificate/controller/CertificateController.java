@@ -1,9 +1,13 @@
 package com.learnova.learnova_backend.certificate.controller;
 
 import com.learnova.learnova_backend.certificate.dto.CertificateResponse;
+import com.learnova.learnova_backend.certificate.entity.Certificate;
 import com.learnova.learnova_backend.certificate.service.CertificateService;
 import com.learnova.learnova_backend.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,5 +41,20 @@ public class CertificateController {
             @PathVariable Long certificateId,
             @AuthenticationPrincipal CustomUserDetails currentUser) {
         return ResponseEntity.ok(certificateService.getMyCertificate(certificateId, currentUser));
+    }
+
+    @GetMapping("/{certificateId}/pdf")
+    public ResponseEntity<byte[]> downloadCertificatePdf(
+            @PathVariable Long certificateId,
+            @AuthenticationPrincipal CustomUserDetails currentUser) {
+        Certificate certificate = certificateService.getOwnedCertificate(certificateId, currentUser);
+        byte[] pdf = certificateService.generateOwnedCertificatePdf(certificateId, currentUser);
+
+        String filename = "learnova-certificate-" + certificate.getCertificateCode() + ".pdf";
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(filename).build().toString())
+                .body(pdf);
     }
 }

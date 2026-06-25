@@ -28,3 +28,22 @@ export async function getCertificate(certificateId: number): Promise<Certificate
   );
   return data;
 }
+
+export async function downloadCertificatePdf(
+  certificateId: number,
+  certificateCode: string,
+): Promise<void> {
+  const { data } = await api.get<Blob>(
+    `/api/v1/learner/certificates/${certificateId}/pdf`,
+    { responseType: 'blob' },
+  );
+
+  const url = window.URL.createObjectURL(data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `learnova-certificate-${certificateCode}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}

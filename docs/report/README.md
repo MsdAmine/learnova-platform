@@ -161,8 +161,11 @@ access-controlled join, idempotent attendance) and must not be presented as
 having recordings, reminders, recurring sessions, a `/leave` endpoint, past-
 session history, iframe embedding, or Jitsi authentication/JWT/JaaS — none
 of these exist. Certificates are implemented but issuance is manual (triggered
-from the course player), not automatic, and offers only browser print —
-no PDF generation, sharing, QR code, or revocation. Quiz attempt history and
+from the course player), not automatic. A learner can download a
+backend-generated PDF (`GET /api/v1/learner/certificates/{certificateId}/pdf`,
+generated on demand, not stored) or use the browser print option — there is
+no sharing, QR code, digital signature, revocation, or public verification.
+Quiz attempt history and
 retake are implemented but the attempt-history endpoint has no pagination.
 Lesson video/rich content, file upload, and section/lesson/question/option
 ordering do not exist either. Profile switching is implemented end-to-end

@@ -50,10 +50,19 @@ limitations:
   at least one SUBMITTED, passed attempt for it (DRAFT/ARCHIVED quizzes
   never block, and a course with no published quizzes only needs lesson
   completion).
-- **No PDF generation, download, sharing, QR code, or revocation.** The
-  certificate view page offers only a browser "Print / Save as PDF" button
-  (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
-  share action, no QR/verification code, and no revoke or regenerate flow.
+- **Server-side PDF download exists; sharing, QR codes, digital signatures,
+  revocation, and public verification do not.** A learner can download a
+  backend-generated PDF of their own certificate via
+  `GET /api/v1/learner/certificates/{certificateId}/pdf`
+  (`application/pdf`, attachment `Content-Disposition`); the PDF is rendered
+  on demand from the certificate/course/learner data and is never stored —
+  there is no certificate media storage. The certificate view page also
+  retains a browser "Print certificate" button (`window.print()`) alongside
+  the new "Download PDF" action. There is no email/LinkedIn share action, no
+  QR code, no digital signature, no revoke or regenerate flow, and no public
+  (unauthenticated) verification endpoint or page — every certificate
+  endpoint, including the PDF download, remains `LEARNER`-authenticated and
+  self-scoped.
 - **No certificate-issuance trigger from anywhere except the course player.**
   `CertificatesPage` (the certificates list) and the learner dashboard's
   Certificates section both only read existing certificates via
@@ -101,8 +110,10 @@ limitations:
   - Course thumbnail upload is wired in course **edit** mode only — create
     mode remains URL-only since no `courseId` exists before the course is
     created.
-  - No lesson attachments and no certificate PDF/media storage — these
-    remain plain-URL or non-existent as documented elsewhere in this file.
+  - No lesson attachments and no certificate media storage. Certificate PDF
+    generation exists (see "Certificates" above) but is generated on demand
+    and never persisted — there is no stored PDF file or Cloudinary
+    certificate asset of any kind.
 - No question/answer-option or section/lesson ordering — items are always
   appended; there is no drag-reorder.
 
