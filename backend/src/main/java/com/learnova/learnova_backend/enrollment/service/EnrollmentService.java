@@ -107,6 +107,7 @@ public class EnrollmentService {
                 course.getTitle(),
                 course.getInstructorProfile().getUser().getFullName(),
                 course.getCategory().getName(),
+                course.getThumbnailUrl(),
                 enrollment.getStatus(),
                 enrollment.getProgressPercentage(),
                 enrollment.getEnrolledAt(),

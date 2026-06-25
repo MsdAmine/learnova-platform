@@ -10,6 +10,7 @@ public record EnrollmentResponse(
         String courseTitle,
         String instructorName,
         String categoryName,
+        String thumbnailUrl,
         EnrollmentStatus status,
         Integer progressPercentage,
         Instant enrolledAt,

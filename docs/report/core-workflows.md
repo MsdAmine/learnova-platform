@@ -230,27 +230,41 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Goal:** Save a course for later without enrolling.
 
 **Main steps:**
-1. On the public course detail page, an eligible learner clicks "Save for
-   later" (guests see a "Sign in to save this course" link instead; the
-   action is gated on `isAuthenticated && roles.includes('ROLE_LEARNER')`
-   since `WishlistController` is `@PreAuthorize("hasRole('LEARNER')")`).
-2. Saved state is derived, not server-flagged per course: the frontend
-   fetches `GET /api/v1/wishlist?size=200` and builds a `Set` of saved
-   course IDs.
-3. Adding an already-saved course returns `409`, treated as "already saved"
-   (no error shown); removing an already-gone course returns `404`, treated
-   as "already removed".
-4. Learner can review and remove saved courses from the Saved Courses
+1. An eligible learner can save/unsave a course directly from a public
+   catalog card (a bookmark-icon control overlaid on the thumbnail) or from
+   the course detail page's "Save for later" action (guests see a "Sign in
+   to save this course" link instead; the action is gated on
+   `isAuthenticated && roles.includes('ROLE_LEARNER')` since
+   `WishlistController` is `@PreAuthorize("hasRole('LEARNER')")`). Catalog
+   cards for already-enrolled courses do not show the control.
+2. Saved state can now be checked per course: catalog cards call
+   `GET /api/v1/wishlist/course/{courseId}/status` rather than deriving
+   membership from the full `GET /api/v1/wishlist?size=200` list (the saved
+   courses dashboard page still uses the list endpoint, since it needs the
+   full collection anyway).
+3. The catalog card toggle is optimistic — the saved/unsaved state flips
+   immediately and rolls back if the mutation fails (excluding the stale-state
+   cases below). Clicking the control does not navigate to the course detail
+   page.
+4. Adding an already-saved course returns `409`, treated as "already saved"
+   (no error shown, no rollback); removing an already-gone course returns
+   `404`, treated as "already removed" (no error shown, no rollback).
+5. Learner can review and remove saved courses from the Saved Courses
    dashboard page.
+6. When a learner enrolls in a course that was saved, the backend
+   automatically removes it from their wishlist as part of the enrollment
+   transaction; enrolling in a course that was never saved still succeeds
+   normally.
 
 **Backend endpoints:**
 - `GET /api/v1/wishlist` (LEARNER)
+- `GET /api/v1/wishlist/course/{courseId}/status` (LEARNER)
 - `POST /api/v1/wishlist/course/{courseId}` (LEARNER)
 - `DELETE /api/v1/wishlist/course/{courseId}` (LEARNER)
 
-**Frontend routes:** `/courses/:courseId` (save action), `/dashboard/saved-courses` (review/remove)
+**Frontend routes:** `/courses` (catalog-card save action), `/courses/:courseId` (save action), `/dashboard/saved-courses` (review/remove)
 
-**Result:** A `WishlistItem` row per saved course. Saving does not enroll the learner or unlock course content; wishlist and enrollment are independent.
+**Result:** A `WishlistItem` row per saved course. Saving does not enroll the learner or unlock course content. Wishlist status and mutation are always learner-scoped through the authenticated principal. Enrolling auto-removes a saved course from the wishlist; no other wishlist/enrollment coupling exists (no recommendations, no analytics).
 
 ---
 

@@ -135,13 +135,17 @@ limitations:
 
 ## Wishlist
 
-- No per-course wishlist-status endpoint; saved state is derived client-side
-  from a single `GET /api/v1/wishlist?size=200` call (a v1 page-size cap).
-- No automatic removal from the wishlist after enrollment — wishlist and
-  enrollment are independent at both backend and frontend layers.
-- Catalog cards (`CourseCatalogCard`) intentionally do not yet show
-  save/unsave controls; the wishlist action exists only on the course detail
-  page and the saved-courses dashboard page.
+- The saved-courses dashboard page still derives its list from a single
+  `GET /api/v1/wishlist?size=200` call (a v1 page-size cap); catalog cards
+  use the newer per-course `GET /api/v1/wishlist/course/{courseId}/status`
+  endpoint instead.
+- Enrolling in a course automatically removes it from the wishlist if it was
+  saved; this is the only coupling between wishlist and enrollment — saving
+  still never enrolls the learner or unlocks course content.
+- Guests cannot save courses; wishlist status and mutation remain
+  learner-scoped through the authenticated principal.
+- No wishlist analytics.
+- No recommendations are derived from wishlist data.
 
 ## Onboarding and learning preferences
 

@@ -3,7 +3,8 @@ import { gradientForId, type Course } from '../components/dashboard/courseCardUt
 
 // ── Types (mirror backend EnrollmentResponse DTO) ──────────────────────────────
 // Backend record: id, courseId, courseTitle, instructorName, categoryName,
-// status, progressPercentage, enrolledAt, completedAt. Instant → ISO string.
+// thumbnailUrl, status, progressPercentage, enrolledAt, completedAt.
+// Instant → ISO string.
 
 export type EnrollmentStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED';
 
@@ -13,6 +14,7 @@ export interface EnrollmentResponse {
   courseTitle: string;
   instructorName: string;
   categoryName: string | null;
+  thumbnailUrl: string | null;
   status: EnrollmentStatus;
   progressPercentage: number;
   enrolledAt: string;
@@ -39,7 +41,8 @@ export async function enrollInCourse(courseId: number): Promise<EnrollmentRespon
 // ── Mapping to the dashboard Course model ──────────────────────────────────────
 // The dashboard cards consume `Course` (id/title/instructor/progress/gradient).
 // `progressPercentage` drives all card states (0 / 1-99 / 100), so it maps onto
-// the existing CourseCard logic directly.
+// the existing CourseCard logic directly. `gradient` is kept as the fallback
+// for courses with no thumbnailUrl (CourseThumb falls back to it on load error).
 
 export function enrollmentToCourse(enrollment: EnrollmentResponse): Course {
   return {
@@ -47,6 +50,7 @@ export function enrollmentToCourse(enrollment: EnrollmentResponse): Course {
     title: enrollment.courseTitle,
     instructor: enrollment.instructorName,
     progress: enrollment.progressPercentage,
+    thumbnailUrl: enrollment.thumbnailUrl,
     gradient: gradientForId(enrollment.courseId),
   };
 }
