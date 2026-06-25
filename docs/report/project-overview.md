@@ -78,9 +78,12 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner certificate issuance and viewing, triggered manually from the
   course player once a course reaches 100% progress and (if the course has
   any published quizzes) every published quiz has at least one passed
-  attempt (see `core-workflows.md` §9); the learner dashboard also displays
-  a learner's already-issued certificates, with each card linking to the
-  certificate view route
+  attempt (see `core-workflows.md` §9); a learner can download a
+  backend-generated PDF of their own issued certificate
+  (`GET /api/v1/learner/certificates/{certificateId}/pdf`), generated on
+  demand and not stored; the learner dashboard also displays a learner's
+  already-issued certificates, with each card linking to the certificate
+  view route
 - Approved-instructor profile switching between the learner and instructor
   areas from all three UI entry points (dashboard switch card, instructor
   layout back-to-learner action, and Settings page), backed by
@@ -107,9 +110,12 @@ These areas are intentionally **not** presented as complete:
   new browser tab. There is no iframe embedding, no Jitsi JWT/JaaS, no
   `/leave` endpoint, no recurring sessions, no reminders, and no
   past-session history view. See `limitations.md` for the full list.
-- **Certificate issuance is manual, not automatic**, and offers only a
-  browser print/save-as-PDF option — no server-generated PDF, sharing, QR
-  code, or revocation flow exists. See `limitations.md` for the full list.
+- **Certificate issuance is manual, not automatic.** Once issued, a learner
+  can download a server-generated PDF (`GET
+  /api/v1/learner/certificates/{certificateId}/pdf`) or use the browser
+  print/save-as-PDF option; the PDF is generated on demand and not stored.
+  No sharing, QR code, digital signature, revocation, or public verification
+  flow exists. See `limitations.md` for the full list.
 - **Lesson content (v1)** — instructors can set a lesson's content type
   (`TEXT`, `VIDEO`, `PDF`, or `LINK`) from the content builder; `TEXT`
   renders inline in the course player, while `VIDEO`/`PDF`/`LINK` render as
@@ -126,6 +132,9 @@ These areas are intentionally **not** presented as complete:
   against real Cloudinary credentials (cloud `dnd5pu5me`) has been verified
   for both the learner profile image and instructor course thumbnail flows;
   Cloudinary dashboard (web console) verification was not performed.
+  Certificate PDFs are generated on demand and returned directly in the
+  download response — no certificate media storage (Cloudinary or
+  otherwise) exists, and generated PDFs are never persisted.
 - **Frontend automated testing is minimal** — a Vitest + React Testing
   Library + jsdom harness now exists (covering `useProfileSwitch`,
   the dashboard's certificate section, the `learnerQuizzes` API client, the

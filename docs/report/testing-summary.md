@@ -7,14 +7,16 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **34
+The backend test suite (`backend/src/test/java`) currently contains **35
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
 no external database is required. A full `./mvnw test` run previously
 reported **241 tests, 0 failures, 0 errors**; the certificate quiz-eligibility
-class added 10 more tests on top of that baseline — see **How to get exact
-numbers** below to confirm the current total.
+class added 10 more tests and the certificate PDF download class
+(`CertificatePdfDownloadIntegrationTest`) added 4 more on top of that
+baseline — see **How to get exact numbers** below to confirm the current
+total.
 
 ### Test categories
 
@@ -65,12 +67,20 @@ numbers** below to confirm the current total.
 - `InstructorProfileUpdateIntegrationTest`
 - `LearnerProfileUpdateIntegrationTest`
 
-**Certificates** (2 classes)
+**Certificates** (3 classes)
 - `CertificateIntegrationTest` — covers issuance on a completed enrollment,
   idempotent re-issuance, rejection on an incomplete enrollment (`409`),
   rejection with no enrollment (`404`), per-learner list scoping, ownership
   checks on certificate retrieval, certificate code uniqueness, and
   unauthenticated access (`401`)
+- `CertificatePdfDownloadIntegrationTest` (4 tests) — covers the
+  server-side certificate PDF download endpoint: the certificate owner can
+  download the PDF (`200`, `application/pdf`, the rendered text contains the
+  learner name, course title, and certificate code); a learner cannot
+  download another learner's certificate PDF (`404`, not `403`, consistent
+  with the existing certificate ownership pattern); requesting a PDF for a
+  non-existent certificate returns `404`; an unauthenticated request returns
+  `401`
 - `CertificateQuizEligibilityIntegrationTest` (10 tests) — covers the
   assessment-aware eligibility rule: issuance succeeds once lessons are
   complete and every published quiz has a passed attempt; issuance is
@@ -532,6 +542,13 @@ and should not be presented as verified in the report:
 - **Certificate issuance UI** — covered by manual browser QA only (see
   above); no automated frontend component test exists for the certificate
   panel or certificate pages.
+- **Certificate PDF download UI** — `downloadCertificatePdf()`
+  (`frontend/src/api/certificates.ts`) and the "Download PDF" actions on
+  `CertificateViewPage` and `CertificatesPage` have no automated frontend
+  test; coverage is manual browser QA only. The backend endpoint itself
+  (`GET /api/v1/learner/certificates/{certificateId}/pdf`) is covered by
+  `CertificatePdfDownloadIntegrationTest` (4 tests, see "Backend Test Suite"
+  above).
 - **Learner dashboard certificate display** — the loading/empty/populated
   states are covered by `LearnerDashboard.test.tsx` (see "Frontend
   Automated Tests" above); viewport/console/keyboard-focus behavior remains

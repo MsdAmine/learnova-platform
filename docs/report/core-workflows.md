@@ -319,8 +319,13 @@ ownership; mutations on `ARCHIVED` courses return `409`.
    to the same `/dashboard/certificates/:certificateId` view route.
 7. `CertificateViewPage` calls `GET
    /api/v1/learner/certificates/{certificateId}` and renders a full-screen,
-   printable certificate document with a "Print / Save as PDF" button
-   (browser `window.print()` — no server-side PDF generation).
+   printable certificate document with two actions: "Download PDF" and
+   "Print certificate" (browser `window.print()`). "Download PDF" calls
+   `GET /api/v1/learner/certificates/{certificateId}/pdf`, which streams a
+   backend-generated PDF (`application/pdf`, attachment
+   `Content-Disposition`) built on demand from the certificate/course/learner
+   data; the PDF is not stored anywhere. `CertificatesPage` (the certificates
+   list) offers the same "Download PDF" action per card.
 
 **Error handling:** Issuing for a non-`COMPLETED` enrollment, or for a
 completed enrollment with an unpassed published quiz, returns `409` with a
@@ -334,6 +339,7 @@ caller, returns `404` on the view page.
 - `POST /api/v1/learner/certificates/course/{courseId}/issue` (LEARNER; self-scoped; idempotent)
 - `GET /api/v1/learner/certificates` (LEARNER; self-scoped)
 - `GET /api/v1/learner/certificates/{certificateId}` (LEARNER; self-scoped)
+- `GET /api/v1/learner/certificates/{certificateId}/pdf` (LEARNER; self-scoped) — server-generated PDF download
 
 **Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard` (Certificates section on the learner dashboard), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
 
