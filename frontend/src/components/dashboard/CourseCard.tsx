@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ProgressBar } from '../ui/ProgressBar';
@@ -7,10 +8,26 @@ import type { Course } from './courseCardUtils';
 
 export type { Course };
 
-// Shared media block for any course-bearing card or row. A plain gradient
-// fill, no icon overlay — keeps the thumbnail from reading as a separate
+// Shared media block for any course-bearing card or row. Renders the course
+// thumbnail when present, falling back to the gradient fill (no thumbnail, or
+// the image failed to load) — keeps the thumbnail from reading as a separate
 // design system across Continue Learning, the featured row, and the grid.
 export function CourseThumb({ course, className }: { course: Course; className?: string }) {
+  const [thumbnailError, setThumbnailError] = useState(false);
+  const showThumbnail = course.thumbnailUrl && !thumbnailError;
+
+  if (showThumbnail) {
+    return (
+      <img
+        src={course.thumbnailUrl ?? undefined}
+        alt=""
+        className={`${className ?? ''} object-cover`}
+        loading="lazy"
+        onError={() => setThumbnailError(true)}
+      />
+    );
+  }
+
   return (
     <div
       className={className}
