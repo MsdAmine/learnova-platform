@@ -53,7 +53,12 @@ function CatalogSkeleton() {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function CourseCatalogPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+
+  // WishlistController is @PreAuthorize("hasRole('LEARNER')") — only show the
+  // save control when the user actually holds ROLE_LEARNER, matching the
+  // CourseDetailPage gate, to avoid a 403 on click.
+  const isLearner = isAuthenticated && (user?.roles.includes('ROLE_LEARNER') ?? false);
 
   // Read-once seed from the URL (e.g. a landing-page hero search or category
   // chip link to /courses?q=...&category=...). This is not two-way sync: the
@@ -241,6 +246,7 @@ export default function CourseCatalogPage() {
                       key={course.id}
                       course={course}
                       isAuthenticated={isAuthenticated}
+                      isLearner={isLearner}
                       enrolled={enrolledIds.has(course.id)}
                       onEnrolled={markEnrolled}
                       onStaleEnrollment={refreshEnrollments}

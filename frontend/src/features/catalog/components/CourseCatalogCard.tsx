@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { Bookmark } from 'lucide-react';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { gradientForId } from '../../../components/dashboard/courseCardUtils';
 import { enrollInCourse } from '../../../api/enrollments';
+import { addToWishlist, getCourseWishlistStatus, removeFromWishlist } from '../../../api/wishlist';
 import type { CourseCatalogItem, CourseLevel } from '../../../api/courses';
 
 const LEVEL_LABELS: Record<CourseLevel, string> = {
@@ -27,9 +29,87 @@ type EnrollState = 'idle' | 'enrolling' | 'failed' | 'unavailable';
 interface CourseCatalogCardProps {
   course: CourseCatalogItem;
   isAuthenticated: boolean;
+  isLearner: boolean;
   enrolled: boolean;
   onEnrolled: (courseId: number) => void;
   onStaleEnrollment: () => void;
+}
+
+// ── Wishlist control (restrained, overlaid on the thumbnail) ──────────────────
+// Each card resolves its own saved state from the per-course status endpoint —
+// deliberately not derived from the capped GET /wishlist list, since that would
+// not scale once the catalog grows past one page of saved courses.
+
+function WishlistControl({ course, isLearner }: { course: CourseCatalogItem; isLearner: boolean }) {
+  const [saved, setSaved] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [mutating, setMutating] = useState(false);
+
+  useEffect(() => {
+    if (!isLearner) return;
+    let cancelled = false;
+    getCourseWishlistStatus(course.id)
+      .then((status) => {
+        if (!cancelled) setSaved(status.saved);
+      })
+      .catch(() => {
+        // Non-blocking: the catalog must not break because a status lookup failed.
+      })
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isLearner, course.id]);
+
+  if (!isLearner) return null;
+
+  async function handleToggle(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (mutating) return;
+
+    const nextSaved = !saved;
+    setMutating(true);
+    setSaved(nextSaved); // optimistic
+    try {
+      if (nextSaved) {
+        await addToWishlist(course.id);
+      } else {
+        await removeFromWishlist(course.id);
+      }
+    } catch (error) {
+      const status = getHttpStatus(error);
+      if (nextSaved && status === 409) {
+        // Already saved elsewhere — stale state, not an error.
+      } else if (!nextSaved && status === 404) {
+        // Already removed elsewhere — stale state, not an error.
+      } else if (status !== 401 && status !== 403) {
+        // Roll back the optimistic update; 401/403 are interceptor-owned.
+        setSaved(saved);
+      }
+    } finally {
+      setMutating(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleToggle}
+      disabled={!loaded || mutating}
+      aria-pressed={saved}
+      aria-label={saved ? `Remove ${course.title} from saved courses` : `Save ${course.title}`}
+      className="absolute top-2 right-2 z-10 inline-flex items-center justify-center h-11 w-11 rounded-full bg-surface/90 text-text-secondary border border-border-default hover:text-salem hover:border-border-hover motion-safe:transition-colors duration-fast disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-salem"
+    >
+      <Bookmark
+        className="h-4 w-4"
+        aria-hidden="true"
+        fill={saved ? 'currentColor' : 'none'}
+      />
+    </button>
+  );
 }
 
 /**
@@ -41,6 +121,7 @@ interface CourseCatalogCardProps {
 export function CourseCatalogCard({
   course,
   isAuthenticated,
+  isLearner,
   enrolled,
   onEnrolled,
   onStaleEnrollment,
@@ -79,21 +160,24 @@ export function CourseCatalogCard({
       className="bg-surface border border-border-default rounded-lg overflow-hidden hover:border-border-hover motion-safe:transition-colors duration-fast"
       aria-label={course.title}
     >
-      {showThumbnail ? (
-        <img
-          src={course.thumbnailUrl ?? undefined}
-          alt=""
-          className="aspect-video w-full object-cover"
-          loading="lazy"
-          onError={() => setThumbnailError(true)}
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className="aspect-video w-full"
-          style={{ background: `linear-gradient(140deg, ${gradient.from}, ${gradient.to})` }}
-        />
-      )}
+      <div className="relative">
+        {showThumbnail ? (
+          <img
+            src={course.thumbnailUrl ?? undefined}
+            alt=""
+            className="aspect-video w-full object-cover"
+            loading="lazy"
+            onError={() => setThumbnailError(true)}
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="aspect-video w-full"
+            style={{ background: `linear-gradient(140deg, ${gradient.from}, ${gradient.to})` }}
+          />
+        )}
+        {!enrolled && <WishlistControl course={course} isLearner={isLearner} />}
+      </div>
 
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2">
