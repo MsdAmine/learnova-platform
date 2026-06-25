@@ -6,6 +6,7 @@ import { Button } from '../../../components/ui/Button';
 import { CourseCard, CourseThumb, CourseProgressFooter } from '../../../components/dashboard/CourseCard';
 import { FeaturedCourseRow } from '../../../components/dashboard/FeaturedCourseRow';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
+import { RecommendedForYou } from '../components/RecommendedForYou';
 import { FilterTabs } from '../../../components/ui/FilterTabs';
 import { Bone } from '../../../components/common/skeletons/Bone';
 import { useEnrollments } from '../../../hooks/useEnrollments';
@@ -254,7 +255,10 @@ export default function LearnerDashboard() {
         )}
       </section>
 
-      {/* 5. Certificates ──────────────────────────────────────────────── */}
+      {/* 5. Recommended for you — rules-based, independent fetch ───────── */}
+      <RecommendedForYou />
+
+      {/* 6. Certificates ──────────────────────────────────────────────── */}
       <section aria-labelledby="certs-heading">
         <h2
           id="certs-heading"
