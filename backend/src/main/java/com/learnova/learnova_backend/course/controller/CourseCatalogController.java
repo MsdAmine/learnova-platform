@@ -1,6 +1,7 @@
 package com.learnova.learnova_backend.course.controller;
 
 import com.learnova.learnova_backend.course.dto.CourseCatalogResponse;
+import com.learnova.learnova_backend.course.dto.CourseDetailResponse;
 import com.learnova.learnova_backend.course.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class CourseCatalogController {
     }
 
     @GetMapping("/{courseId}")
-    public CourseCatalogResponse getPublishedCourse(@PathVariable Long courseId) {
+    public CourseDetailResponse getPublishedCourse(@PathVariable Long courseId) {
         return courseService.getPublishedCourse(courseId);
     }
 }
