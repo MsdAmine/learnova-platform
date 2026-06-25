@@ -18,4 +18,9 @@ public interface QuizAttemptRepository extends JpaRepository<QuizAttempt, Long> 
 
     List<QuizAttempt> findByLearnerProfileIdAndQuizIdOrderByStartedAtDesc(
             Long learnerProfileId, Long quizId);
+
+    // True if the learner has at least one submitted attempt that passed this quiz.
+    // Used for certificate eligibility: in-progress and failed-only attempts do not count.
+    boolean existsByLearnerProfileIdAndQuizIdAndStatusAndPassedTrue(
+            Long learnerProfileId, Long quizId, QuizAttemptStatus status);
 }

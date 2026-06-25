@@ -19,6 +19,12 @@ vi.mock('../../../api/certificates', () => ({
   getMyCertificates: vi.fn(),
 }));
 
+// The Recommended-for-you section fetches on mount; keep it pending so these
+// certificate-focused tests are unaffected by its state.
+vi.mock('../../../api/courseSuggestions', () => ({
+  getCourseSuggestions: vi.fn(() => new Promise(() => {})),
+}));
+
 function renderDashboard() {
   return render(
     <MemoryRouter>

@@ -34,7 +34,8 @@ pace, takes quizzes and receives a score, retakes quizzes and reviews full
 attempt history, saves courses to a wishlist for later, edits their own
 profile (including the same learning preferences captured during onboarding),
 and can issue and view a certificate of completion once a course reaches 100%
-progress.
+progress and, if the course has any published quizzes, every one of them has
+been passed.
 
 **Instructor** — requests instructor access (subject to admin approval),
 creates and manages their own courses (draft → published → archived),
@@ -54,7 +55,7 @@ implemented; there is no broader user-management console.
 | `profile` | Learner/instructor profiles, profile switching, admin approval, self-editing, learning preferences, onboarding-completion tracking |
 | `course` | Course CRUD, catalog, sections/lessons, lesson progress, quiz authoring, wishlist |
 | `enrollment` | Learner enrollment, enrollment listing/lookup, learner course content |
-| `certificate` | Certificate issuance (on completed enrollment), listing, and self-scoped retrieval |
+| `certificate` | Certificate issuance (completed enrollment + all published course quizzes passed), listing, and self-scoped retrieval |
 | `livesession` | Live session scheduling (instructor, ownership-checked), enrollment-gated learner visibility, access-controlled join, idempotent attendance recording — powered by generated Jitsi room URLs |
 | `media` | Cloudinary-backed file upload abstraction (`MediaStorageService`/`CloudinaryMediaStorageService`/`MediaValidator`) for learner profile images and course thumbnails |
 | `security` | JWT filter, `CustomUserDetails`, method-level authorization, error dispatch |
@@ -72,11 +73,15 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner lesson study and progress tracking
 - Learner quiz-taking with automatic scoring, retake, and full attempt
   history
-- Learner wishlist (save-for-later) and saved-courses dashboard
+- Learner wishlist (save-for-later, from public catalog cards or the course detail page) and saved-courses dashboard; enrolling auto-removes a saved course from the wishlist
 - Profile self-editing for both learner and instructor profiles
 - Learner certificate issuance and viewing, triggered manually from the
-  course player once a course reaches 100% progress (see
-  `core-workflows.md` §9); the learner dashboard also displays a learner's
+  course player once a course reaches 100% progress and (if the course has
+  any published quizzes) every published quiz has at least one passed
+  attempt (see `core-workflows.md` §9); a learner can download a
+  backend-generated PDF of their own issued certificate
+  (`GET /api/v1/learner/certificates/{certificateId}/pdf`), generated on
+  demand and not stored; the learner dashboard also displays a learner's
   already-issued certificates, with each card linking to the certificate
   view route
 - Approved-instructor profile switching between the learner and instructor
@@ -105,9 +110,12 @@ These areas are intentionally **not** presented as complete:
   new browser tab. There is no iframe embedding, no Jitsi JWT/JaaS, no
   `/leave` endpoint, no recurring sessions, no reminders, and no
   past-session history view. See `limitations.md` for the full list.
-- **Certificate issuance is manual, not automatic**, and offers only a
-  browser print/save-as-PDF option — no server-generated PDF, sharing, QR
-  code, or revocation flow exists. See `limitations.md` for the full list.
+- **Certificate issuance is manual, not automatic.** Once issued, a learner
+  can download a server-generated PDF (`GET
+  /api/v1/learner/certificates/{certificateId}/pdf`) or use the browser
+  print/save-as-PDF option; the PDF is generated on demand and not stored.
+  No sharing, QR code, digital signature, revocation, or public verification
+  flow exists. See `limitations.md` for the full list.
 - **Lesson content (v1)** — instructors can set a lesson's content type
   (`TEXT`, `VIDEO`, `PDF`, or `LINK`) from the content builder; `TEXT`
   renders inline in the course player, while `VIDEO`/`PDF`/`LINK` render as
@@ -124,6 +132,9 @@ These areas are intentionally **not** presented as complete:
   against real Cloudinary credentials (cloud `dnd5pu5me`) has been verified
   for both the learner profile image and instructor course thumbnail flows;
   Cloudinary dashboard (web console) verification was not performed.
+  Certificate PDFs are generated on demand and returned directly in the
+  download response — no certificate media storage (Cloudinary or
+  otherwise) exists, and generated PDFs are never persisted.
 - **Frontend automated testing is minimal** — a Vitest + React Testing
   Library + jsdom harness now exists (covering `useProfileSwitch`,
   the dashboard's certificate section, the `learnerQuizzes` API client, the

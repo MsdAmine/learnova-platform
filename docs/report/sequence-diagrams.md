@@ -380,9 +380,14 @@ sequenceDiagram
   the caller's enrollment for the course is not `COMPLETED`; the frontend
   surfaces this as an accessible (`role="alert"`) message in the panel
   rather than a silent failure.
-- **No PDF generation** — the certificate view renders an HTML document and
-  relies on the browser's native print dialog (`window.print()`) for a PDF;
-  there is no server-side rendering, email delivery, or sharing endpoint.
+- **Server-generated PDF download** — `GET
+  /api/v1/learner/certificates/{certificateId}/pdf` streams a
+  backend-rendered PDF (`application/pdf`, attachment
+  `Content-Disposition`) built on demand from the certificate/course/learner
+  data and never stored. The certificate view also retains the browser
+  print dialog (`window.print()`) as an alternative. There is no email
+  delivery, sharing, QR code, digital signature, revocation, or public
+  verification endpoint.
 
 ---
 

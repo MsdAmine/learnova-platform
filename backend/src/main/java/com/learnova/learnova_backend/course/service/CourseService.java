@@ -13,6 +13,7 @@ import com.learnova.learnova_backend.course.dto.PublicLessonPreviewResponse;
 import com.learnova.learnova_backend.course.dto.PublicSectionPreviewResponse;
 import com.learnova.learnova_backend.course.entity.Section;
 import com.learnova.learnova_backend.course.repository.SectionRepository;
+import com.learnova.learnova_backend.course.dto.WishlistStatusResponse;
 import com.learnova.learnova_backend.media.MediaFolder;
 import com.learnova.learnova_backend.media.MediaStorageService;
 import com.learnova.learnova_backend.media.MediaUploadResult;
@@ -588,6 +589,28 @@ public class CourseService {
 
                 // 4. Suppression physique de la ligne
                 wishlistRepository.delete(item);
+        }
+
+        @Transactional(readOnly = true)
+        public WishlistStatusResponse getWishlistStatus(Long courseId,
+                        String username) {
+                // Mirrors the course resolution used by addCourseToWishlist/removeCourseFromWishlist:
+                // any existing course id is a valid target, not just PUBLISHED ones, so a status
+                // check behaves consistently with the mutation endpoints it backs.
+                Course course = courseRepository.findById(courseId)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "Target course context not found"));
+
+                User user = userRepository.findByEmailIgnoreCase(username)
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                "User authentication context not found"));
+
+                LearnerProfile learnerProfile = learnerProfileRepository.findByUserId(user.getId())
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN,
+                                                "User profile is missing an active Learner assignment"));
+
+                boolean saved = wishlistRepository.existsByLearnerProfileAndCourse(learnerProfile, course);
+                return new WishlistStatusResponse(course.getId(), saved);
         }
 
         @Transactional(readOnly = true)

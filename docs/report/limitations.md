@@ -43,13 +43,26 @@ limitations:
   "Issue certificate" from the course player's certificate panel; there is no
   background job or completion hook that creates a `Certificate` row without
   that click.
-- **Certificate availability depends on course completion.** The panel only
-  appears once `Enrollment.progressPercentage` reaches 100%; issuing for a
-  non-`COMPLETED` enrollment is rejected by the backend with `409`.
-- **No PDF generation, download, sharing, QR code, or revocation.** The
-  certificate view page offers only a browser "Print / Save as PDF" button
-  (`window.print()`); there is no server-rendered PDF, no email/LinkedIn
-  share action, no QR/verification code, and no revoke or regenerate flow.
+- **Certificate availability depends on course completion and, if present,
+  passing every published quiz.** The panel only appears once
+  `Enrollment.progressPercentage` reaches 100%; the backend additionally
+  rejects issuance with `409` if the course has any PUBLISHED quiz without
+  at least one SUBMITTED, passed attempt for it (DRAFT/ARCHIVED quizzes
+  never block, and a course with no published quizzes only needs lesson
+  completion).
+- **Server-side PDF download exists; sharing, QR codes, digital signatures,
+  revocation, and public verification do not.** A learner can download a
+  backend-generated PDF of their own certificate via
+  `GET /api/v1/learner/certificates/{certificateId}/pdf`
+  (`application/pdf`, attachment `Content-Disposition`); the PDF is rendered
+  on demand from the certificate/course/learner data and is never stored —
+  there is no certificate media storage. The certificate view page also
+  retains a browser "Print certificate" button (`window.print()`) alongside
+  the new "Download PDF" action. There is no email/LinkedIn share action, no
+  QR code, no digital signature, no revoke or regenerate flow, and no public
+  (unauthenticated) verification endpoint or page — every certificate
+  endpoint, including the PDF download, remains `LEARNER`-authenticated and
+  self-scoped.
 - **No certificate-issuance trigger from anywhere except the course player.**
   `CertificatesPage` (the certificates list) and the learner dashboard's
   Certificates section both only read existing certificates via
@@ -97,8 +110,10 @@ limitations:
   - Course thumbnail upload is wired in course **edit** mode only — create
     mode remains URL-only since no `courseId` exists before the course is
     created.
-  - No lesson attachments and no certificate PDF/media storage — these
-    remain plain-URL or non-existent as documented elsewhere in this file.
+  - No lesson attachments and no certificate media storage. Certificate PDF
+    generation exists (see "Certificates" above) but is generated on demand
+    and never persisted — there is no stored PDF file or Cloudinary
+    certificate asset of any kind.
 - No question/answer-option or section/lesson ordering — items are always
   appended; there is no drag-reorder.
 
@@ -113,9 +128,6 @@ limitations:
   history empty without surfacing an error or blocking the rest of the tab.
 - No timers/duration fields on quizzes.
 - No quiz analytics or learner-results dashboard for instructors.
-- No certificate integration tied to quiz passing — certificate issuance
-  (see the **Certificates** section above) is keyed only to lesson/course
-  progress reaching 100%, not to quiz results.
 - v1 supports exactly one selected option per question — no multi-select /
   partial-credit question type.
 - No unpublish or restore-from-archived flow for quizzes; publish is
@@ -123,13 +135,17 @@ limitations:
 
 ## Wishlist
 
-- No per-course wishlist-status endpoint; saved state is derived client-side
-  from a single `GET /api/v1/wishlist?size=200` call (a v1 page-size cap).
-- No automatic removal from the wishlist after enrollment — wishlist and
-  enrollment are independent at both backend and frontend layers.
-- Catalog cards (`CourseCatalogCard`) intentionally do not yet show
-  save/unsave controls; the wishlist action exists only on the course detail
-  page and the saved-courses dashboard page.
+- The saved-courses dashboard page still derives its list from a single
+  `GET /api/v1/wishlist?size=200` call (a v1 page-size cap); catalog cards
+  use the newer per-course `GET /api/v1/wishlist/course/{courseId}/status`
+  endpoint instead.
+- Enrolling in a course automatically removes it from the wishlist if it was
+  saved; this is the only coupling between wishlist and enrollment — saving
+  still never enrolls the learner or unlocks course content.
+- Guests cannot save courses; wishlist status and mutation remain
+  learner-scoped through the authenticated principal.
+- No wishlist analytics.
+- No recommendations are derived from wishlist data.
 
 ## Onboarding and learning preferences
 

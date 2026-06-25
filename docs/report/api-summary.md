@@ -72,6 +72,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | Method | Path | Access | Purpose |
 |---|---|---|---|
 | GET | `/api/v1/wishlist` | LEARNER | Paged list of the caller's saved courses |
+| GET | `/api/v1/wishlist/course/{courseId}/status` | LEARNER | Per-course saved status (`{ courseId, saved }`) — used by the catalog cards instead of the capped list |
 | POST | `/api/v1/wishlist/course/{courseId}` | LEARNER | Save a course (409 if already saved) |
 | DELETE | `/api/v1/wishlist/course/{courseId}` | LEARNER | Remove a saved course (404 if not saved) |
 
@@ -143,9 +144,10 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 
 | Method | Path | Access | Purpose |
 |---|---|---|---|
-| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment (`201` first issue, `200` idempotent repeat; `409` if not completed) |
+| POST | `/api/v1/learner/certificates/course/{courseId}/issue` | LEARNER; self-scoped | Issue a certificate for a `COMPLETED` enrollment, requiring every published course quiz to have a passed attempt (`201` first issue, `200` idempotent repeat without re-validation; `409` if lessons incomplete or a published quiz is unpassed) |
 | GET | `/api/v1/learner/certificates` | LEARNER; self-scoped | List the caller's own certificates |
 | GET | `/api/v1/learner/certificates/{certificateId}` | LEARNER; self-scoped | Get one certificate owned by the caller (`404` if not found or not owned) |
+| GET | `/api/v1/learner/certificates/{certificateId}/pdf` | LEARNER; self-scoped | Download a server-generated PDF of the caller's own certificate (`application/pdf`, attachment `Content-Disposition`); generated on demand, not stored; `404` if not found or not owned |
 
 ## Admin
 

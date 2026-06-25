@@ -230,27 +230,41 @@ ownership; mutations on `ARCHIVED` courses return `409`.
 **Goal:** Save a course for later without enrolling.
 
 **Main steps:**
-1. On the public course detail page, an eligible learner clicks "Save for
-   later" (guests see a "Sign in to save this course" link instead; the
-   action is gated on `isAuthenticated && roles.includes('ROLE_LEARNER')`
-   since `WishlistController` is `@PreAuthorize("hasRole('LEARNER')")`).
-2. Saved state is derived, not server-flagged per course: the frontend
-   fetches `GET /api/v1/wishlist?size=200` and builds a `Set` of saved
-   course IDs.
-3. Adding an already-saved course returns `409`, treated as "already saved"
-   (no error shown); removing an already-gone course returns `404`, treated
-   as "already removed".
-4. Learner can review and remove saved courses from the Saved Courses
+1. An eligible learner can save/unsave a course directly from a public
+   catalog card (a bookmark-icon control overlaid on the thumbnail) or from
+   the course detail page's "Save for later" action (guests see a "Sign in
+   to save this course" link instead; the action is gated on
+   `isAuthenticated && roles.includes('ROLE_LEARNER')` since
+   `WishlistController` is `@PreAuthorize("hasRole('LEARNER')")`). Catalog
+   cards for already-enrolled courses do not show the control.
+2. Saved state can now be checked per course: catalog cards call
+   `GET /api/v1/wishlist/course/{courseId}/status` rather than deriving
+   membership from the full `GET /api/v1/wishlist?size=200` list (the saved
+   courses dashboard page still uses the list endpoint, since it needs the
+   full collection anyway).
+3. The catalog card toggle is optimistic — the saved/unsaved state flips
+   immediately and rolls back if the mutation fails (excluding the stale-state
+   cases below). Clicking the control does not navigate to the course detail
+   page.
+4. Adding an already-saved course returns `409`, treated as "already saved"
+   (no error shown, no rollback); removing an already-gone course returns
+   `404`, treated as "already removed" (no error shown, no rollback).
+5. Learner can review and remove saved courses from the Saved Courses
    dashboard page.
+6. When a learner enrolls in a course that was saved, the backend
+   automatically removes it from their wishlist as part of the enrollment
+   transaction; enrolling in a course that was never saved still succeeds
+   normally.
 
 **Backend endpoints:**
 - `GET /api/v1/wishlist` (LEARNER)
+- `GET /api/v1/wishlist/course/{courseId}/status` (LEARNER)
 - `POST /api/v1/wishlist/course/{courseId}` (LEARNER)
 - `DELETE /api/v1/wishlist/course/{courseId}` (LEARNER)
 
-**Frontend routes:** `/courses/:courseId` (save action), `/dashboard/saved-courses` (review/remove)
+**Frontend routes:** `/courses` (catalog-card save action), `/courses/:courseId` (save action), `/dashboard/saved-courses` (review/remove)
 
-**Result:** A `WishlistItem` row per saved course. Saving does not enroll the learner or unlock course content; wishlist and enrollment are independent.
+**Result:** A `WishlistItem` row per saved course. Saving does not enroll the learner or unlock course content. Wishlist status and mutation are always learner-scoped through the authenticated principal. Enrolling auto-removes a saved course from the wishlist; no other wishlist/enrollment coupling exists (no recommendations, no analytics).
 
 ---
 
@@ -299,11 +313,17 @@ ownership; mutations on `ARCHIVED` courses return `409`.
    already exists.
 3. If none exists, the learner clicks "Issue certificate", which calls
    `POST /api/v1/learner/certificates/course/{courseId}/issue`. The backend
-   validates `Enrollment.status = COMPLETED` and creates a `Certificate` row
-   (idempotent: a repeat call returns the existing certificate with `200`
-   instead of creating a duplicate).
+   validates `Enrollment.status = COMPLETED` (all lessons finished) and, if
+   the course has any PUBLISHED quizzes, that every one of them has at least
+   one SUBMITTED attempt with `passed = true` (DRAFT/ARCHIVED quizzes never
+   block; a course with no published quizzes only needs lesson completion);
+   it then creates a `Certificate` row (idempotent: a repeat call returns
+   the existing certificate with `200` instead of creating a duplicate, and
+   skips re-validation).
 4. On success, the panel shows a "View certificate" link to
-   `/dashboard/certificates/:certificateId`.
+   `/dashboard/certificates/:certificateId`. If blocked specifically on an
+   unpassed quiz, the panel surfaces the backend's reason and offers a
+   "Go to Quizzes" action that switches the course player to the Quizzes tab.
 5. The same certificate is also reachable later from `/dashboard/certificates`
    (the certificates list page), which calls `GET
    /api/v1/learner/certificates` and links each card to its certificate view.
@@ -313,21 +333,31 @@ ownership; mutations on `ARCHIVED` courses return `409`.
    to the same `/dashboard/certificates/:certificateId` view route.
 7. `CertificateViewPage` calls `GET
    /api/v1/learner/certificates/{certificateId}` and renders a full-screen,
-   printable certificate document with a "Print / Save as PDF" button
-   (browser `window.print()` — no server-side PDF generation).
+   printable certificate document with two actions: "Download PDF" and
+   "Print certificate" (browser `window.print()`). "Download PDF" calls
+   `GET /api/v1/learner/certificates/{certificateId}/pdf`, which streams a
+   backend-generated PDF (`application/pdf`, attachment
+   `Content-Disposition`) built on demand from the certificate/course/learner
+   data; the PDF is not stored anywhere. `CertificatesPage` (the certificates
+   list) offers the same "Download PDF" action per card.
 
-**Error handling:** Issuing for a non-`COMPLETED` enrollment returns `409`,
-surfaced in the panel as an accessible (`role="alert"`) message. A certificate
-not found, or not owned by the caller, returns `404` on the view page.
+**Error handling:** Issuing for a non-`COMPLETED` enrollment, or for a
+completed enrollment with an unpassed published quiz, returns `409` with a
+distinct backend message for each case ("Complete all lessons before
+generating a certificate." vs. "Pass all published quizzes before generating
+a certificate."); both are surfaced in the panel as an accessible
+(`role="alert"`) message. A certificate not found, or not owned by the
+caller, returns `404` on the view page.
 
 **Backend endpoints:**
 - `POST /api/v1/learner/certificates/course/{courseId}/issue` (LEARNER; self-scoped; idempotent)
 - `GET /api/v1/learner/certificates` (LEARNER; self-scoped)
 - `GET /api/v1/learner/certificates/{certificateId}` (LEARNER; self-scoped)
+- `GET /api/v1/learner/certificates/{certificateId}/pdf` (LEARNER; self-scoped) — server-generated PDF download
 
 **Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, Lessons area), `/dashboard` (Certificates section on the learner dashboard), `/dashboard/certificates` (list), `/dashboard/certificates/:certificateId` (full-screen view, outside `DashboardLayout`)
 
-**Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. The certificate backend itself was not changed by this workflow's UI integration.
+**Result:** A `Certificate` row created on first issuance, read-only afterward. Issuance is a manual, learner-triggered action from the course player — there is no automatic issuance on completion. Eligibility now requires both lesson completion and passing every published quiz on the course.
 
 ---
 

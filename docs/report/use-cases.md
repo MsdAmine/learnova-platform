@@ -289,17 +289,18 @@ replaces "Learner" capabilities — it's additive.
 - **Goal:** Bookmark a course for later without enrolling.
 - **Preconditions:** Authenticated with `ROLE_LEARNER`. Eligibility gate: `isAuthenticated && user.roles.includes('ROLE_LEARNER')` (an admin-only account without the learner role would not see this action).
 - **Main success flow:**
-  1. On `/courses/:courseId`, an eligible learner clicks "Save for later".
+  1. An eligible learner can save/unsave a course from a public catalog card (`/courses`) via a bookmark-icon control overlaid on the thumbnail, or from `/courses/:courseId` via "Save for later". Catalog cards for already-enrolled courses do not show the control.
   2. Backend creates a `WishlistItem` via `POST /api/v1/wishlist/course/{courseId}`.
-  3. Saved state is derived client-side from `GET /api/v1/wishlist?size=200` (no per-course status endpoint exists), building a `Set` of saved course IDs.
-  4. Learner can remove the item from the same page or from `/dashboard/saved-courses` via `DELETE`.
+  3. Saved state can be checked per course via `GET /api/v1/wishlist/course/{courseId}/status`; catalog cards use this endpoint. The saved-courses dashboard page still derives its list from `GET /api/v1/wishlist?size=200`, since it needs the full collection.
+  4. The catalog card toggle is optimistic, with rollback on failure (excluding the 409/404 stale-state cases below); clicking the control does not navigate to the course detail page.
+  5. Learner can remove the item from the catalog card, the course detail page, or from `/dashboard/saved-courses` via `DELETE`.
 - **Alternative/error flows:**
-  - Add an already-saved course → `409`, treated as "already saved" silently.
-  - Remove an already-removed course → `404`, treated as "already removed" silently.
-  - Guest visits the page → sees "Sign in to save this course" link instead of the action; no wishlist call is ever made.
-- **Postconditions:** A `WishlistItem` row added/removed. Wishlist is independent of enrollment — saving never unlocks content, and enrolling never auto-removes a wishlist entry.
-- **Frontend routes:** `/courses/:courseId`, `/dashboard/saved-courses`
-- **Backend endpoints:** `GET /api/v1/wishlist`, `POST /api/v1/wishlist/course/{courseId}`, `DELETE /api/v1/wishlist/course/{courseId}`
+  - Add an already-saved course → `409`, treated as "already saved" silently (no rollback).
+  - Remove an already-removed course → `404`, treated as "already removed" silently (no rollback).
+  - Guest visits the page → sees "Sign in to save this course" link instead of the action (catalog cards show no control at all for guests); no wishlist call is ever made.
+- **Postconditions:** A `WishlistItem` row added/removed. Saving never unlocks content. Enrolling in a course automatically removes it from the wishlist if it was saved (the only coupling between the two features); enrolling in a course that was never saved still succeeds normally. Wishlist status and mutation remain learner-scoped through the authenticated principal.
+- **Frontend routes:** `/courses` (catalog card), `/courses/:courseId`, `/dashboard/saved-courses`
+- **Backend endpoints:** `GET /api/v1/wishlist`, `GET /api/v1/wishlist/course/{courseId}/status`, `POST /api/v1/wishlist/course/{courseId}`, `DELETE /api/v1/wishlist/course/{courseId}`
 - **Entities/tables:** `WishlistItem`, `Course`, `LearnerProfile`
 
 ---
@@ -661,16 +662,16 @@ replaces "Learner" capabilities — it's additive.
 - **Status:** Implemented
 - **Primary actor:** Learner (own certificates only)
 - **Goal:** Obtain and view a certificate of completion for a finished course.
-- **Preconditions:** `Enrollment.status = COMPLETED` for the target course (enforced server-side; `CONFLICT`/409 if not yet completed).
+- **Preconditions:** `Enrollment.status = COMPLETED` for the target course, and, if the course has any PUBLISHED quizzes, at least one SUBMITTED attempt with `passed = true` for every one of them (enforced server-side; `CONFLICT`/409 otherwise). DRAFT/ARCHIVED quizzes never block, and a course with no published quizzes only needs lesson completion.
 - **Main success flow:**
-  1. Learner finishes every lesson in a course; `progressPercentage` reaches 100% (see UC-9).
+  1. Learner finishes every lesson in a course; `progressPercentage` reaches 100% (see UC-9), and, if the course has published quizzes, passes each one (see UC quiz-taking flow).
   2. On `/dashboard/courses/:courseId`, `CoursePlayerPage` renders a `CertificatePanel` once `progressPercentage === 100`. The panel first calls `GET /api/v1/learner/certificates` to check whether a certificate already exists for this course.
-  3. If none exists, the panel shows an "Issue certificate" button. Clicking it calls `POST /api/v1/learner/certificates/course/{courseId}/issue` (idempotent: `201` on first issue, `200` returning the existing certificate on repeat calls).
+  3. If none exists, the panel shows an "Issue certificate" button. Clicking it calls `POST /api/v1/learner/certificates/course/{courseId}/issue` (idempotent: `201` on first issue, `200` returning the existing certificate on repeat calls without re-validating eligibility).
   4. On success, the panel switches to a "View certificate" link to `/dashboard/certificates/:certificateId`.
   5. Learner can also reach the same certificate later via `/dashboard/certificates` (list, `GET /api/v1/learner/certificates`), clicking "View certificate" on a card, or from the Certificates section on the learner dashboard (`/dashboard`), which calls the same endpoint directly and links each card to the same view route.
-  6. `/dashboard/certificates/:certificateId` (rendered outside `DashboardLayout` as a full-screen printable document via `CertificateViewPage`) calls `GET /api/v1/learner/certificates/{certificateId}` and renders the certificate (learner name, course title, instructor name, issued date, a generated `certificateCode`) with a "Print / Save as PDF" button (`window.print()` — no server-side PDF generation).
+  6. `/dashboard/certificates/:certificateId` (rendered outside `DashboardLayout` as a full-screen printable document via `CertificateViewPage`) calls `GET /api/v1/learner/certificates/{certificateId}` and renders the certificate (learner name, course title, instructor name, issued date, a generated `certificateCode`) with two actions: "Download PDF" (calls `GET /api/v1/learner/certificates/{certificateId}/pdf`, which streams a backend-generated PDF — `application/pdf`, attachment `Content-Disposition` — rendered on demand and not stored) and "Print certificate" (`window.print()`). `CertificatesPage` (the list) offers the same "Download PDF" action per card.
 - **Important caveat — issuance is manual, not automatic:** the certificate panel only appears after a course reaches 100% progress, and the learner must explicitly click "Issue certificate" — there is no background job or completion hook that issues certificates without this click. `CertificatesPage`'s copy was corrected to say "Finish every lesson in a course to issue a certificate from the course player," replacing an earlier claim that certificates were issued automatically.
-- **Alternative/error flows:** Certificate not found or not owned by the caller → `404`, "Certificate not found" panel with a back-link. Issuing for a non-`COMPLETED` enrollment → `409`, surfaced in the certificate panel via an accessible `role="alert"` message ("This course is not fully completed yet, so a certificate cannot be issued."). Any other issuance failure shows a generic accessible error message and lets the learner retry.
+- **Alternative/error flows:** Certificate not found or not owned by the caller → `404`, "Certificate not found" panel with a back-link. Issuing with incomplete lessons → `409` with the backend message "Complete all lessons before generating a certificate."; issuing with lessons complete but an unpassed published quiz → `409` with "Pass all published quizzes before generating a certificate." Both are surfaced in the certificate panel via an accessible `role="alert"` message, and the quiz-blocked case additionally shows a "Go to Quizzes" button that switches the course player to the Quizzes tab. Any other issuance failure shows a generic accessible error message and lets the learner retry.
 - **Postconditions:** A `Certificate` row (course, enrollment, learner profile, UUID `certificateCode`, `issuedAt`) once issued; read-only afterward — no revoke/regenerate flow exists.
 - **Frontend routes:** `/dashboard/courses/:courseId` (certificate panel, under `ProtectedRoute`), `/dashboard` (Certificates section on the learner dashboard, under `ProtectedRoute` + `DashboardLayout`), `/dashboard/certificates` (list, under `ProtectedRoute` + `DashboardLayout`), `/dashboard/certificates/:certificateId` (full-screen view, under `ProtectedRoute` only, intentionally outside `DashboardLayout`)
 - **Backend endpoints:** `POST /api/v1/learner/certificates/course/{courseId}/issue`, `GET /api/v1/learner/certificates`, `GET /api/v1/learner/certificates/{certificateId}` (all `ROLE_LEARNER`, self-scoped). Not modified as part of this UI work.
@@ -883,9 +884,9 @@ replaces "Learner" capabilities — it's additive.
 - Lesson file uploads and Cloudinary lesson attachments — lesson content v1 (`TEXT`/`VIDEO`/`PDF`/`LINK`) supports only inline text or a link to an externally hosted resource; no embedded video playback, no arbitrary iframe embeds, no rich text editor
 - Section/lesson/question/answer-option ordering (drag-reorder); items are currently always appended
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
-- Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28), plus PDF download/sharing beyond the existing browser print
+- Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28); certificate sharing, QR codes, digital signatures, revocation, and public verification (a server-generated PDF download already exists, see UC-28)
 - Live session `/leave` endpoint, recurring sessions, reminders, and a past-session history view (none exist in v1; see UC-31–UC-35)
-- Catalog-card wishlist controls (currently the wishlist action exists only on course detail and saved-courses pages)
+- Wishlist analytics and wishlist-based course recommendations (no recommendation engine reads wishlist data today; see UC-6)
 - Broader admin user management beyond instructor approvals and category creation
 
 ---

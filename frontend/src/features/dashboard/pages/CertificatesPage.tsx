@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/Button';
 import { StatePanel } from '../../../components/dashboard/StatePanel';
 import { Bone } from '../../../components/common/skeletons/Bone';
-import { getMyCertificates } from '../../../api/certificates';
+import { downloadCertificatePdf, getMyCertificates } from '../../../api/certificates';
 import type { CertificateResponse } from '../../../api/certificates';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -38,6 +38,21 @@ function CertificatesSkeleton() {
 
 function CertificateCard({ certificate }: { certificate: CertificateResponse }) {
   const navigate = useNavigate();
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    setDownloading(true);
+    setDownloadError(false);
+    try {
+      await downloadCertificatePdf(certificate.id, certificate.certificateCode);
+    } catch {
+      setDownloadError(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <article
       className="bg-surface border border-border-default rounded-lg p-lg"
@@ -59,14 +74,30 @@ function CertificateCard({ certificate }: { certificate: CertificateResponse }) 
         Code:{' '}
         <span className="font-mono">{certificate.certificateCode}</span>
       </p>
-      <Button
-        variant="secondary"
-        size="sm"
-        aria-label={`View certificate for ${certificate.courseTitle}`}
-        onClick={() => navigate(`/dashboard/certificates/${certificate.id}`)}
-      >
-        View certificate
-      </Button>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="secondary"
+          size="sm"
+          aria-label={`View certificate for ${certificate.courseTitle}`}
+          onClick={() => navigate(`/dashboard/certificates/${certificate.id}`)}
+        >
+          View certificate
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label={`Download PDF for ${certificate.courseTitle}`}
+          onClick={handleDownloadPdf}
+          loading={downloading}
+        >
+          Download PDF
+        </Button>
+      </div>
+      {downloadError && (
+        <p className="text-body-sm text-error mt-2">
+          We could not download the PDF. Please try again.
+        </p>
+      )}
     </article>
   );
 }

@@ -35,6 +35,13 @@ function getStatus(err: unknown): number | undefined {
   return (err as { response?: { status?: number } })?.response?.status;
 }
 
+// Reads the backend's error reason (ResponseStatusException message) off an Axios error.
+function getErrorMessage(err: unknown): string | undefined {
+  const message = (err as { response?: { data?: { message?: unknown } } })
+    ?.response?.data?.message;
+  return typeof message === 'string' && message.trim() !== '' ? message : undefined;
+}
+
 type TabKey = 'lessons' | 'quizzes';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -340,13 +347,18 @@ type CertificateStatus = 'checking' | 'none' | 'issuing' | 'issued' | 'error';
 function CertificatePanel({
   courseId,
   courseTitle,
+  onGoToQuizzes,
 }: {
   courseId: number;
   courseTitle: string;
+  onGoToQuizzes?: () => void;
 }) {
   const [status, setStatus] = useState<CertificateStatus>('checking');
   const [certificateId, setCertificateId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // True when the block is specifically about unpassed quizzes, so we can point
+  // the learner at the Quizzes tab rather than just showing the message.
+  const [quizBlocked, setQuizBlocked] = useState(false);
 
   useEffect(() => {
     const token = { cancelled: false };
@@ -372,16 +384,23 @@ function CertificatePanel({
   async function handleIssue() {
     setStatus('issuing');
     setErrorMessage(null);
+    setQuizBlocked(false);
     try {
       const certificate = await issueCertificate(courseId);
       setCertificateId(certificate.id);
       setStatus('issued');
     } catch (err) {
-      setErrorMessage(
-        getStatus(err) === 409
-          ? 'This course is not fully completed yet, so a certificate cannot be issued.'
-          : 'We could not issue your certificate. Please try again.',
-      );
+      const backendMessage = getErrorMessage(err);
+      if (getStatus(err) === 409) {
+        // Surface the backend's specific reason (incomplete lessons vs unpassed quizzes).
+        setErrorMessage(
+          backendMessage ??
+            'This course is not fully completed yet, so a certificate cannot be issued.',
+        );
+        setQuizBlocked(/quiz/i.test(backendMessage ?? ''));
+      } else {
+        setErrorMessage('We could not issue your certificate. Please try again.');
+      }
       setStatus('error');
     }
   }
@@ -403,9 +422,19 @@ function CertificatePanel({
       </p>
 
       {status === 'error' && errorMessage && (
-        <p className="text-body-sm text-error mb-3" role="alert">
-          {errorMessage}
-        </p>
+        <div className="mb-3" role="alert">
+          <p className="text-body-sm text-error">{errorMessage}</p>
+          {quizBlocked && onGoToQuizzes && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-2"
+              onClick={onGoToQuizzes}
+            >
+              Go to Quizzes
+            </Button>
+          )}
+        </div>
       )}
 
       {status === 'issued' && certificateId != null ? (
@@ -1102,7 +1131,11 @@ export default function CoursePlayerPage() {
           </>
         )}
         {hasLessons && progressPercentage === 100 && (
-          <CertificatePanel courseId={courseId} courseTitle={content.courseTitle} />
+          <CertificatePanel
+            courseId={courseId}
+            courseTitle={content.courseTitle}
+            onGoToQuizzes={() => setActiveTab('quizzes')}
+          />
         )}
       </div>
 
