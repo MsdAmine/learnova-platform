@@ -73,7 +73,7 @@ where applicable, a wired frontend screen). Each is documented in detail in
 - Learner lesson study and progress tracking
 - Learner quiz-taking with automatic scoring, retake, and full attempt
   history
-- Learner wishlist (save-for-later) and saved-courses dashboard
+- Learner wishlist (save-for-later, from public catalog cards or the course detail page) and saved-courses dashboard; enrolling auto-removes a saved course from the wishlist
 - Profile self-editing for both learner and instructor profiles
 - Learner certificate issuance and viewing, triggered manually from the
   course player once a course reaches 100% progress and (if the course has

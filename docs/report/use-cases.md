@@ -289,17 +289,18 @@ replaces "Learner" capabilities — it's additive.
 - **Goal:** Bookmark a course for later without enrolling.
 - **Preconditions:** Authenticated with `ROLE_LEARNER`. Eligibility gate: `isAuthenticated && user.roles.includes('ROLE_LEARNER')` (an admin-only account without the learner role would not see this action).
 - **Main success flow:**
-  1. On `/courses/:courseId`, an eligible learner clicks "Save for later".
+  1. An eligible learner can save/unsave a course from a public catalog card (`/courses`) via a bookmark-icon control overlaid on the thumbnail, or from `/courses/:courseId` via "Save for later". Catalog cards for already-enrolled courses do not show the control.
   2. Backend creates a `WishlistItem` via `POST /api/v1/wishlist/course/{courseId}`.
-  3. Saved state is derived client-side from `GET /api/v1/wishlist?size=200` (no per-course status endpoint exists), building a `Set` of saved course IDs.
-  4. Learner can remove the item from the same page or from `/dashboard/saved-courses` via `DELETE`.
+  3. Saved state can be checked per course via `GET /api/v1/wishlist/course/{courseId}/status`; catalog cards use this endpoint. The saved-courses dashboard page still derives its list from `GET /api/v1/wishlist?size=200`, since it needs the full collection.
+  4. The catalog card toggle is optimistic, with rollback on failure (excluding the 409/404 stale-state cases below); clicking the control does not navigate to the course detail page.
+  5. Learner can remove the item from the catalog card, the course detail page, or from `/dashboard/saved-courses` via `DELETE`.
 - **Alternative/error flows:**
-  - Add an already-saved course → `409`, treated as "already saved" silently.
-  - Remove an already-removed course → `404`, treated as "already removed" silently.
-  - Guest visits the page → sees "Sign in to save this course" link instead of the action; no wishlist call is ever made.
-- **Postconditions:** A `WishlistItem` row added/removed. Wishlist is independent of enrollment — saving never unlocks content, and enrolling never auto-removes a wishlist entry.
-- **Frontend routes:** `/courses/:courseId`, `/dashboard/saved-courses`
-- **Backend endpoints:** `GET /api/v1/wishlist`, `POST /api/v1/wishlist/course/{courseId}`, `DELETE /api/v1/wishlist/course/{courseId}`
+  - Add an already-saved course → `409`, treated as "already saved" silently (no rollback).
+  - Remove an already-removed course → `404`, treated as "already removed" silently (no rollback).
+  - Guest visits the page → sees "Sign in to save this course" link instead of the action (catalog cards show no control at all for guests); no wishlist call is ever made.
+- **Postconditions:** A `WishlistItem` row added/removed. Saving never unlocks content. Enrolling in a course automatically removes it from the wishlist if it was saved (the only coupling between the two features); enrolling in a course that was never saved still succeeds normally. Wishlist status and mutation remain learner-scoped through the authenticated principal.
+- **Frontend routes:** `/courses` (catalog card), `/courses/:courseId`, `/dashboard/saved-courses`
+- **Backend endpoints:** `GET /api/v1/wishlist`, `GET /api/v1/wishlist/course/{courseId}/status`, `POST /api/v1/wishlist/course/{courseId}`, `DELETE /api/v1/wishlist/course/{courseId}`
 - **Entities/tables:** `WishlistItem`, `Course`, `LearnerProfile`
 
 ---
@@ -885,7 +886,7 @@ replaces "Learner" capabilities — it's additive.
 - Quiz timers, quiz analytics, and a learner-results dashboard for instructors
 - Automatic certificate issuance on course completion (today's flow requires the learner to click "Issue certificate" from the course player; see UC-28); certificate sharing, QR codes, digital signatures, revocation, and public verification (a server-generated PDF download already exists, see UC-28)
 - Live session `/leave` endpoint, recurring sessions, reminders, and a past-session history view (none exist in v1; see UC-31–UC-35)
-- Catalog-card wishlist controls (currently the wishlist action exists only on course detail and saved-courses pages)
+- Wishlist analytics and wishlist-based course recommendations (no recommendation engine reads wishlist data today; see UC-6)
 - Broader admin user management beyond instructor approvals and category creation
 
 ---

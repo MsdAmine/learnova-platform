@@ -3,6 +3,7 @@ export interface Course {
   title: string;
   instructor: string;
   progress: number;
+  thumbnailUrl?: string | null;
   gradient?: { from: string; to: string };
 }
 

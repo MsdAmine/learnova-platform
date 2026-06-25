@@ -72,6 +72,7 @@ Swagger UI (live, interactive): `http://localhost:8080/swagger-ui/index.html`
 | Method | Path | Access | Purpose |
 |---|---|---|---|
 | GET | `/api/v1/wishlist` | LEARNER | Paged list of the caller's saved courses |
+| GET | `/api/v1/wishlist/course/{courseId}/status` | LEARNER | Per-course saved status (`{ courseId, saved }`) — used by the catalog cards instead of the capped list |
 | POST | `/api/v1/wishlist/course/{courseId}` | LEARNER | Save a course (409 if already saved) |
 | DELETE | `/api/v1/wishlist/course/{courseId}` | LEARNER | Remove a saved course (404 if not saved) |
 

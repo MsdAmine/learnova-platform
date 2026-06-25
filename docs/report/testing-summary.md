@@ -7,7 +7,7 @@ test suite (see **How to get exact numbers** below).
 
 ## Backend Test Suite
 
-The backend test suite (`backend/src/test/java`) currently contains **35
+The backend test suite (`backend/src/test/java`) currently contains **36
 test classes** (file count from `backend/src/test/java/**/*.java`), organized
 by module. Tests run against an in-memory H2 database in
 PostgreSQL-compatibility mode (`src/test/resources/application-test.yml`) —
@@ -28,6 +28,15 @@ total.
 - `AccountStatusSecurityTest`
 - `AdminInstructorProfileSecurityTest`
 - `UserRepositoryTest`
+
+**Wishlist** (1 class)
+- `WishlistIntegrationTest` (8 tests) — covers the per-course status endpoint
+  returning `saved: true`/`false`; status requires authentication (`401`);
+  status does not leak across learners (a learner cannot observe another
+  learner's saved state); adding the same course twice returns `409`;
+  removing a saved course drops it from status; enrolling in a saved course
+  automatically removes it from the wishlist; enrolling in a course that was
+  never saved still succeeds.
 
 **Course lifecycle** (4 classes)
 - `CourseLifecycleIntegrationTest`

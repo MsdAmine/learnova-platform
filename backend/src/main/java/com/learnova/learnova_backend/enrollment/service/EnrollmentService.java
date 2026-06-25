@@ -3,6 +3,7 @@ package com.learnova.learnova_backend.enrollment.service;
 import com.learnova.learnova_backend.course.entity.Course;
 import com.learnova.learnova_backend.course.entity.CourseStatus;
 import com.learnova.learnova_backend.course.repository.CourseRepository;
+import com.learnova.learnova_backend.course.repository.WishlistItemRepository;
 import com.learnova.learnova_backend.enrollment.dto.EnrollmentResponse;
 import com.learnova.learnova_backend.enrollment.entity.Enrollment;
 import com.learnova.learnova_backend.enrollment.repository.EnrollmentRepository;
@@ -24,6 +25,7 @@ public class EnrollmentService {
     private final EnrollmentRepository enrollmentRepository;
     private final LearnerProfileRepository learnerProfileRepository;
     private final CourseRepository courseRepository;
+    private final WishlistItemRepository wishlistItemRepository;
 
     @Transactional
     public EnrollmentResponse enroll(CustomUserDetails currentUser, Long courseId) {
@@ -57,7 +59,15 @@ public class EnrollmentService {
                 .course(course)
                 .build();
 
-        return toResponse(enrollmentRepository.save(enrollment));
+        EnrollmentResponse response = toResponse(enrollmentRepository.save(enrollment));
+
+        // A learner enrolling no longer needs the course saved for later; drop it from
+        // the wishlist if present. Absence is not an error — most enrollments won't have
+        // come from a saved course — and this never touches other learners' wishlists.
+        wishlistItemRepository.findByLearnerProfileAndCourse(learnerProfile, course)
+                .ifPresent(wishlistItemRepository::delete);
+
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -97,6 +107,7 @@ public class EnrollmentService {
                 course.getTitle(),
                 course.getInstructorProfile().getUser().getFullName(),
                 course.getCategory().getName(),
+                course.getThumbnailUrl(),
                 enrollment.getStatus(),
                 enrollment.getProgressPercentage(),
                 enrollment.getEnrolledAt(),
